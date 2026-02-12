@@ -1,0 +1,25 @@
+{
+  "name": "create-githat-app",
+  "version": "0.1.1",
+  "description": "Scaffold a new app with GitHat identity built in",
+  "bin": {
+    "create-githat-app": "./bin/index.js"
+  },
+  "files": ["bin", "src"],
+  "scripts": {
+    "test": "node bin/index.js --help"
+  },
+  "dependencies": {
+    "prompts": "^2.4.2"
+  },
+  "keywords": ["githat", "nextjs", "react", "vite", "create-app", "cli", "auth", "identity"],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GitHat-IO/create-githat-app"
+  }
+}
