@@ -1,0 +1,9 @@
+{{#if includeOrgManagement}}
+{{#if includeGithatFolder}}
+import { DashboardSettings } from '../../../githat/dashboard/settings{{#unless typescript}}.jsx{{/unless}}';
+
+export default function SettingsPage() {
+  return <DashboardSettings />;
+}
+{{/if}}
+{{/if}}

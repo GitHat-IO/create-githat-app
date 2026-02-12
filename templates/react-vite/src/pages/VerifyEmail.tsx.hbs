@@ -1,0 +1,51 @@
+{{#if includeEmailVerification}}
+import { useEffect, useState } from 'react';
+{{#if includeGithatFolder}}
+import { authApi } from '../../githat/api/auth{{#unless typescript}}.js{{/unless}}';
+{{/if}}
+
+export default function VerifyEmail() {
+  const [status, setStatus] = useState{{#if typescript}}<'loading' | 'success' | 'error'>{{/if}}('loading');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (!token) { setStatus('error'); return; }
+
+    (async () => {
+      try {
+{{#if includeGithatFolder}}
+        await authApi.verifyEmail(token);
+{{else}}
+        await fetch('{{apiUrl}}/auth/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
+{{/if}}
+        setStatus('success');
+      } catch { setStatus('error'); }
+    })();
+  }, []);
+
+  return (
+    <main style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#09090b' }}>
+      <div style=\{{ textAlign: 'center' }}>
+        {status === 'loading' && <p style=\{{ color: '#a1a1aa' }}>Verifying...</p>}
+        {status === 'success' && (
+          <>
+            <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '0.5rem' }}>Email verified!</h1>
+            <p style=\{{ color: '#a1a1aa' }}>You can now <a href="/sign-in" style=\{{ color: '#7c3aed' }}>sign in</a>.</p>
+          </>
+        )}
+        {status === 'error' && (
+          <>
+            <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '0.5rem' }}>Verification failed</h1>
+            <p style=\{{ color: '#a1a1aa' }}>The link may have expired. <a href="/sign-up" style=\{{ color: '#7c3aed' }}>Try again</a>.</p>
+          </>
+        )}
+      </div>
+    </main>
+  );
+}
+{{/if}}

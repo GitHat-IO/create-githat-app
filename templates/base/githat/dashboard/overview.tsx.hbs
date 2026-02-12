@@ -1,0 +1,37 @@
+{{#unless includeDashboard}}{{else}}
+'use client';
+
+import { useAuth } from '@githat/nextjs';
+
+export function DashboardOverview() {
+  const { user, org } = useAuth();
+
+  return (
+    <div>
+      <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '0.5rem' }}>
+        Welcome{user?.name ? `, ${user.name}` : ''}
+      </h1>
+      {org && (
+        <p style=\{{ color: '#a1a1aa', marginBottom: '2rem' }}>
+          Organization: <strong style=\{{ color: '#7c3aed' }}>{org.name}</strong> ({org.role})
+        </p>
+      )}
+
+      <div style=\{{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(16rem, 1fr))', gap: '1rem' }}>
+        <StatCard title="Status" value="Active" />
+        <StatCard title="Plan" value={org?.tier || 'Free'} />
+        <StatCard title="Identity" value="GitHat" />
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ title, value }{{#if typescript}}: { title: string; value: string }{{/if}}) {
+  return (
+    <div style=\{{ padding: '1.5rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem' }}>
+      <p style=\{{ fontSize: '0.875rem', color: '#71717a', marginBottom: '0.25rem' }}>{title}</p>
+      <p style=\{{ fontSize: '1.25rem', fontWeight: 600, color: '#fafafa' }}>{value}</p>
+    </div>
+  );
+}
+{{/unless}}

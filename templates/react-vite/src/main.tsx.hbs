@@ -1,0 +1,30 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { GitHatProvider } from '@githat/nextjs';
+import '@githat/nextjs/styles';
+import App from './App{{#unless typescript}}.jsx{{/unless}}';
+import './index.css';
+{{#if includeGithatFolder}}
+import { githatConfig } from '../githat/config{{#unless typescript}}.js{{/unless}}';
+{{/if}}
+
+ReactDOM.createRoot(document.getElementById('root'){{#if typescript}}!{{/if}}).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <GitHatProvider config=\{{
+{{#if includeGithatFolder}}
+        ...githatConfig,
+{{else}}
+        publishableKey: import.meta.env.VITE_GITHAT_PUBLISHABLE_KEY || '',
+        signInUrl: '/sign-in',
+        signUpUrl: '/sign-up',
+        afterSignInUrl: '/dashboard',
+        afterSignOutUrl: '/',
+{{/if}}
+      }}>
+        <App />
+      </GitHatProvider>
+    </BrowserRouter>
+  </React.StrictMode>
+);

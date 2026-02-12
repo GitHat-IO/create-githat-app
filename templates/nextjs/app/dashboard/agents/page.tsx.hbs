@@ -1,0 +1,9 @@
+{{#if includeAgentModule}}
+{{#if includeGithatFolder}}
+import { DashboardAgents } from '../../../githat/dashboard/agents{{#unless typescript}}.jsx{{/unless}}';
+
+export default function AgentsPage() {
+  return <DashboardAgents />;
+}
+{{/if}}
+{{/if}}

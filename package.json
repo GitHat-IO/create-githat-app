@@ -1,18 +1,35 @@
 {
   "name": "create-githat-app",
-  "version": "0.1.1",
-  "description": "Scaffold a new app with GitHat identity built in",
+  "version": "1.0.0",
+  "description": "Scaffold enterprise-grade apps with GitHat identity — for humans, AI agents, and MCP servers",
+  "type": "module",
   "bin": {
     "create-githat-app": "./bin/index.js"
   },
-  "files": ["bin", "src"],
+  "files": ["bin", "dist", "templates"],
   "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
     "test": "node bin/index.js --help"
   },
   "dependencies": {
-    "prompts": "^2.4.2"
+    "@clack/prompts": "^0.9.1",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "figlet": "^1.8.0",
+    "fs-extra": "^11.2.0",
+    "gradient-string": "^3.0.0",
+    "handlebars": "^4.7.8",
+    "ora": "^8.1.1"
   },
-  "keywords": ["githat", "nextjs", "react", "vite", "create-app", "cli", "auth", "identity"],
+  "devDependencies": {
+    "@types/figlet": "^1.7.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/gradient-string": "^1.1.6",
+    "tsup": "^8.4.0",
+    "typescript": "^5.9.0"
+  },
+  "keywords": ["githat", "nextjs", "react", "vite", "create-app", "cli", "auth", "identity", "mcp", "ai-agents"],
   "license": "MIT",
   "publishConfig": {
     "access": "public",

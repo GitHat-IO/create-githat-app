@@ -1,1 +1,6 @@
 node_modules
+dist
+my-test-app
+test-app
+*.tgz
+.DS_Store

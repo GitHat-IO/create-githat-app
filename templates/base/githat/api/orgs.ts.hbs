@@ -1,0 +1,34 @@
+{{#if includeGithatFolder}}
+{{#if includeOrgManagement}}
+import { githatApi } from './client{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { ApiOrg, ApiOrgMember } from './types';
+{{/if}}
+
+export const orgsApi = {
+  create: (name{{#if typescript}}: string{{/if}}, slug{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<{ org: ApiOrg }>{{/if}}('/org', { name, slug }),
+
+  get: (id{{#if typescript}}: string{{/if}}) =>
+    githatApi.get{{#if typescript}}<{ org: ApiOrg }>{{/if}}(`/org/${id}`),
+
+  update: (id{{#if typescript}}: string{{/if}}, data{{#if typescript}}: Partial<Pick<ApiOrg, 'name' | 'logoUrl' | 'brandColor'>>{{/if}}) =>
+    githatApi.patch{{#if typescript}}<{ org: ApiOrg }>{{/if}}(`/org/${id}`, data),
+
+  delete: (id{{#if typescript}}: string{{/if}}) =>
+    githatApi.del(`/org/${id}`),
+
+  listMembers: (orgId{{#if typescript}}: string{{/if}}) =>
+    githatApi.get{{#if typescript}}<{ members: ApiOrgMember[] }>{{/if}}(`/org/${orgId}/members`),
+
+  inviteMember: (orgId{{#if typescript}}: string{{/if}}, email{{#if typescript}}: string{{/if}}, role{{#if typescript}}: 'admin' | 'member'{{/if}}) =>
+    githatApi.post(`/org/${orgId}/members`, { email, role }),
+
+  updateRole: (orgId{{#if typescript}}: string{{/if}}, userId{{#if typescript}}: string{{/if}}, role{{#if typescript}}: 'admin' | 'member'{{/if}}) =>
+    githatApi.patch(`/org/${orgId}/members/${userId}`, { role }),
+
+  removeMember: (orgId{{#if typescript}}: string{{/if}}, userId{{#if typescript}}: string{{/if}}) =>
+    githatApi.del(`/org/${orgId}/members/${userId}`),
+};
+{{/if}}
+{{/if}}

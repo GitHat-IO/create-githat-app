@@ -1,0 +1,9 @@
+{{#if includeDashboard}}
+{{#if includeGithatFolder}}
+import { DashboardApps } from '../../../githat/dashboard/apps{{#unless typescript}}.jsx{{/unless}}';
+
+export default function AppsPage() {
+  return <DashboardApps />;
+}
+{{/if}}
+{{/if}}

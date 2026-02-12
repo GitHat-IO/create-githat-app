@@ -1,0 +1,38 @@
+{{#if includeGithatFolder}}
+import { githatApi } from './client{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { AuthResponse, ApiUser, ApiOrg } from './types';
+{{/if}}
+
+export const authApi = {
+  login: (email{{#if typescript}}: string{{/if}}, password{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<AuthResponse>{{/if}}('/auth/login', { email, password }),
+
+  register: (email{{#if typescript}}: string{{/if}}, password{{#if typescript}}: string{{/if}}, name{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<AuthResponse>{{/if}}('/auth/register', { email, password, name }),
+
+  logout: () => githatApi.post('/auth/logout', {}),
+
+  me: () =>
+    githatApi.get{{#if typescript}}<{ user: ApiUser; currentOrg: ApiOrg | null }>{{/if}}('/auth/me'),
+
+  refresh: (refreshToken{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<AuthResponse>{{/if}}('/auth/refresh', { refreshToken }),
+
+{{#if includeForgotPassword}}
+  forgotPassword: (email{{#if typescript}}: string{{/if}}) =>
+    githatApi.post('/auth/forgot-password', { email }),
+
+  resetPassword: (token{{#if typescript}}: string{{/if}}, password{{#if typescript}}: string{{/if}}) =>
+    githatApi.post('/auth/reset-password', { token, password }),
+{{/if}}
+
+{{#if includeEmailVerification}}
+  verifyEmail: (token{{#if typescript}}: string{{/if}}) =>
+    githatApi.post('/auth/verify-email', { token }),
+
+  resendVerification: (email{{#if typescript}}: string{{/if}}) =>
+    githatApi.post('/auth/resend-verification', { email }),
+{{/if}}
+};
+{{/if}}

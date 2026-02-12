@@ -1,0 +1,111 @@
+{{#if includeMcpModule}}
+'use client';
+
+import { useState, useEffect } from 'react';
+import { githatApi } from '../api/client{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { McpServer } from '../api/types';
+{{/if}}
+
+export function DashboardMcpServers() {
+  const [servers, setServers] = useState{{#if typescript}}<McpServer[]>{{/if}}([]);
+  const [loading, setLoading] = useState(true);
+  const [domain, setDomain] = useState('');
+  const [registering, setRegistering] = useState(false);
+  const [error, setError] = useState('');
+
+  const loadServers = () => {
+    setLoading(true);
+    githatApi.get{{#if typescript}}<{ servers: McpServer[] }>{{/if}}('/mcp/servers')
+      .then((data) => setServers(data.servers || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadServers(); }, []);
+
+  const handleRegister = async (e{{#if typescript}}: React.FormEvent{{/if}}) => {
+    e.preventDefault();
+    if (!domain.trim()) return;
+    setRegistering(true);
+    setError('');
+    try {
+      await githatApi.post('/mcp/servers', { domain: domain.trim() });
+      setDomain('');
+      loadServers();
+    } catch {
+      setError('Failed to register server. Check your domain and try again.');
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  const handleDelete = async (id{{#if typescript}}: string{{/if}}) => {
+    if (!confirm('Remove this MCP server?')) return;
+    try {
+      await githatApi.del(`/mcp/servers/${id}`);
+      loadServers();
+    } catch {
+      setError('Failed to remove server.');
+    }
+  };
+
+  if (loading) {
+    return <p style=\{{ color: '#71717a' }}>Loading MCP servers...</p>;
+  }
+
+  return (
+    <div>
+      <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '1.5rem' }}>MCP Servers</h1>
+
+      <form onSubmit={handleRegister} style=\{{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+        <input
+          type="text"
+          value={domain}
+          onChange={(e) => setDomain(e.target.value)}
+          placeholder="mcp.yourcompany.com"
+          required
+          style=\{{ flex: 1, padding: '0.625rem 0.75rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.375rem', color: '#fafafa', outline: 'none' }}
+        />
+        <button
+          type="submit"
+          disabled={registering}
+          style=\{{ padding: '0.625rem 1.25rem', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '0.375rem', fontWeight: 600, cursor: 'pointer', opacity: registering ? 0.6 : 1 }}
+        >
+          {registering ? 'Registering...' : 'Register'}
+        </button>
+      </form>
+
+      {error && <p style=\{{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '1rem' }}>{error}</p>}
+
+      {servers.length === 0 ? (
+        <div style=\{{ padding: '3rem', textAlign: 'center', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem' }}>
+          <p style=\{{ color: '#71717a' }}>No MCP servers registered yet.</p>
+        </div>
+      ) : (
+        <div style=\{{ display: 'grid', gap: '0.5rem' }}>
+          {servers.map((server) => (
+            <div key={server.id} style=\{{ padding: '1rem 1.5rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style=\{{ fontWeight: 600, color: '#fafafa' }}>{server.domain}</p>
+                <p style=\{{ fontSize: '0.875rem', color: '#71717a' }}>Client ID: {server.clientId}</p>
+              </div>
+              <div style=\{{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style=\{{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', borderRadius: '9999px', background: server.verified ? '#064e3b' : '#451a03', color: server.verified ? '#34d399' : '#f59e0b' }}>
+                  {server.verified ? 'Verified' : 'Pending'}
+                </span>
+                <button
+                  onClick={() => handleDelete(server.id)}
+                  style=\{{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'transparent', border: '1px solid #3f3f46', borderRadius: '0.25rem', color: '#ef4444', cursor: 'pointer' }}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+{{/if}}

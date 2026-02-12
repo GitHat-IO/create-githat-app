@@ -1,0 +1,21 @@
+{{#if includeMcpModule}}
+import { githatApi } from './client{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { McpServer } from './types';
+{{/if}}
+
+export const mcpApi = {
+  register: (domain{{#if typescript}}: string{{/if}}, name{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<{ server: McpServer; clientSecret: string }>{{/if}}('/mcp/register', { domain, name }),
+
+  verify: (clientId{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<{ server: McpServer }>{{/if}}('/mcp/verify', { clientId }),
+
+  getToken: (clientId{{#if typescript}}: string{{/if}}, clientSecret{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<{ accessToken: string }>{{/if}}('/mcp/token', {
+      grant_type: 'client_credentials',
+      client_id: clientId,
+      client_secret: clientSecret,
+    }),
+};
+{{/if}}

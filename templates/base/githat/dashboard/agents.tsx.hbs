@@ -1,0 +1,121 @@
+{{#if includeAgentModule}}
+'use client';
+
+import { useState, useEffect } from 'react';
+import { githatApi } from '../api/client{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { AiAgent } from '../api/types';
+{{/if}}
+
+export function DashboardAgents() {
+  const [agents, setAgents] = useState{{#if typescript}}<AiAgent[]>{{/if}}([]);
+  const [loading, setLoading] = useState(true);
+  const [name, setName] = useState('');
+  const [wallet, setWallet] = useState('');
+  const [registering, setRegistering] = useState(false);
+  const [error, setError] = useState('');
+
+  const loadAgents = () => {
+    setLoading(true);
+    githatApi.get{{#if typescript}}<{ agents: AiAgent[] }>{{/if}}('/agents')
+      .then((data) => setAgents(data.agents || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadAgents(); }, []);
+
+  const handleRegister = async (e{{#if typescript}}: React.FormEvent{{/if}}) => {
+    e.preventDefault();
+    if (!name.trim() || !wallet.trim()) return;
+    setRegistering(true);
+    setError('');
+    try {
+      await githatApi.post('/agents', { name: name.trim(), wallet: wallet.trim() });
+      setName('');
+      setWallet('');
+      loadAgents();
+    } catch {
+      setError('Failed to register agent. Check the wallet address and try again.');
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  const handleDelete = async (agentWallet{{#if typescript}}: string{{/if}}) => {
+    if (!confirm('Remove this AI agent?')) return;
+    try {
+      await githatApi.del(`/agents/${agentWallet}`);
+      loadAgents();
+    } catch {
+      setError('Failed to remove agent.');
+    }
+  };
+
+  if (loading) {
+    return <p style=\{{ color: '#71717a' }}>Loading AI agents...</p>;
+  }
+
+  return (
+    <div>
+      <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '1.5rem' }}>AI Agents</h1>
+
+      <form onSubmit={handleRegister} style=\{{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Agent name"
+          required
+          style=\{{ flex: '1 1 10rem', padding: '0.625rem 0.75rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.375rem', color: '#fafafa', outline: 'none' }}
+        />
+        <input
+          type="text"
+          value={wallet}
+          onChange={(e) => setWallet(e.target.value)}
+          placeholder="0x... wallet address"
+          required
+          style=\{{ flex: '2 1 16rem', padding: '0.625rem 0.75rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.375rem', color: '#fafafa', fontFamily: 'monospace', fontSize: '0.875rem', outline: 'none' }}
+        />
+        <button
+          type="submit"
+          disabled={registering}
+          style=\{{ padding: '0.625rem 1.25rem', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '0.375rem', fontWeight: 600, cursor: 'pointer', opacity: registering ? 0.6 : 1 }}
+        >
+          {registering ? 'Registering...' : 'Register'}
+        </button>
+      </form>
+
+      {error && <p style=\{{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '1rem' }}>{error}</p>}
+
+      {agents.length === 0 ? (
+        <div style=\{{ padding: '3rem', textAlign: 'center', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem' }}>
+          <p style=\{{ color: '#71717a' }}>No AI agents registered yet.</p>
+        </div>
+      ) : (
+        <div style=\{{ display: 'grid', gap: '0.5rem' }}>
+          {agents.map((agent) => (
+            <div key={agent.wallet} style=\{{ padding: '1rem 1.5rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style=\{{ fontWeight: 600, color: '#fafafa' }}>{agent.name}</p>
+                <p style=\{{ fontSize: '0.875rem', color: '#71717a', fontFamily: 'monospace' }}>{agent.wallet}</p>
+              </div>
+              <div style=\{{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style=\{{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', borderRadius: '9999px', background: agent.verified ? '#064e3b' : '#451a03', color: agent.verified ? '#34d399' : '#f59e0b' }}>
+                  {agent.verified ? 'Verified' : 'Pending'}
+                </span>
+                <button
+                  onClick={() => handleDelete(agent.wallet)}
+                  style=\{{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'transparent', border: '1px solid #3f3f46', borderRadius: '0.25rem', color: '#ef4444', cursor: 'pointer' }}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+{{/if}}

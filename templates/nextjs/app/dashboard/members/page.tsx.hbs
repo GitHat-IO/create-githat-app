@@ -1,0 +1,9 @@
+{{#if includeOrgManagement}}
+{{#if includeGithatFolder}}
+import { DashboardMembers } from '../../../githat/dashboard/members{{#unless typescript}}.jsx{{/unless}}';
+
+export default function MembersPage() {
+  return <DashboardMembers />;
+}
+{{/if}}
+{{/if}}

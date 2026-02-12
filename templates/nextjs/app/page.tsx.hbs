@@ -1,0 +1,18 @@
+import { SignInButton, SignUpButton } from '@githat/nextjs';
+
+export default function Home() {
+  return (
+    <main {{#if useTailwind}}className="flex flex-col items-center justify-center min-h-screen gap-6 bg-[#09090b] text-[#fafafa]"{{else}}style=\{{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1.5rem', background: '#09090b', color: '#fafafa' }}{{/if}}>
+      <h1 {{#if useTailwind}}className="text-4xl font-bold"{{else}}style=\{{ fontSize: '2.5rem', fontWeight: 700 }}{{/if}}>
+        Welcome to {{businessName}}
+      </h1>
+      <p {{#if useTailwind}}className="text-zinc-400 max-w-lg text-center"{{else}}style=\{{ color: '#a1a1aa', maxWidth: '32rem', textAlign: 'center' }}{{/if}}>
+        {{description}}
+      </p>
+      <div {{#if useTailwind}}className="flex gap-4"{{else}}style=\{{ display: 'flex', gap: '1rem' }}{{/if}}>
+        <SignInButton />
+        <SignUpButton />
+      </div>
+    </main>
+  );
+}

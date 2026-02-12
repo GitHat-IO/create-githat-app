@@ -1,0 +1,30 @@
+{{#if includeDashboard}}
+{{#if includeGithatFolder}}
+import { DashboardOverview } from '../../githat/dashboard/overview{{#unless typescript}}.jsx{{/unless}}';
+
+export default function DashboardPage() {
+  return <DashboardOverview />;
+}
+{{else}}
+'use client';
+
+import { useAuth } from '@githat/nextjs';
+
+export default function DashboardPage() {
+  const { user, org } = useAuth();
+
+  return (
+    <div>
+      <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '1rem' }}>
+        Welcome{user?.name ? `, ${user.name}` : ''}
+      </h1>
+      {org && (
+        <p style=\{{ color: '#a1a1aa' }}>
+          Organization: <strong style=\{{ color: '#7c3aed' }}>{org.name}</strong> ({org.role})
+        </p>
+      )}
+    </div>
+  );
+}
+{{/if}}
+{{/if}}

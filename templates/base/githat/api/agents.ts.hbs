@@ -1,0 +1,17 @@
+{{#if includeAgentModule}}
+import { githatApi } from './client{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { AiAgent } from './types';
+{{/if}}
+
+export const agentsApi = {
+  register: (wallet{{#if typescript}}: string{{/if}}, chainId{{#if typescript}}: number{{/if}}, name{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<{ agent: AiAgent }>{{/if}}('/agent/register', { wallet, chainId, name }),
+
+  challenge: (wallet{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<{ nonce: string }>{{/if}}('/agent/challenge', { wallet }),
+
+  getToken: (wallet{{#if typescript}}: string{{/if}}, signature{{#if typescript}}: string{{/if}}, nonce{{#if typescript}}: string{{/if}}) =>
+    githatApi.post{{#if typescript}}<{ accessToken: string }>{{/if}}('/agent/token', { wallet, signature, nonce }),
+};
+{{/if}}

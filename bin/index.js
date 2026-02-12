@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-const { cli } = require('../src/cli');
-cli(process.argv.slice(2)).catch((err) => {
-  console.error(err.message);
+import('../dist/cli.js').catch((err) => {
+  console.error(err.message || err);
   process.exit(1);
 });

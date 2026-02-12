@@ -1,0 +1,11 @@
+node_modules
+{{#ifEquals framework "nextjs"}}
+.next
+out
+{{else}}
+dist
+{{/ifEquals}}
+.env
+.env*.local
+.DS_Store
+*.tgz

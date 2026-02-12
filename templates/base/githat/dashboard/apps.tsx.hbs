@@ -1,0 +1,53 @@
+{{#unless includeDashboard}}{{else}}
+'use client';
+
+import { useState, useEffect } from 'react';
+import { githatApi } from '../api/client{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { ApiApp } from '../api/types';
+{{/if}}
+
+export function DashboardApps() {
+  const [apps, setApps] = useState{{#if typescript}}<ApiApp[]>{{/if}}([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    githatApi.get{{#if typescript}}<{ apps: ApiApp[] }>{{/if}}('/apps')
+      .then((data) => setApps(data.apps || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <p style=\{{ color: '#71717a' }}>Loading apps...</p>;
+  }
+
+  return (
+    <div>
+      <div style=\{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+        <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa' }}>Apps</h1>
+      </div>
+
+      {apps.length === 0 ? (
+        <div style=\{{ padding: '3rem', textAlign: 'center', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem' }}>
+          <p style=\{{ color: '#71717a' }}>No apps yet. Create one at <a href="https://githat.io/dashboard/apps" target="_blank" rel="noopener noreferrer" style=\{{ color: '#7c3aed' }}>githat.io</a></p>
+        </div>
+      ) : (
+        <div style=\{{ display: 'grid', gap: '1rem' }}>
+          {apps.map((app) => (
+            <div key={app.id} style=\{{ padding: '1rem 1.5rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <p style=\{{ fontWeight: 600, color: '#fafafa' }}>{app.name}</p>
+                <p style=\{{ fontSize: '0.875rem', color: '#71717a' }}>{app.domain || 'No domain'}</p>
+              </div>
+              <span style=\{{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', borderRadius: '9999px', background: app.status === 'production' ? '#064e3b' : '#1e1e2e', color: app.status === 'production' ? '#34d399' : '#a1a1aa' }}>
+                {app.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+{{/unless}}

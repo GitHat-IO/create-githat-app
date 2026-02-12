@@ -1,0 +1,70 @@
+{{#if includeGithatFolder}}
+export interface ApiUser {
+  id: string;
+  email: string;
+  name: string;
+  avatarUrl: string | null;
+  emailVerified: boolean;
+  createdAt: string;
+}
+
+export interface ApiOrg {
+  id: string;
+  name: string;
+  slug: string;
+  tier: string;
+  logoUrl: string | null;
+  brandColor: string | null;
+}
+
+export interface ApiOrgMember {
+  userId: string;
+  email: string;
+  name: string;
+  role: 'owner' | 'admin' | 'member';
+  joinedAt: string;
+}
+
+export interface ApiApp {
+  id: string;
+  name: string;
+  domain: string | null;
+  status: 'development' | 'staging' | 'production' | 'disabled';
+}
+
+export interface ApiKey {
+  id: string;
+  name: string;
+  type: 'publishable' | 'secret';
+  key: string;
+  createdAt: string;
+  lastUsed: string | null;
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  user: ApiUser;
+  currentOrg: ApiOrg | null;
+}
+
+{{#if includeMcpModule}}
+export interface McpServer {
+  id: string;
+  domain: string;
+  verified: boolean;
+  clientId: string;
+  createdAt: string;
+}
+{{/if}}
+
+{{#if includeAgentModule}}
+export interface AiAgent {
+  wallet: string;
+  chainId: number;
+  name: string;
+  verified: boolean;
+  createdAt: string;
+}
+{{/if}}
+{{/if}}

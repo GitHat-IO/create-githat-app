@@ -1,0 +1,14 @@
+{{#if includeGithatFolder}}
+import { githatApi } from './client{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { ApiOrg } from './types';
+{{/if}}
+
+export const usersApi = {
+  listOrgs: () =>
+    githatApi.get{{#if typescript}}<{ orgs: ApiOrg[] }>{{/if}}('/user/orgs'),
+
+  switchOrg: (orgId{{#if typescript}}: string{{/if}}) =>
+    githatApi.post('/user/orgs/' + orgId + '/switch', {}),
+};
+{{/if}}

@@ -1,0 +1,53 @@
+{{#if includeGithatFolder}}
+'use client';
+
+import { useAuth } from '@githat/nextjs';
+{{#ifEquals framework "nextjs"}}
+import { useRouter } from 'next/navigation';
+{{else}}
+import { useNavigate } from 'react-router-dom';
+{{/ifEquals}}
+import { githatConfig } from '../config{{#unless typescript}}.js{{/unless}}';
+
+export function AuthGuard({ children, requiredRole }{{#if typescript}}: {
+  children: React.ReactNode;
+  requiredRole?: 'owner' | 'admin' | 'member';
+}{{/if}}) {
+  const { isSignedIn, isLoading, org } = useAuth();
+{{#ifEquals framework "nextjs"}}
+  const router = useRouter();
+{{else}}
+  const navigate = useNavigate();
+{{/ifEquals}}
+
+  if (isLoading) {
+    return (
+      <div style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#09090b', color: '#a1a1aa' }}>
+        Loading...
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+{{#ifEquals framework "nextjs"}}
+    router.push(githatConfig.signInUrl);
+{{else}}
+    navigate(githatConfig.signInUrl);
+{{/ifEquals}}
+    return null;
+  }
+
+  if (requiredRole && org?.role !== requiredRole && org?.role !== 'owner') {
+    return (
+      <div style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#09090b', color: '#fafafa' }}>
+        <div style=\{{ textAlign: 'center' }}>
+          <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600 }}>Access Denied</h1>
+          <p style=\{{ color: '#71717a', marginTop: '0.5rem' }}>You don't have permission to view this page.</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+{{/if}}

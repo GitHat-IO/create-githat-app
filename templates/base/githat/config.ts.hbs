@@ -1,0 +1,18 @@
+{{#if includeGithatFolder}}
+export const githatConfig = {
+  appName: '{{businessName}}',
+  publishableKey: {{#ifEquals framework "nextjs"}}process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY{{else}}import.meta.env.VITE_GITHAT_PUBLISHABLE_KEY{{/ifEquals}} || '',
+  apiUrl: {{#ifEquals framework "nextjs"}}process.env.NEXT_PUBLIC_GITHAT_API_URL{{else}}import.meta.env.VITE_GITHAT_API_URL{{/ifEquals}} || '{{apiUrl}}',
+  signInUrl: '/sign-in',
+  signUpUrl: '/sign-up',
+  afterSignInUrl: '/dashboard',
+  afterSignOutUrl: '/',
+  features: {
+    forgotPassword: {{includeForgotPassword}},
+    emailVerification: {{includeEmailVerification}},
+    orgManagement: {{includeOrgManagement}},
+    mcpServers: {{includeMcpModule}},
+    aiAgents: {{includeAgentModule}},
+  },
+} as const;
+{{/if}}

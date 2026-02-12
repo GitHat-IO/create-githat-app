@@ -1,0 +1,28 @@
+{{#if includeDashboard}}
+{{#if includeGithatFolder}}
+import { DashboardLayout } from '../../githat/dashboard/layout{{#unless typescript}}.jsx{{/unless}}';
+
+export default function Layout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+  return <DashboardLayout>{children}</DashboardLayout>;
+}
+{{else}}
+import { ProtectedRoute, UserButton, OrgSwitcher } from '@githat/nextjs';
+
+export default function DashboardLayout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+  return (
+    <ProtectedRoute>
+      <div style=\{{ minHeight: '100vh', background: '#09090b' }}>
+        <header style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2rem', borderBottom: '1px solid #1e1e2e' }}>
+          <h2 style=\{{ fontSize: '1.125rem', fontWeight: 600, color: '#fafafa' }}>{{businessName}}</h2>
+          <div style=\{{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <OrgSwitcher />
+            <UserButton />
+          </div>
+        </header>
+        <main style=\{{ padding: '2rem' }}>{children}</main>
+      </div>
+    </ProtectedRoute>
+  );
+}
+{{/if}}
+{{/if}}

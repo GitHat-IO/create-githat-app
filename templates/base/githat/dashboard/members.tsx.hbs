@@ -1,0 +1,123 @@
+{{#if includeOrgManagement}}
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useAuth } from '@githat/nextjs';
+import { orgsApi } from '../api/orgs{{#unless typescript}}.js{{/unless}}';
+{{#if typescript}}
+import type { ApiOrgMember } from '../api/types';
+{{/if}}
+
+export function DashboardMembers() {
+  const { org } = useAuth();
+  const [members, setMembers] = useState{{#if typescript}}<ApiOrgMember[]>{{/if}}([]);
+  const [loading, setLoading] = useState(true);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState{{#if typescript}}<'admin' | 'member'>{{/if}}('member');
+  const [inviting, setInviting] = useState(false);
+  const [error, setError] = useState('');
+
+  const loadMembers = () => {
+    if (!org) return;
+    setLoading(true);
+    orgsApi.listMembers(org.id)
+      .then((data) => setMembers(data.members || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadMembers(); }, [org]);
+
+  const handleInvite = async (e{{#if typescript}}: React.FormEvent{{/if}}) => {
+    e.preventDefault();
+    if (!org || !inviteEmail.trim()) return;
+    setInviting(true);
+    setError('');
+    try {
+      await orgsApi.inviteMember(org.id, inviteEmail.trim(), inviteRole);
+      setInviteEmail('');
+      loadMembers();
+    } catch {
+      setError('Failed to send invite. Please try again.');
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  const handleRemove = async (userId{{#if typescript}}: string{{/if}}) => {
+    if (!org || !confirm('Remove this member?')) return;
+    try {
+      await orgsApi.removeMember(org.id, userId);
+      loadMembers();
+    } catch {
+      setError('Failed to remove member.');
+    }
+  };
+
+  if (!org) {
+    return <p style=\{{ color: '#71717a' }}>Select an organization to manage members.</p>;
+  }
+
+  if (loading) {
+    return <p style=\{{ color: '#71717a' }}>Loading members...</p>;
+  }
+
+  return (
+    <div>
+      <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '1.5rem' }}>Members</h1>
+
+      <form onSubmit={handleInvite} style=\{{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+        <input
+          type="email"
+          value={inviteEmail}
+          onChange={(e) => setInviteEmail(e.target.value)}
+          placeholder="colleague@company.com"
+          required
+          style=\{{ flex: 1, minWidth: '12rem', padding: '0.625rem 0.75rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.375rem', color: '#fafafa', outline: 'none' }}
+        />
+        <select
+          value={inviteRole}
+          onChange={(e) => setInviteRole(e.target.value{{#if typescript}} as 'admin' | 'member'{{/if}})}
+          style=\{{ padding: '0.625rem 0.75rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.375rem', color: '#fafafa' }}
+        >
+          <option value="member">Member</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button
+          type="submit"
+          disabled={inviting}
+          style=\{{ padding: '0.625rem 1.25rem', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '0.375rem', fontWeight: 600, cursor: 'pointer', opacity: inviting ? 0.6 : 1 }}
+        >
+          {inviting ? 'Inviting...' : 'Invite'}
+        </button>
+      </form>
+
+      {error && <p style=\{{ color: '#ef4444', fontSize: '0.875rem', marginBottom: '1rem' }}>{error}</p>}
+
+      <div style=\{{ display: 'grid', gap: '0.5rem' }}>
+        {members.map((member) => (
+          <div key={member.userId} style=\{{ padding: '1rem 1.5rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <p style=\{{ fontWeight: 600, color: '#fafafa' }}>{member.name}</p>
+              <p style=\{{ fontSize: '0.875rem', color: '#71717a' }}>{member.email}</p>
+            </div>
+            <div style=\{{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <span style=\{{ fontSize: '0.75rem', padding: '0.25rem 0.75rem', borderRadius: '9999px', background: '#1e1e2e', color: member.role === 'owner' ? '#7c3aed' : '#a1a1aa' }}>
+                {member.role}
+              </span>
+              {member.role !== 'owner' && (
+                <button
+                  onClick={() => handleRemove(member.userId)}
+                  style=\{{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', background: 'transparent', border: '1px solid #3f3f46', borderRadius: '0.25rem', color: '#ef4444', cursor: 'pointer' }}
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+{{/if}}

@@ -1,0 +1,10 @@
+import { authMiddleware } from '@githat/nextjs/middleware';
+
+export default authMiddleware({
+  publicRoutes: ['/', '/sign-in', '/sign-up'{{#if includeForgotPassword}}, '/forgot-password'{{/if}}{{#if includeEmailVerification}}, '/verify-email'{{/if}}],
+  signInUrl: '/sign-in',
+});
+
+export const config = {
+  matcher: ['/((?!_next|api|.*\\..*).*)'],
+};

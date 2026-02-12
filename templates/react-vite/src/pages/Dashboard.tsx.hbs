@@ -1,0 +1,68 @@
+{{#if includeDashboard}}
+{{#if includeGithatFolder}}
+import { Routes, Route } from 'react-router-dom';
+import { DashboardLayout } from '../../githat/dashboard/layout{{#unless typescript}}.jsx{{/unless}}';
+import { DashboardOverview } from '../../githat/dashboard/overview{{#unless typescript}}.jsx{{/unless}}';
+import { DashboardApps } from '../../githat/dashboard/apps{{#unless typescript}}.jsx{{/unless}}';
+{{#if includeOrgManagement}}
+import { DashboardMembers } from '../../githat/dashboard/members{{#unless typescript}}.jsx{{/unless}}';
+import { DashboardSettings } from '../../githat/dashboard/settings{{#unless typescript}}.jsx{{/unless}}';
+{{/if}}
+{{#if includeMcpModule}}
+import { DashboardMcpServers } from '../../githat/dashboard/mcp-servers{{#unless typescript}}.jsx{{/unless}}';
+{{/if}}
+{{#if includeAgentModule}}
+import { DashboardAgents } from '../../githat/dashboard/agents{{#unless typescript}}.jsx{{/unless}}';
+{{/if}}
+
+export default function Dashboard() {
+  return (
+    <DashboardLayout>
+      <Routes>
+        <Route index element={<DashboardOverview />} />
+        <Route path="apps" element={<DashboardApps />} />
+{{#if includeOrgManagement}}
+        <Route path="members" element={<DashboardMembers />} />
+        <Route path="settings" element={<DashboardSettings />} />
+{{/if}}
+{{#if includeMcpModule}}
+        <Route path="mcp" element={<DashboardMcpServers />} />
+{{/if}}
+{{#if includeAgentModule}}
+        <Route path="agents" element={<DashboardAgents />} />
+{{/if}}
+      </Routes>
+    </DashboardLayout>
+  );
+}
+{{else}}
+import { useAuth } from '@githat/nextjs';
+import { UserButton, OrgSwitcher } from '@githat/nextjs';
+
+export default function Dashboard() {
+  const { user, org } = useAuth();
+
+  return (
+    <div style=\{{ minHeight: '100vh', background: '#09090b' }}>
+      <header style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2rem', borderBottom: '1px solid #1e1e2e' }}>
+        <h2 style=\{{ fontSize: '1.125rem', fontWeight: 600, color: '#fafafa' }}>{{businessName}}</h2>
+        <div style=\{{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <OrgSwitcher />
+          <UserButton />
+        </div>
+      </header>
+      <main style=\{{ padding: '2rem' }}>
+        <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '1rem' }}>
+          Welcome{user?.name ? `, ${user.name}` : ''}
+        </h1>
+        {org && (
+          <p style=\{{ color: '#a1a1aa' }}>
+            Organization: <strong style=\{{ color: '#7c3aed' }}>{org.name}</strong> ({org.role})
+          </p>
+        )}
+      </main>
+    </div>
+  );
+}
+{{/if}}
+{{/if}}
