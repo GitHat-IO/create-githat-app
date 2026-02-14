@@ -4,3 +4,5 @@ my-test-app
 test-app
 *.tgz
 .DS_Store
+.claude/
+.vscode/
