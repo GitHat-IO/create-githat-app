@@ -1,6 +1,8 @@
 # create-githat-app
 
-Scaffold enterprise-grade apps with [GitHat](https://githat.io) identity — for humans, AI agents, and MCP servers.
+Scaffold a production-ready app with a fully-managed backend — auth, teams, orgs, API keys, MCP verification, and AI agent identity. **No backend to deploy.**
+
+[GitHat](https://githat.io) is your backend. When you run `create-githat-app`, your generated project connects to GitHat's hosted platform at `api.githat.io`. User accounts, organizations, teams, API keys, MCP servers, and AI agents are all stored and managed by GitHat. You write frontend code only.
 
 ## Install & Launch
 
@@ -128,14 +130,15 @@ npx create-githat-app --version
 
 ## What You Get
 
-A production-ready project with:
+A production-ready project connected to GitHat's hosted backend:
 
+- **Fully-managed backend** — `api.githat.io` handles auth, orgs, teams, API keys, agents, MCP
 - **Auth pages** — sign-in, sign-up, forgot password, email verification
 - **Protected dashboard** — sidebar navigation, org switcher, user button
 - **`@githat/nextjs` SDK** — `<GitHatProvider>`, `<ProtectedRoute>`, `useAuth()`
-- **`githat/` platform folder** — typed API client and dashboard modules
+- **`githat/` platform folder** — typed API client for all 42+ backend endpoints
 - **Dark theme** — zinc/purple design system out of the box
-- **Database ready** — Prisma or Drizzle pre-configured (optional)
+- **Database ready** — Prisma or Drizzle for your app's own data (optional)
 - **Tailwind CSS 4** — utility-first styling (optional)
 
 ## The `githat/` Folder
@@ -167,6 +170,22 @@ githat/
 ```
 
 All API calls go to `api.githat.io`. The client handles auth tokens and automatic refresh.
+
+## Your Backend is GitHat
+
+You don't deploy or maintain a backend. GitHat's hosted platform handles:
+
+- **Authentication** — sign-up, sign-in, email verification, password reset
+- **Organizations** — create, switch, branding, custom domains
+- **Team management** — invite members by email, assign roles (owner/admin/member), remove
+- **API key management** — publishable + secret keys per app, rotation
+- **MCP server registration** — domain verification via DNS TXT, OAuth2 credentials
+- **AI agent registration** — Ethereum wallet verification, challenge-response tokens
+- **Email delivery** — verification emails, invitations, password resets (via AWS SES)
+- **Database** — users, orgs, teams, apps, agents, MCP servers (DynamoDB, managed by GitHat)
+- **Public verification** — anyone can verify an agent or MCP server at `githat.io/verify/`
+
+Your data lives in GitHat's infrastructure. You write frontend code, GitHat handles the rest.
 
 ## Three Identity Types
 

@@ -1,0 +1,94 @@
+# {{projectName}}
+
+Built with [GitHat](https://githat.io) — your backend is already set up. Auth, teams, orgs, API keys, MCP verification, and AI agent identity are handled by GitHat's hosted platform.
+
+## Getting Started
+
+1. Install dependencies:
+
+```bash
+{{#ifEquals packageManager "yarn"}}yarn{{else}}{{packageManager}} install{{/ifEquals}}
+```
+
+2. Add your GitHat publishable key to `{{#ifEquals framework "nextjs"}}.env.local{{else}}.env{{/ifEquals}}`:
+
+```env
+{{#ifEquals framework "nextjs"}}NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY{{else}}VITE_GITHAT_PUBLISHABLE_KEY{{/ifEquals}}=pk_live_your_key_here
+```
+
+Get your key at [githat.io/dashboard/apps](https://githat.io/dashboard/apps).
+
+3. Start the dev server:
+
+```bash
+{{#ifEquals packageManager "npm"}}npm run dev{{else}}{{packageManager}} dev{{/ifEquals}}
+```
+
+4. Open [http://localhost:{{#ifEquals framework "nextjs"}}3000{{else}}5173{{/ifEquals}}](http://localhost:{{#ifEquals framework "nextjs"}}3000{{else}}5173{{/ifEquals}})
+
+## Your Backend
+
+All API calls go to `api.githat.io`. Your data is stored in GitHat's database. **No backend to deploy.**
+
+GitHat handles:
+
+- User auth (sign-up, sign-in, email verification, password reset)
+- Organizations (create, switch, branding)
+- Team management (invite members, assign roles)
+- API key management (publishable + secret keys)
+{{#if includeMcpModule}}- MCP server registration and domain verification
+{{/if}}{{#if includeAgentModule}}- AI agent registration and wallet verification
+{{/if}}- Email delivery (verification, invitations, password resets)
+
+The `githat/` folder in your project is a typed API client that talks to `api.githat.io`. You write frontend code, GitHat handles the rest.
+
+Manage everything at [githat.io/dashboard](https://githat.io/dashboard).
+
+## Pages
+
+- `/sign-in` — Sign in
+- `/sign-up` — Create account
+{{#if includeForgotPassword}}- `/forgot-password` — Password recovery
+{{/if}}{{#if includeDashboard}}- `/dashboard` — Protected dashboard
+{{/if}}{{#if includeOrgManagement}}- `/dashboard/members` — Invite members, manage roles
+{{/if}}
+
+## GitHat SDK
+
+This project uses [`@githat/nextjs`](https://www.npmjs.com/package/@githat/nextjs) for connecting to the GitHat platform:
+
+```{{#if typescript}}tsx{{else}}jsx{{/if}}
+import { useAuth, UserButton, OrgSwitcher } from '@githat/nextjs';
+
+const { user, org, signIn, signUp, signOut } = useAuth();
+```
+
+## Deploy
+
+{{#ifEquals framework "nextjs"}}### Vercel (recommended)
+
+```bash
+npx vercel
+```
+
+Add `NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY` to your Vercel project environment variables.
+{{else}}### Vercel
+
+```bash
+npx vercel
+```
+
+### Netlify
+
+```bash
+npx netlify deploy
+```
+
+Add `VITE_GITHAT_PUBLISHABLE_KEY` to your hosting provider's environment variables.
+{{/ifEquals}}
+
+## Learn More
+
+- [GitHat Documentation](https://githat.io/docs)
+- [SDK Reference](https://www.npmjs.com/package/@githat/nextjs)
+- [API Reference (42+ endpoints)](https://githat.io/docs/api)
