@@ -19,15 +19,9 @@ export async function promptProject(initialName?: string): Promise<ProjectAnswer
         }),
       businessName: () =>
         p.text({
-          message: 'Business or app display name',
+          message: 'Display name',
           placeholder: 'Acme Corp',
           validate: (v) => (!v ? 'Display name is required' : undefined),
-        }),
-      description: () =>
-        p.text({
-          message: 'One-line description',
-          placeholder: 'A platform for managing identity across humans and AI',
-          initialValue: '',
         }),
     },
     {
@@ -41,6 +35,6 @@ export async function promptProject(initialName?: string): Promise<ProjectAnswer
   return {
     projectName: answers.projectName as string,
     businessName: answers.businessName as string,
-    description: (answers.description as string) || `${answers.businessName} — Built with GitHat identity`,
+    description: `${answers.businessName} — Built with GitHat`,
   };
 }

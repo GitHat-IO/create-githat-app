@@ -6,23 +6,18 @@ export interface FinalizeAnswers {
 }
 
 export async function promptFinalize(): Promise<FinalizeAnswers> {
-  const answers = await p.group(
-    {
-      initGit: () =>
-        p.confirm({ message: 'Initialize git repository?', initialValue: true }),
-      installDeps: () =>
-        p.confirm({ message: 'Install dependencies now?', initialValue: true }),
-    },
-    {
-      onCancel: () => {
-        p.cancel('Setup cancelled.');
-        process.exit(0);
-      },
-    },
-  );
+  const installDeps = await p.confirm({
+    message: 'Install dependencies?',
+    initialValue: true,
+  });
+
+  if (p.isCancel(installDeps)) {
+    p.cancel('Setup cancelled.');
+    process.exit(0);
+  }
 
   return {
-    initGit: answers.initGit as boolean,
-    installDeps: answers.installDeps as boolean,
+    initGit: true,
+    installDeps: installDeps as boolean,
   };
 }

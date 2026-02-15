@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import * as p from '@clack/prompts';
-import { validatePublishableKey, validateApiUrl } from '../utils/validate.js';
+import { validatePublishableKey } from '../utils/validate.js';
 import { DEFAULT_API_URL, DASHBOARD_URL } from '../constants.js';
 
 export type AuthFeature =
@@ -35,7 +35,7 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
       options: [
         { value: 'browser', label: 'Sign in with browser', hint: 'opens githat.io — recommended' },
         { value: 'paste', label: 'I have a key', hint: 'paste your pk_live_... key' },
-        { value: 'skip', label: 'Skip for now', hint: 'add key to .env.local later' },
+        { value: 'skip', label: 'Skip for now', hint: 'add key to .env later' },
       ],
     });
 
@@ -46,8 +46,8 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
 
     if (connectChoice === 'browser') {
       p.log.step('Opening githat.io in your browser...');
-      openBrowser(`https://githat.io/sign-up`);
-      p.log.info('Sign up (or sign in), then go to Dashboard → Apps to copy your publishable key.');
+      openBrowser('https://githat.io/sign-up');
+      p.log.info('Sign up (or sign in), then go to Dashboard → Apps to copy your key.');
 
       const pastedKey = await p.text({
         message: 'Paste your publishable key',
@@ -78,40 +78,27 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
     // 'skip' → publishableKey stays empty
   }
 
-  const answers = await p.group(
-    {
-      apiUrl: () =>
-        p.text({
-          message: 'GitHat API URL',
-          placeholder: DEFAULT_API_URL,
-          initialValue: DEFAULT_API_URL,
-          validate: validateApiUrl,
-        }),
-      authFeatures: () =>
-        p.multiselect({
-          message: 'Auth features',
-          options: [
-            { value: 'forgot-password', label: 'Forgot password / Reset password', hint: 'recommended' },
-            { value: 'email-verification', label: 'Email verification', hint: 'recommended' },
-            { value: 'org-management', label: 'Organization management', hint: 'teams, invites, roles' },
-            { value: 'mcp-servers', label: 'MCP server registration', hint: 'tool verification' },
-            { value: 'ai-agents', label: 'AI agent wallet auth', hint: 'Ethereum signatures' },
-          ],
-          initialValues: ['forgot-password', 'email-verification'],
-          required: false,
-        }),
-    },
-    {
-      onCancel: () => {
-        p.cancel('Setup cancelled.');
-        process.exit(0);
-      },
-    },
-  );
+  const authFeatures = await p.multiselect({
+    message: 'Auth features',
+    options: [
+      { value: 'forgot-password', label: 'Forgot password', hint: 'reset via email' },
+      { value: 'email-verification', label: 'Email verification' },
+      { value: 'org-management', label: 'Organizations', hint: 'teams & roles' },
+      { value: 'mcp-servers', label: 'MCP servers', hint: 'Model Context Protocol' },
+      { value: 'ai-agents', label: 'AI agents', hint: 'wallet-based identity' },
+    ],
+    initialValues: ['forgot-password', 'email-verification'],
+    required: false,
+  });
+
+  if (p.isCancel(authFeatures)) {
+    p.cancel('Setup cancelled.');
+    process.exit(0);
+  }
 
   return {
     publishableKey,
-    apiUrl: (answers.apiUrl as string) || DEFAULT_API_URL,
-    authFeatures: (answers.authFeatures as AuthFeature[]) || [],
+    apiUrl: DEFAULT_API_URL,
+    authFeatures: (authFeatures as AuthFeature[]) || [],
   };
 }

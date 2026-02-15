@@ -3,18 +3,52 @@ import gradient from 'gradient-string';
 import chalk from 'chalk';
 import { VERSION, BRAND_COLORS } from '../constants.js';
 
-const githatGradient = gradient([...BRAND_COLORS]);
+const brand = gradient([...BRAND_COLORS]);
+const violet = chalk.hex('#a78bfa');
+const dim = chalk.dim;
+
+function visibleLength(str: string): number {
+  return str.replace(/\u001b\[.*?m/g, '').length;
+}
+
+function drawBox(lines: string[]): void {
+  const W = 54;
+  const hr = '─'.repeat(W);
+  console.log(dim(`  ╭${hr}╮`));
+  console.log(dim(`  │${' '.repeat(W)}│`));
+  for (const line of lines) {
+    const pad = W - 2 - visibleLength(line);
+    console.log(dim('  │') + `  ${line}${' '.repeat(Math.max(0, pad))}` + dim('│'));
+  }
+  console.log(dim(`  │${' '.repeat(W)}│`));
+  console.log(dim(`  ╰${hr}╯`));
+}
 
 export function displayBanner(): void {
   const ascii = figlet.textSync('GitHat', {
-    font: 'Slant',
+    font: 'ANSI Shadow',
     horizontalLayout: 'default',
   });
 
   console.log('');
-  console.log(githatGradient(ascii));
-  console.log(chalk.dim('  Identity for humans, agents, and MCP servers'));
-  console.log(chalk.dim(`  v${VERSION} | githat.io`));
+  console.log(brand(ascii));
+
+  drawBox([
+    `${violet('✦')}  Create a new GitHat app`,
+    '',
+    dim('The developer platform'),
+    dim('for humans, agents & MCP servers'),
+    '',
+    dim(`v${VERSION}  ·  githat.io`),
+  ]);
+
+  console.log('');
+}
+
+export function sectionHeader(title: string): void {
+  const line = '─'.repeat(Math.max(1, 38 - title.length));
+  console.log('');
+  console.log(dim(`  ─── ${title} ${line}`));
   console.log('');
 }
 
@@ -27,18 +61,22 @@ export function displaySuccess(
   const port = framework === 'react-vite' ? '5173' : '3000';
 
   console.log('');
-  console.log(githatGradient('  ✦ Your GitHat app is ready!'));
-  console.log('');
-  console.log(`  ${chalk.cyan('cd')} ${projectName}`);
-  console.log(`  ${chalk.cyan(devCmd)}`);
-  console.log('');
-  console.log(chalk.dim(`  → http://localhost:${port}`));
-  console.log('');
-  console.log(chalk.dim('  Routes:'));
-  console.log(chalk.dim('  /sign-in       Sign in'));
-  console.log(chalk.dim('  /sign-up       Create account'));
-  console.log(chalk.dim('  /dashboard     Protected dashboard'));
-  console.log('');
-  console.log(chalk.dim('  Docs: https://githat.io/docs/sdk'));
+
+  drawBox([
+    `${violet('✦')}  Your GitHat app is ready!`,
+    '',
+    `${violet('$')} cd ${projectName}`,
+    `${violet('$')} ${devCmd}`,
+    '',
+    dim(`→ http://localhost:${port}`),
+    '',
+    chalk.bold('Routes'),
+    `${violet('/sign-in')}       Sign in`,
+    `${violet('/sign-up')}       Create account`,
+    `${violet('/dashboard')}     Protected dashboard`,
+    '',
+    dim('Docs → https://githat.io/docs/sdk'),
+  ]);
+
   console.log('');
 }

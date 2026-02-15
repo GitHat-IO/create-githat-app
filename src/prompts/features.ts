@@ -21,7 +21,7 @@ export async function promptFeatures(): Promise<FeatureAnswers> {
         p.select({
           message: 'Database',
           options: [
-            { value: 'none', label: 'None — API only', hint: 'use GitHat backend directly' },
+            { value: 'none', label: 'None', hint: 'use GitHat backend directly' },
             { value: 'prisma-postgres', label: 'Prisma + PostgreSQL' },
             { value: 'prisma-mysql', label: 'Prisma + MySQL' },
             { value: 'drizzle-postgres', label: 'Drizzle + PostgreSQL' },
@@ -29,17 +29,9 @@ export async function promptFeatures(): Promise<FeatureAnswers> {
           ],
         }),
       useTailwind: () =>
-        p.confirm({ message: 'Include Tailwind CSS?', initialValue: true }),
+        p.confirm({ message: 'Tailwind CSS?', initialValue: true }),
       includeDashboard: () =>
-        p.confirm({
-          message: 'Include full dashboard?',
-          initialValue: true,
-        }),
-      includeGithatFolder: () =>
-        p.confirm({
-          message: 'Include githat/ platform folder?',
-          initialValue: true,
-        }),
+        p.confirm({ message: 'Include dashboard?', initialValue: true }),
     },
     {
       onCancel: () => {
@@ -53,6 +45,6 @@ export async function promptFeatures(): Promise<FeatureAnswers> {
     databaseChoice: answers.databaseChoice as DatabaseChoice,
     useTailwind: answers.useTailwind as boolean,
     includeDashboard: answers.includeDashboard as boolean,
-    includeGithatFolder: answers.includeGithatFolder as boolean,
+    includeGithatFolder: true,
   };
 }

@@ -4,6 +4,7 @@ import { promptFramework, type FrameworkAnswers } from './framework.js';
 import { promptGitHat, type GitHatAnswers } from './githat.js';
 import { promptFeatures, type FeatureAnswers } from './features.js';
 import { promptFinalize, type FinalizeAnswers } from './finalize.js';
+import { sectionHeader } from '../utils/ascii.js';
 import type { TemplateContext } from '../utils/template-engine.js';
 
 export interface AllAnswers
@@ -20,10 +21,19 @@ export async function runPrompts(args: {
 }): Promise<AllAnswers> {
   p.intro('Let\u2019s set up your GitHat app');
 
+  sectionHeader('Project');
   const project = await promptProject(args.initialName);
+
+  sectionHeader('Stack');
   const framework = await promptFramework(args.typescript);
+
+  sectionHeader('Connect');
   const githat = await promptGitHat(args.publishableKey);
+
+  sectionHeader('Features');
   const features = await promptFeatures();
+
+  sectionHeader('Finish');
   const finalize = await promptFinalize();
 
   return { ...project, ...framework, ...githat, ...features, ...finalize };
