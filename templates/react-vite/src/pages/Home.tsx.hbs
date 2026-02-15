@@ -1,6 +1,61 @@
 import { SignInButton, SignUpButton } from '@githat/nextjs';
 
+const hasKey = !!import.meta.env.VITE_GITHAT_PUBLISHABLE_KEY;
+
+function SetupGuide() {
+  return (
+    <main {{#if useTailwind}}className="flex flex-col items-center justify-center min-h-screen gap-8 bg-[#09090b] text-[#fafafa] px-6"{{else}}style=\{{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '2rem', background: '#09090b', color: '#fafafa', padding: '0 1.5rem' }}{{/if}}>
+      <div {{#if useTailwind}}className="text-center"{{else}}style=\{{ textAlign: 'center' }}{{/if}}>
+        <h1 {{#if useTailwind}}className="text-4xl font-bold mb-2"{{else}}style=\{{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}{{/if}}>
+          {{businessName}}
+        </h1>
+        <p {{#if useTailwind}}className="text-zinc-400"{{else}}style=\{{ color: '#a1a1aa' }}{{/if}}>
+          Get started in 3 steps
+        </p>
+      </div>
+
+      <div {{#if useTailwind}}className="flex flex-col gap-4 max-w-md w-full"{{else}}style=\{{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '28rem', width: '100%' }}{{/if}}>
+        <div {{#if useTailwind}}className="flex gap-4 items-start p-4 rounded-lg border border-zinc-800 bg-zinc-900"{{else}}style=\{{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #27272a', background: '#18181b' }}{{/if}}>
+          <span {{#if useTailwind}}className="text-xl font-bold text-violet-400 shrink-0"{{else}}style=\{{ fontSize: '1.25rem', fontWeight: 700, color: '#a78bfa', flexShrink: 0 }}{{/if}}>1</span>
+          <div>
+            <p {{#if useTailwind}}className="font-semibold"{{else}}style=\{{ fontWeight: 600 }}{{/if}}>Sign up at GitHat</p>
+            <a href="https://githat.io/sign-up" target="_blank" rel="noopener noreferrer" {{#if useTailwind}}className="text-violet-400 hover:underline text-sm"{{else}}style=\{{ color: '#a78bfa', fontSize: '0.875rem' }}{{/if}}>
+              githat.io/sign-up →
+            </a>
+          </div>
+        </div>
+
+        <div {{#if useTailwind}}className="flex gap-4 items-start p-4 rounded-lg border border-zinc-800 bg-zinc-900"{{else}}style=\{{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #27272a', background: '#18181b' }}{{/if}}>
+          <span {{#if useTailwind}}className="text-xl font-bold text-violet-400 shrink-0"{{else}}style=\{{ fontSize: '1.25rem', fontWeight: 700, color: '#a78bfa', flexShrink: 0 }}{{/if}}>2</span>
+          <div>
+            <p {{#if useTailwind}}className="font-semibold"{{else}}style=\{{ fontWeight: 600 }}{{/if}}>Copy your publishable key</p>
+            <a href="https://githat.io/dashboard/apps" target="_blank" rel="noopener noreferrer" {{#if useTailwind}}className="text-violet-400 hover:underline text-sm"{{else}}style=\{{ color: '#a78bfa', fontSize: '0.875rem' }}{{/if}}>
+              Dashboard → Apps →
+            </a>
+          </div>
+        </div>
+
+        <div {{#if useTailwind}}className="flex gap-4 items-start p-4 rounded-lg border border-zinc-800 bg-zinc-900"{{else}}style=\{{ display: 'flex', gap: '1rem', alignItems: 'flex-start', padding: '1rem', borderRadius: '0.5rem', border: '1px solid #27272a', background: '#18181b' }}{{/if}}>
+          <span {{#if useTailwind}}className="text-xl font-bold text-violet-400 shrink-0"{{else}}style=\{{ fontSize: '1.25rem', fontWeight: 700, color: '#a78bfa', flexShrink: 0 }}{{/if}}>3</span>
+          <div>
+            <p {{#if useTailwind}}className="font-semibold"{{else}}style=\{{ fontWeight: 600 }}{{/if}}>Add to .env and restart</p>
+            <code {{#if useTailwind}}className="text-xs text-zinc-400 bg-zinc-800 px-2 py-1 rounded mt-1 block"{{else}}style=\{{ fontSize: '0.75rem', color: '#a1a1aa', background: '#27272a', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', marginTop: '0.25rem', display: 'block' }}{{/if}}>
+              VITE_GITHAT_PUBLISHABLE_KEY=pk_live_...
+            </code>
+          </div>
+        </div>
+      </div>
+
+      <a href="https://githat.io/docs/quickstart" target="_blank" rel="noopener noreferrer" {{#if useTailwind}}className="text-sm text-zinc-500 hover:text-zinc-300"{{else}}style=\{{ fontSize: '0.875rem', color: '#71717a' }}{{/if}}>
+        Read the docs →
+      </a>
+    </main>
+  );
+}
+
 export default function Home() {
+  if (!hasKey) return <SetupGuide />;
+
   return (
     <main {{#if useTailwind}}className="flex flex-col items-center justify-center min-h-screen gap-6 bg-[#09090b] text-[#fafafa]"{{else}}style=\{{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1.5rem', background: '#09090b', color: '#fafafa' }}{{/if}}>
       <h1 {{#if useTailwind}}className="text-4xl font-bold"{{else}}style=\{{ fontSize: '2.5rem', fontWeight: 700 }}{{/if}}>
