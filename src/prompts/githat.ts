@@ -74,8 +74,10 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
       }
 
       publishableKey = (pastedKey as string) || '';
+    } else if (connectChoice === 'skip') {
+      p.log.info('Your app will work on localhost without a key!');
+      p.log.info('For production, get your key at https://githat.io/dashboard/apps');
     }
-    // 'skip' → publishableKey stays empty
   }
 
   const authFeatures = await p.multiselect({
