@@ -7,8 +7,8 @@ import type { PackageManager } from './package-manager.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Navigate from dist/utils/ -> project root -> templates/
-const TEMPLATES_ROOT = path.resolve(__dirname, '..', '..', 'templates');
+// Navigate from dist/ -> project root -> templates/
+const TEMPLATES_ROOT = path.resolve(__dirname, '..', 'templates');
 
 // Register helpers
 Handlebars.registerHelper('ifEquals', function (this: unknown, a: string, b: string, options: Handlebars.HelperOptions) {

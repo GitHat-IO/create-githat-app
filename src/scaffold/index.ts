@@ -30,9 +30,10 @@ export async function scaffold(
 
     // Render framework-specific templates
     const frameworkDir = path.join(templatesRoot, context.framework);
-    if (fs.existsSync(frameworkDir)) {
-      renderTemplateDirectory(frameworkDir, root, context);
+    if (!fs.existsSync(frameworkDir)) {
+      throw new Error(`Templates not found at ${frameworkDir}. This is a bug — please report it.`);
     }
+    renderTemplateDirectory(frameworkDir, root, context);
 
     // Render base templates (githat/ folder, env, gitignore)
     const baseDir = path.join(templatesRoot, 'base');
