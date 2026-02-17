@@ -5,14 +5,19 @@ import { displayBanner } from './utils/ascii.js';
 import { runPrompts, answersToContext } from './prompts/index.js';
 import { scaffold } from './scaffold/index.js';
 import { VERSION } from './constants.js';
+import { skillsCommand } from './commands/skills/index.js';
 
 const program = new Command();
 
 program
-  .name('create-githat-app')
-  .description('Scaffold enterprise-grade apps with GitHat identity')
-  .version(VERSION)
-  .argument('[project-name]', 'Name of the project directory')
+  .name('githat')
+  .description('GitHat CLI - Scaffold apps and manage skills')
+  .version(VERSION);
+
+// Default create command (backwards compatible with create-githat-app)
+program
+  .command('create [project-name]', { isDefault: true })
+  .description('Scaffold a new GitHat app')
   .option('--key <key>', 'GitHat publishable key (pk_live_...)')
   .option('--ts', 'Use TypeScript (default)')
   .option('--js', 'Use JavaScript')
@@ -39,5 +44,8 @@ program
       process.exit(1);
     }
   });
+
+// Skills marketplace commands
+program.addCommand(skillsCommand);
 
 program.parse();
