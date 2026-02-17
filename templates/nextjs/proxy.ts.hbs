@@ -1,6 +1,6 @@
-import { authMiddleware } from '@githat/nextjs/middleware';
+import { authProxy } from '@githat/nextjs/proxy';
 
-export default authMiddleware({
+export const proxy = authProxy({
   publicRoutes: ['/', '/sign-in', '/sign-up'{{#if includeForgotPassword}}, '/forgot-password'{{/if}}{{#if includeEmailVerification}}, '/verify-email'{{/if}}],
   signInUrl: '/sign-in',
 });
