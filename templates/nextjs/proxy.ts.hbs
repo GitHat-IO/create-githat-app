@@ -1,7 +1,7 @@
 import { authProxy } from '@githat/nextjs/proxy';
 
 export const proxy = authProxy({
-  publicRoutes: ['/', '/sign-in', '/sign-up'{{#if includeForgotPassword}}, '/forgot-password'{{/if}}{{#if includeEmailVerification}}, '/verify-email'{{/if}}],
+  publicRoutes: ['/', '/sign-in', '/sign-up'{{#if includeForgotPassword}}, '/forgot-password', '/reset-password'{{/if}}{{#if includeEmailVerification}}, '/verify-email'{{/if}}],
   signInUrl: '/sign-in',
 });
 
