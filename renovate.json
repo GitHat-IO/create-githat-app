@@ -1,0 +1,25 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "rangeStrategy": "bump",
+  "packageRules": [
+    {
+      "description": "Auto-merge patch/minor dev dependency updates",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "description": "Group CLI dependencies",
+      "matchPackageNames": ["@clack/prompts", "chalk", "commander", "ora"],
+      "groupName": "CLI libraries"
+    },
+    {
+      "description": "Group TypeScript updates",
+      "matchPackageNames": ["typescript", "tsup"],
+      "groupName": "TypeScript tooling"
+    }
+  ],
+  "schedule": ["before 6am on monday"]
+}
