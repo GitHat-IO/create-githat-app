@@ -11,8 +11,15 @@ function visibleLength(str: string): number {
   return str.replace(/\u001b\[.*?m/g, '').length;
 }
 
+function getBoxWidth(): number {
+  const termWidth = process.stdout.columns || 80;
+  // Box width: terminal width minus indent (2) minus borders (2) minus padding (2)
+  // Clamp between 40 and 70 for readability
+  return Math.min(70, Math.max(40, termWidth - 6));
+}
+
 function drawBox(lines: string[]): void {
-  const W = 54;
+  const W = getBoxWidth();
   const hr = '─'.repeat(W);
   console.log(dim(`  ╭${hr}╮`));
   console.log(dim(`  │${' '.repeat(W)}│`));
@@ -46,9 +53,10 @@ export function displayBanner(): void {
 }
 
 export function sectionHeader(title: string): void {
-  const line = '─'.repeat(Math.max(1, 38 - title.length));
+  const W = getBoxWidth();
+  const lineLen = Math.max(1, W - 6 - title.length);
   console.log('');
-  console.log(dim(`  ─── ${title} ${line}`));
+  console.log(dim(`  ─── ${title} ${'─'.repeat(lineLen)}`));
   console.log('');
 }
 
