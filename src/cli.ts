@@ -21,16 +21,24 @@ program
   .option('--key <key>', 'GitHat publishable key (pk_live_...)')
   .option('--ts', 'Use TypeScript (default)')
   .option('--js', 'Use JavaScript')
-  .action(async (projectName: string | undefined, opts: { key?: string; ts?: boolean; js?: boolean }) => {
+  .option('-y, --yes', 'Skip prompts and use defaults')
+  .action(async (projectName: string | undefined, opts: { key?: string; ts?: boolean; js?: boolean; yes?: boolean }) => {
     try {
       displayBanner();
 
       const typescript = opts.js ? false : opts.ts ? true : undefined;
 
+      // --yes flag requires project name
+      if (opts.yes && !projectName) {
+        p.cancel(chalk.red('Project name is required when using --yes flag'));
+        process.exit(1);
+      }
+
       const answers = await runPrompts({
         initialName: projectName,
         publishableKey: opts.key,
         typescript,
+        yes: opts.yes,
       });
 
       const context = answersToContext(answers);
@@ -38,6 +46,7 @@ program
       await scaffold(context, {
         installDeps: answers.installDeps,
         initGit: answers.initGit,
+        skipPrompts: opts.yes,
       });
     } catch (err) {
       p.cancel(chalk.red((err as Error).message || 'Something went wrong.'));

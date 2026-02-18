@@ -5,6 +5,8 @@ import { promptGitHat, type GitHatAnswers } from './githat.js';
 import { promptFeatures, type FeatureAnswers } from './features.js';
 import { promptFinalize, type FinalizeAnswers } from './finalize.js';
 import { sectionHeader } from '../utils/ascii.js';
+import { detectPackageManager } from '../utils/package-manager.js';
+import { DEFAULT_API_URL } from '../constants.js';
 import type { TemplateContext } from '../utils/template-engine.js';
 
 export interface AllAnswers
@@ -14,11 +16,45 @@ export interface AllAnswers
     FeatureAnswers,
     FinalizeAnswers {}
 
+function toDisplayName(projectName: string): string {
+  return projectName
+    .replace(/[-_]/g, ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function getDefaults(projectName: string, publishableKey?: string, typescript?: boolean): AllAnswers {
+  const displayName = toDisplayName(projectName);
+  return {
+    projectName,
+    businessName: displayName,
+    description: `${displayName} — Built with GitHat`,
+    framework: 'nextjs',
+    typescript: typescript ?? true,
+    packageManager: detectPackageManager(),
+    publishableKey: publishableKey || '',
+    apiUrl: DEFAULT_API_URL,
+    authFeatures: ['forgot-password'],
+    databaseChoice: 'none',
+    useTailwind: true,
+    includeDashboard: true,
+    includeGithatFolder: true,
+    initGit: true,
+    installDeps: true,
+  };
+}
+
 export async function runPrompts(args: {
   initialName?: string;
   publishableKey?: string;
   typescript?: boolean;
+  yes?: boolean;
 }): Promise<AllAnswers> {
+  // --yes flag: skip all prompts, use defaults
+  if (args.yes && args.initialName) {
+    p.log.info('Using defaults (--yes flag)');
+    return getDefaults(args.initialName, args.publishableKey, args.typescript);
+  }
+
   p.intro('Let\u2019s set up your GitHat app');
 
   sectionHeader('Project');
