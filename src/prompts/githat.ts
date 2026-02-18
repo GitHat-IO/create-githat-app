@@ -89,7 +89,7 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
       { value: 'mcp-servers', label: 'MCP servers', hint: 'Model Context Protocol' },
       { value: 'ai-agents', label: 'AI agents', hint: 'wallet-based identity' },
     ],
-    initialValues: ['forgot-password', 'email-verification'],
+    initialValues: ['forgot-password'],
     required: false,
   });
 
