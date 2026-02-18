@@ -28,14 +28,13 @@ function openBrowser(url: string): void {
 export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers> {
   let publishableKey = existingKey || '';
 
-  // If no key provided via --key flag, offer guided browser flow
+  // If no key provided via --key flag, offer options
   if (!publishableKey) {
     const connectChoice = await p.select({
       message: 'Connect to GitHat',
       options: [
-        { value: 'browser', label: 'Sign in with browser', hint: 'opens githat.io — recommended' },
+        { value: 'skip', label: 'Skip for now', hint: 'auth works on localhost — add key later' },
         { value: 'paste', label: 'I have a key', hint: 'paste your pk_live_... key' },
-        { value: 'skip', label: 'Skip for now', hint: 'add key to .env later' },
       ],
     });
 
@@ -44,24 +43,7 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
       process.exit(0);
     }
 
-    if (connectChoice === 'browser') {
-      p.log.step('Opening githat.io in your browser...');
-      openBrowser('https://githat.io/sign-up');
-      p.log.info('Sign up (or sign in), then go to Dashboard → Apps to copy your key.');
-
-      const pastedKey = await p.text({
-        message: 'Paste your publishable key',
-        placeholder: 'pk_live_...',
-        validate: validatePublishableKey,
-      });
-
-      if (p.isCancel(pastedKey)) {
-        p.cancel('Setup cancelled.');
-        process.exit(0);
-      }
-
-      publishableKey = (pastedKey as string) || '';
-    } else if (connectChoice === 'paste') {
+    if (connectChoice === 'paste') {
       const pastedKey = await p.text({
         message: 'Publishable key',
         placeholder: `pk_live_... (get one at ${DASHBOARD_URL})`,
@@ -74,10 +56,8 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
       }
 
       publishableKey = (pastedKey as string) || '';
-    } else if (connectChoice === 'skip') {
-      p.log.info('Auth works on localhost without a key (CORS bypass for development).');
-      p.log.info('Sign up at githat.io — a publishable key is auto-created for you.');
     }
+    // Skip is default — no extra logging needed, shown in final summary
   }
 
   const authFeatures = await p.multiselect({
