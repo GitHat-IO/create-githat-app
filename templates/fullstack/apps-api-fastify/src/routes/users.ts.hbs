@@ -1,0 +1,43 @@
+import type { FastifyPluginAsync } from 'fastify';
+
+export const userRoutes: FastifyPluginAsync = async (app) => {
+  // Example protected route - verify GitHat tokens here
+  app.get('/me', async (request, reply) => {
+    // Get the Authorization header
+    const authHeader = request.headers.authorization;
+    if (!authHeader?.startsWith('Bearer ')) {
+      return reply.status(401).send({ error: 'Unauthorized' });
+    }
+
+    const token = authHeader.slice(7);
+
+    // Verify the token with GitHat API
+    try {
+      const response = await fetch('{{apiUrl}}/auth/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Publishable-Key': process.env.GITHAT_PUBLISHABLE_KEY || '',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      if (!response.ok) {
+        return reply.status(401).send({ error: 'Invalid token' });
+      }
+
+      const { user, org } = await response.json();
+      return { user, org };
+    } catch (error) {
+      app.log.error('Token verification failed:', error);
+      return reply.status(500).send({ error: 'Authentication failed' });
+    }
+  });
+
+  // Example: Get user profile
+  app.get<{ Params: { id: string } }>('/:id', async (request) => {
+    const { id } = request.params;
+    // TODO: Implement user lookup
+    return { id, message: 'User lookup not implemented' };
+  });
+};

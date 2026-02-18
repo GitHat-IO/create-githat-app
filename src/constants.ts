@@ -1,4 +1,4 @@
-export const VERSION = '1.0.3';
+export const VERSION = '1.0.4';
 export const DEFAULT_API_URL = 'https://api.githat.io';
 export const DOCS_URL = 'https://githat.io/docs/sdk';
 export const DASHBOARD_URL = 'https://githat.io/dashboard/apps';
@@ -64,4 +64,49 @@ export const DEPS = {
     dependencies: { 'drizzle-orm': '^0.39.0', 'better-sqlite3': '^11.0.0' },
     devDependencies: { 'drizzle-kit': '^0.30.0', '@types/better-sqlite3': '^7.6.0' },
   },
+  // Backend frameworks for fullstack
+  hono: {
+    dependencies: {
+      hono: '^4.6.0',
+      '@hono/node-server': '^1.13.0',
+    },
+    devDependencies: {
+      typescript: '^5.9.0',
+      '@types/node': '^22.0.0',
+      tsx: '^4.19.0',
+    },
+  },
+  express: {
+    dependencies: {
+      express: '^5.0.0',
+      cors: '^2.8.5',
+    },
+    devDependencies: {
+      typescript: '^5.9.0',
+      '@types/node': '^22.0.0',
+      '@types/express': '^5.0.0',
+      '@types/cors': '^2.8.17',
+      tsx: '^4.19.0',
+    },
+  },
+  fastify: {
+    dependencies: {
+      fastify: '^5.2.0',
+      '@fastify/cors': '^10.0.0',
+    },
+    devDependencies: {
+      typescript: '^5.9.0',
+      '@types/node': '^22.0.0',
+      tsx: '^4.19.0',
+    },
+  },
+  // Turborepo for fullstack monorepo
+  turbo: {
+    devDependencies: {
+      turbo: '^2.3.0',
+    },
+  },
 } as const;
+
+export type ProjectType = 'frontend' | 'fullstack';
+export type BackendFramework = 'hono' | 'express' | 'fastify';

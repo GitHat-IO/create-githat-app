@@ -1,0 +1,9 @@
+{{#if includeDashboard}}
+import { withAuth } from '@githat/nextjs/server';
+
+async function DashboardLayout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+  return <>{children}</>;
+}
+
+export default withAuth(DashboardLayout);
+{{/if}}

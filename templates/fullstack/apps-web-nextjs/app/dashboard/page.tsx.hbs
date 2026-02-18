@@ -1,0 +1,27 @@
+{{#if includeDashboard}}
+'use client';
+import { useGitHat, UserButton } from '@githat/nextjs';
+
+export default function DashboardPage() {
+  const { user, org } = useGitHat();
+
+  return (
+    <div {{#if useTailwind}}className="p-8"{{else}}style=\{{ padding: '2rem' }}{{/if}}>
+      <div {{#if useTailwind}}className="flex justify-between items-center mb-8"{{else}}style=\{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}{{/if}}>
+        <h1 {{#if useTailwind}}className="text-2xl font-bold"{{else}}style=\{{ fontSize: '1.5rem', fontWeight: 700 }}{{/if}}>Dashboard</h1>
+        <UserButton />
+      </div>
+      <div {{#if useTailwind}}className="grid gap-4 md:grid-cols-2"{{else}}style=\{{ display: 'grid', gap: '1rem' }}{{/if}}>
+        <div {{#if useTailwind}}className="p-4 rounded-lg border border-zinc-800 bg-zinc-900"{{else}}style=\{{ padding: '1rem', borderRadius: '0.5rem', border: '1px solid #27272a', background: '#18181b' }}{{/if}}>
+          <h2 {{#if useTailwind}}className="font-semibold mb-2"{{else}}style=\{{ fontWeight: 600, marginBottom: '0.5rem' }}{{/if}}>User</h2>
+          <p {{#if useTailwind}}className="text-zinc-400"{{else}}style=\{{ color: '#a1a1aa' }}{{/if}}>{user?.email}</p>
+        </div>
+        <div {{#if useTailwind}}className="p-4 rounded-lg border border-zinc-800 bg-zinc-900"{{else}}style=\{{ padding: '1rem', borderRadius: '0.5rem', border: '1px solid #27272a', background: '#18181b' }}{{/if}}>
+          <h2 {{#if useTailwind}}className="font-semibold mb-2"{{else}}style=\{{ fontWeight: 600, marginBottom: '0.5rem' }}{{/if}}>Organization</h2>
+          <p {{#if useTailwind}}className="text-zinc-400"{{else}}style=\{{ color: '#a1a1aa' }}{{/if}}>{org?.name || 'Personal'}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+{{/if}}

@@ -1,0 +1,17 @@
+version: 1
+name: {{projectName}}
+
+apps:
+  web:
+    type: {{framework}}
+    path: apps/web
+    domain: {{projectName}}.githat.io
+    env:
+      NEXT_PUBLIC_API_URL: $\{{apps.api.url}}
+
+  api:
+    type: {{backendFramework}}
+    path: apps/api
+    domain: api.{{projectName}}.githat.io
+    env:
+      GITHAT_PUBLISHABLE_KEY: $\{{secrets.GITHAT_PUBLISHABLE_KEY}}

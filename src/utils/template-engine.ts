@@ -25,6 +25,10 @@ export interface TemplateContext {
   publishableKey: string;
   apiUrl: string;
 
+  // Project type
+  projectType: 'frontend' | 'fullstack';
+  backendFramework?: 'hono' | 'express' | 'fastify';
+
   // Feature flags
   useDatabase: boolean;
   databaseChoice: string;

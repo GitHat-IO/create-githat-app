@@ -1,0 +1,26 @@
+import { GitHatProvider } from '@githat/nextjs';
+import '@githat/nextjs/styles';
+import './globals.css';
+
+export const metadata = {
+  title: '{{businessName}}',
+  description: '{{description}}',
+};
+
+export default function RootLayout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+  return (
+    <html lang="en">
+      <body>
+        <GitHatProvider config=\{{
+          publishableKey: process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY || '',
+          signInUrl: '/sign-in',
+          signUpUrl: '/sign-up',
+          afterSignInUrl: '/dashboard',
+          afterSignOutUrl: '/',
+        }}>
+          {children}
+        </GitHatProvider>
+      </body>
+    </html>
+  );
+}

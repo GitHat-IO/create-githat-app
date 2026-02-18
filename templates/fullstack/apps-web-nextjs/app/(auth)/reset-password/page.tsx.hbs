@@ -1,0 +1,11 @@
+{{#if includeForgotPassword}}
+import { ResetPasswordForm } from '@githat/nextjs';
+
+export default function ResetPasswordPage() {
+  return (
+    <main {{#if useTailwind}}className="flex items-center justify-center min-h-screen bg-[#09090b]"{{else}}style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#09090b' }}{{/if}}>
+      <ResetPasswordForm signInUrl="/sign-in" />
+    </main>
+  );
+}
+{{/if}}

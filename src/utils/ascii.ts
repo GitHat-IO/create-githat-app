@@ -65,32 +65,57 @@ export function displaySuccess(
   packageManager: string,
   framework: string,
   hasPublishableKey: boolean = true,
+  isFullstack: boolean = false,
 ): void {
   const devCmd = packageManager === 'npm' ? 'npm run dev' : `${packageManager} dev`;
   const port = framework === 'react-vite' ? '5173' : '3000';
 
   console.log('');
 
-  drawBox([
-    `${violet('✦')}  Your GitHat app is ready!`,
-    '',
-    `${violet('$')} cd ${projectName}`,
-    `${violet('$')} ${devCmd}`,
-    '',
-    dim(`→ http://localhost:${port}`),
-    '',
-    chalk.bold('Routes'),
-    `${violet('/sign-in')}       Sign in`,
-    `${violet('/sign-up')}       Create account`,
-    `${violet('/dashboard')}     Protected dashboard`,
-    '',
-    ...(hasPublishableKey ? [] : [
-      chalk.yellow('No key configured — auth works on localhost.'),
-      `For production: ${violet('githat.io/dashboard/apps')}`,
+  if (isFullstack) {
+    drawBox([
+      `${violet('✦')}  Your GitHat fullstack app is ready!`,
       '',
-    ]),
-    dim('Docs → https://githat.io/docs/sdk'),
-  ]);
+      `${violet('$')} cd ${projectName}`,
+      `${violet('$')} ${devCmd}`,
+      '',
+      dim(`→ Web: http://localhost:3000`),
+      dim(`→ API: http://localhost:3001`),
+      '',
+      chalk.bold('Structure'),
+      `${violet('apps/web')}       Next.js frontend`,
+      `${violet('apps/api')}       API backend`,
+      `${violet('packages/')}      Shared code`,
+      '',
+      ...(hasPublishableKey ? [] : [
+        chalk.yellow('No key configured — auth works on localhost.'),
+        `For production: ${violet('githat.io/dashboard/apps')}`,
+        '',
+      ]),
+      dim('Docs → https://githat.io/docs/sdk'),
+    ]);
+  } else {
+    drawBox([
+      `${violet('✦')}  Your GitHat app is ready!`,
+      '',
+      `${violet('$')} cd ${projectName}`,
+      `${violet('$')} ${devCmd}`,
+      '',
+      dim(`→ http://localhost:${port}`),
+      '',
+      chalk.bold('Routes'),
+      `${violet('/sign-in')}       Sign in`,
+      `${violet('/sign-up')}       Create account`,
+      `${violet('/dashboard')}     Protected dashboard`,
+      '',
+      ...(hasPublishableKey ? [] : [
+        chalk.yellow('No key configured — auth works on localhost.'),
+        `For production: ${violet('githat.io/dashboard/apps')}`,
+        '',
+      ]),
+      dim('Docs → https://githat.io/docs/sdk'),
+    ]);
+  }
 
   console.log('');
 }
