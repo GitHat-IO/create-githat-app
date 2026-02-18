@@ -1,6 +1,6 @@
 {
   "name": "create-githat-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "GitHat CLI — scaffold apps and manage the skills marketplace",
   "type": "module",
   "bin": {
@@ -48,7 +48,11 @@
     "mcp",
     "ai-agents"
   ],
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Proprietary",
+  "homepage": "https://githat.io",
+  "bugs": {
+    "url": "https://github.com/GitHat-IO/create-githat-app/issues"
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -56,5 +60,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GitHat-IO/create-githat-app.git"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
