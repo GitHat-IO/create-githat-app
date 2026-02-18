@@ -21,8 +21,10 @@ program
   .option('--key <key>', 'GitHat publishable key (pk_live_...)')
   .option('--ts', 'Use TypeScript (default)')
   .option('--js', 'Use JavaScript')
+  .option('--fullstack', 'Create fullstack project (Turborepo)')
+  .option('--backend <framework>', 'Backend framework (hono, express, fastify)')
   .option('-y, --yes', 'Skip prompts and use defaults')
-  .action(async (projectName: string | undefined, opts: { key?: string; ts?: boolean; js?: boolean; yes?: boolean }) => {
+  .action(async (projectName: string | undefined, opts: { key?: string; ts?: boolean; js?: boolean; fullstack?: boolean; backend?: string; yes?: boolean }) => {
     try {
       displayBanner();
 
@@ -39,6 +41,8 @@ program
         publishableKey: opts.key,
         typescript,
         yes: opts.yes,
+        fullstack: opts.fullstack,
+        backendFramework: opts.backend as 'hono' | 'express' | 'fastify' | undefined,
       });
 
       const context = answersToContext(answers);

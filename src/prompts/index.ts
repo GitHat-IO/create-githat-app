@@ -26,13 +26,21 @@ function toDisplayName(projectName: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function getDefaults(projectName: string, publishableKey?: string, typescript?: boolean): AllAnswers {
+function getDefaults(
+  projectName: string,
+  publishableKey?: string,
+  typescript?: boolean,
+  fullstack?: boolean,
+  backendFramework?: BackendFramework
+): AllAnswers {
   const displayName = toDisplayName(projectName);
+  const projectType: ProjectType = fullstack ? 'fullstack' : 'frontend';
   return {
     projectName,
     businessName: displayName,
     description: `${displayName} — Built with GitHat`,
-    projectType: 'frontend',
+    projectType,
+    backendFramework: fullstack ? (backendFramework || 'hono') : undefined,
     framework: 'nextjs',
     typescript: typescript ?? true,
     packageManager: detectPackageManager(),
@@ -42,7 +50,7 @@ function getDefaults(projectName: string, publishableKey?: string, typescript?: 
     databaseChoice: 'none',
     useTailwind: true,
     includeDashboard: true,
-    includeGithatFolder: true,
+    includeGithatFolder: projectType === 'frontend',
     initGit: true,
     installDeps: true,
   };
@@ -53,11 +61,13 @@ export async function runPrompts(args: {
   publishableKey?: string;
   typescript?: boolean;
   yes?: boolean;
+  fullstack?: boolean;
+  backendFramework?: BackendFramework;
 }): Promise<AllAnswers> {
   // --yes flag: skip all prompts, use defaults
   if (args.yes && args.initialName) {
     p.log.info('Using defaults (--yes flag)');
-    return getDefaults(args.initialName, args.publishableKey, args.typescript);
+    return getDefaults(args.initialName, args.publishableKey, args.typescript, args.fullstack, args.backendFramework);
   }
 
   p.intro("Let's set up your GitHat app");
