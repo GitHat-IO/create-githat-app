@@ -82,5 +82,19 @@ export async function scaffold(
   }
 
   p.outro('Setup complete!');
-  displaySuccess(context.projectName, context.packageManager, context.framework);
+  displaySuccess(context.projectName, context.packageManager, context.framework, !!context.publishableKey);
+
+  // Offer to star the repo
+  const starPrompt = await p.confirm({
+    message: 'Star GitHat on GitHub? (helps us grow!)',
+    initialValue: false,
+  });
+  if (!p.isCancel(starPrompt) && starPrompt) {
+    try {
+      const cmd = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
+      execSync(`${cmd} "https://github.com/GitHat-IO/githat"`, { stdio: 'ignore' });
+    } catch {
+      p.log.info('Visit https://github.com/GitHat-IO/githat to star us!');
+    }
+  }
 }

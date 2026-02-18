@@ -64,6 +64,7 @@ export function displaySuccess(
   projectName: string,
   packageManager: string,
   framework: string,
+  hasPublishableKey: boolean = true,
 ): void {
   const devCmd = packageManager === 'npm' ? 'npm run dev' : `${packageManager} dev`;
   const port = framework === 'react-vite' ? '5173' : '3000';
@@ -83,6 +84,11 @@ export function displaySuccess(
     `${violet('/sign-up')}       Create account`,
     `${violet('/dashboard')}     Protected dashboard`,
     '',
+    ...(hasPublishableKey ? [] : [
+      chalk.yellow('No key configured — auth works on localhost.'),
+      `For production: ${violet('githat.io/dashboard/apps')}`,
+      '',
+    ]),
     dim('Docs → https://githat.io/docs/sdk'),
   ]);
 

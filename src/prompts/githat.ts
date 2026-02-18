@@ -75,8 +75,8 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
 
       publishableKey = (pastedKey as string) || '';
     } else if (connectChoice === 'skip') {
-      p.log.info('Your app will work on localhost without a key!');
-      p.log.info('For production, get your key at https://githat.io/dashboard/apps');
+      p.log.info('Auth works on localhost without a key (CORS bypass for development).');
+      p.log.info('Sign up at githat.io — a publishable key is auto-created for you.');
     }
   }
 
