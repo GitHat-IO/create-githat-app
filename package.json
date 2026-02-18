@@ -7,21 +7,25 @@
     "create-githat-app": "./bin/index.js",
     "githat": "./bin/index.js"
   },
-  "files": ["bin", "dist", "templates"],
+  "files": [
+    "bin",
+    "dist",
+    "templates"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "test": "node bin/index.js --help"
   },
   "dependencies": {
-    "@clack/prompts": "^0.9.1",
+    "@clack/prompts": "^1.0.1",
     "chalk": "^5.4.1",
-    "commander": "^13.1.0",
+    "commander": "^14.0.3",
     "figlet": "^1.8.0",
     "fs-extra": "^11.2.0",
     "gradient-string": "^3.0.0",
     "handlebars": "^4.7.8",
-    "ora": "^8.1.1",
+    "ora": "^9.3.0",
     "unzipper": "^0.12.3"
   },
   "devDependencies": {
@@ -32,7 +36,18 @@
     "tsup": "^8.4.0",
     "typescript": "^5.9.0"
   },
-  "keywords": ["githat", "nextjs", "react", "vite", "create-app", "cli", "auth", "identity", "mcp", "ai-agents"],
+  "keywords": [
+    "githat",
+    "nextjs",
+    "react",
+    "vite",
+    "create-app",
+    "cli",
+    "auth",
+    "identity",
+    "mcp",
+    "ai-agents"
+  ],
   "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
     "access": "public",
