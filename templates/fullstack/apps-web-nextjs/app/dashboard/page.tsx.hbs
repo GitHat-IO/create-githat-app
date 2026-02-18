@@ -1,9 +1,9 @@
 {{#if includeDashboard}}
 'use client';
-import { useGitHat, UserButton } from '@githat/nextjs';
+import { useAuth, UserButton } from '@githat/nextjs';
 
 export default function DashboardPage() {
-  const { user, org } = useGitHat();
+  const { user, org } = useAuth();
 
   return (
     <div {{#if useTailwind}}className="p-8"{{else}}style=\{{ padding: '2rem' }}{{/if}}>

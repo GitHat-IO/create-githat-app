@@ -1,9 +1,15 @@
 {{#if includeDashboard}}
-import { withAuth } from '@githat/nextjs/server';
+import { redirect } from 'next/navigation';
+import { cookies } from 'next/headers';
 
-async function DashboardLayout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+export default async function DashboardLayout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('githat_access')?.value;
+
+  if (!token) {
+    redirect('/sign-in');
+  }
+
   return <>{children}</>;
 }
-
-export default withAuth(DashboardLayout);
 {{/if}}
