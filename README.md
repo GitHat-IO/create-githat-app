@@ -1,4 +1,18 @@
+<div align="center">
+
 # create-githat-app
+
+**The CLI for [GitHat](https://githat.io) — Auth + Hosting that replaces Clerk + Vercel**
+
+[![npm version](https://img.shields.io/npm/v/create-githat-app?style=flat-square&logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/create-githat-app)
+[![npm downloads](https://img.shields.io/npm/dm/create-githat-app?style=flat-square&logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/create-githat-app)
+[![SDK](https://img.shields.io/npm/v/@githat/nextjs?style=flat-square&logo=npm&logoColor=white&label=%40githat%2Fnextjs&color=cb3837)](https://www.npmjs.com/package/@githat/nextjs)
+[![Website](https://img.shields.io/website?style=flat-square&url=https%3A%2F%2Fgithat.io&up_message=live&up_color=1f6feb&label=githat.io)](https://githat.io)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+
+</div>
+
+---
 
 Scaffold a production-ready app with a fully-managed backend — auth, teams, orgs, API keys, MCP verification, and AI agent identity. **No backend to deploy.**
 
@@ -263,6 +277,19 @@ VITE_GITHAT_PUBLISHABLE_KEY=pk_live_...
 VITE_GITHAT_API_URL=https://api.githat.io
 ```
 
+## Documentation
+
+- [GitHat Quick Start](https://githat.io/docs/quickstart) — Get running in 5 minutes
+- [SDK Reference](https://githat.io/docs/sdk) — `@githat/nextjs` hooks, components, and server utils
+- [API Reference](https://githat.io/docs/api) — All 86 REST endpoints
+- [CLI Reference](https://githat.io/docs/cli) — Flags, prompts, and templates
+- [Next.js Guide](https://githat.io/docs/nextjs) — Auth in Next.js 14-16+
+- [React Guide](https://githat.io/docs/react) — Auth in any React app
+- [Bring Your Own Database](https://githat.io/docs/byod) — Keep your PostgreSQL, MySQL, or MongoDB
+- [MCP Servers](https://githat.io/docs/mcp) — Domain verification for AI tool servers
+- [AI Agents](https://githat.io/docs/agents) — Wallet-based identity for autonomous agents
+- [Skills Marketplace](https://githat.io/docs/skills) — Install templates, integrations, and workflows
+
 ## Contributing
 
 ```bash
@@ -272,6 +299,14 @@ npm install
 npm run build
 node bin/index.js test-app
 ```
+
+## Related
+
+- [@githat/nextjs](https://www.npmjs.com/package/@githat/nextjs) — React/Next.js SDK
+- [GitHat Platform](https://githat.io) — Auth + Hosting replacing Clerk + Vercel
+- [GitHat Pricing](https://githat.io/pricing) — Free, Pro, and Enterprise tiers
+- [GitHat vs Clerk](https://githat.io/compare/githat-vs-clerk) — Feature comparison
+- [GitHat vs Auth0](https://githat.io/compare/githat-vs-auth0) — Why developers switch
 
 ## License
 
