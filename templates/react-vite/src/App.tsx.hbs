@@ -27,20 +27,27 @@ function NotFound() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/sign-in" element={<SignIn />} />
-      <Route path="/sign-up" element={<SignUp />} />
+    <>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/sign-in" element={<SignIn />} />
+        <Route path="/sign-up" element={<SignUp />} />
 {{#if includeForgotPassword}}
-      <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 {{/if}}
 {{#if includeEmailVerification}}
-      <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 {{/if}}
 {{#if includeDashboard}}
-      <Route path="/dashboard/*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard/*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 {{/if}}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <footer style=\{{ textAlign: 'center', padding: '1rem 0', fontSize: '0.75rem', color: '#52525b' }}>
+        <a href="https://githat.io" target="_blank" rel="noopener noreferrer" style=\{{ color: '#7c3aed', textDecoration: 'none' }}>
+          Powered by GitHat
+        </a>
+      </footer>
+    </>
   );
 }
