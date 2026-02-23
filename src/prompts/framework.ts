@@ -7,18 +7,23 @@ export interface FrameworkAnswers {
   packageManager: PackageManager;
 }
 
-export async function promptFramework(typescriptOverride?: boolean): Promise<FrameworkAnswers> {
+export async function promptFramework(typescriptOverride?: boolean, isFullstack?: boolean): Promise<FrameworkAnswers> {
   const packageManager = detectPackageManager();
+
+  // React+Vite only available for frontend-only projects (no fullstack template exists)
+  const frameworkOptions = isFullstack
+    ? [{ value: 'nextjs', label: 'Next.js 16', hint: 'App Router · SSR · middleware auth' }]
+    : [
+        { value: 'nextjs', label: 'Next.js 16', hint: 'App Router · SSR · middleware auth' },
+        { value: 'react-vite', label: 'React 19 + Vite 7', hint: 'SPA · client-side routing' },
+      ];
 
   const answers = await p.group(
     {
       framework: () =>
         p.select({
           message: 'Framework',
-          options: [
-            { value: 'nextjs', label: 'Next.js 16', hint: 'App Router · SSR · middleware auth' },
-            { value: 'react-vite', label: 'React 19 + Vite 7', hint: 'SPA · client-side routing' },
-          ],
+          options: frameworkOptions,
         }),
       typescript: () =>
         typescriptOverride !== undefined

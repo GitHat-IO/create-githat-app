@@ -77,11 +77,12 @@ export async function runPrompts(args: {
   const projectType = await promptProjectType();
 
   sectionHeader('Stack');
-  const framework = await promptFramework(args.typescript);
+  const isFullstack = projectType.projectType === 'fullstack';
+  const framework = await promptFramework(args.typescript, isFullstack);
 
   // Only prompt for backend if fullstack
   let backend: Partial<BackendAnswers> = {};
-  if (projectType.projectType === 'fullstack') {
+  if (isFullstack) {
     backend = await promptBackend();
   }
 

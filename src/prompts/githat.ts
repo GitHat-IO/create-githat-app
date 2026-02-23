@@ -147,8 +147,9 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
       const key = await deviceAuthFlow();
       if (key) {
         publishableKey = key;
+      } else {
+        p.log.warn('Authorization failed. Continuing without key...');
       }
-      // If browser auth failed, continue without key (same as skip)
     } else if (connectChoice === 'paste') {
       const pastedKey = await p.text({
         message: 'Publishable key',

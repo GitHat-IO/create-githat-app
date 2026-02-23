@@ -15,12 +15,12 @@ export async function promptProjectType(): Promise<ProjectTypeAnswers> {
             {
               value: 'frontend',
               label: 'Frontend only',
-              hint: 'Next.js with API routes',
+              hint: 'Next.js or React+Vite',
             },
             {
               value: 'fullstack',
               label: 'Fullstack',
-              hint: 'Next.js + separate API (Turborepo)',
+              hint: 'Next.js + API (Turborepo)',
             },
           ],
         }),
