@@ -8,7 +8,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/create-githat-app?style=flat-square&logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/create-githat-app)
 [![SDK](https://img.shields.io/npm/v/@githat/nextjs?style=flat-square&logo=npm&logoColor=white&label=%40githat%2Fnextjs&color=cb3837)](https://www.npmjs.com/package/@githat/nextjs)
 [![Website](https://img.shields.io/website?style=flat-square&url=https%3A%2F%2Fgithat.io&up_message=live&up_color=1f6feb&label=githat.io)](https://githat.io)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)](LICENSE)
 
 </div>
 
@@ -310,4 +310,4 @@ node bin/index.js test-app
 
 ## License
 
-MIT
+Proprietary — see [LICENSE](LICENSE)
