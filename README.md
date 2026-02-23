@@ -150,7 +150,7 @@ A production-ready project connected to GitHat's hosted backend:
 - **Auth pages** — sign-in, sign-up, forgot password, email verification
 - **Protected dashboard** — sidebar navigation, org switcher, user button
 - **`@githat/nextjs` SDK** — `<GitHatProvider>`, `<ProtectedRoute>`, `useAuth()`
-- **`githat/` platform folder** — typed API client for all 42+ backend endpoints
+- **`githat/` platform folder** — typed API client for all 86 backend endpoints
 - **Dark theme** — zinc/purple design system out of the box
 - **Database ready** — Prisma or Drizzle for your app's own data (optional)
 - **Tailwind CSS 4** — utility-first styling (optional)
