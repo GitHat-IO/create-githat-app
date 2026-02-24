@@ -11,7 +11,7 @@ export const DEPS = {
       next: '^16.0.0',
       react: '^19.0.0',
       'react-dom': '^19.0.0',
-      '@githat/nextjs': '^0.2.5',
+      '@githat/nextjs': '^0.2.6',
     },
     devDependencies: {
       typescript: '^5.9.0',
@@ -25,7 +25,7 @@ export const DEPS = {
       react: '^19.0.0',
       'react-dom': '^19.0.0',
       'react-router-dom': '^7.0.0',
-      '@githat/nextjs': '^0.2.5',
+      '@githat/nextjs': '^0.2.6',
     },
     devDependencies: {
       vite: '^7.0.0',
