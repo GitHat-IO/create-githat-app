@@ -150,7 +150,7 @@ A production-ready project connected to GitHat's hosted backend:
 - **Auth pages** — sign-in, sign-up, forgot password, email verification
 - **Protected dashboard** — sidebar navigation, org switcher, user button
 - **`@githat/nextjs` SDK** — `<GitHatProvider>`, `<ProtectedRoute>`, `useAuth()`
-- **`githat/` platform folder** — typed API client for all 95 backend endpoints
+- **`githat/` platform folder** — typed API client for the full REST API
 - **Dark theme** — zinc/purple design system out of the box
 - **Database ready** — Prisma or Drizzle for your app's own data (optional)
 - **Tailwind CSS 4** — utility-first styling (optional)
@@ -281,7 +281,7 @@ VITE_GITHAT_API_URL=https://api.githat.io
 
 - [GitHat Quick Start](https://githat.io/docs/quickstart) — Get running in 5 minutes
 - [SDK Reference](https://githat.io/docs/sdk) — `@githat/nextjs` hooks, components, and server utils
-- [API Reference](https://githat.io/docs/api) — All 95 REST endpoints
+- [API Reference](https://githat.io/docs/api) — Full REST API reference
 - [CLI Reference](https://githat.io/docs/cli) — Flags, prompts, and templates
 - [Next.js Guide](https://githat.io/docs/nextjs) — Auth in Next.js 14-16+
 - [React Guide](https://githat.io/docs/react) — Auth in any React app
