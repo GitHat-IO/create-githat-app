@@ -14,9 +14,9 @@
 
 ---
 
-Scaffold a production-ready app with a fully-managed backend — auth, teams, orgs, API keys, MCP verification, and AI agent identity. **No backend to deploy.**
+Scaffold a production-ready app with a fully-managed backend — auth, teams, orgs, API keys, and AI agent identity. **No backend to deploy.**
 
-[GitHat](https://githat.io) is your backend. When you run `create-githat-app`, your generated project connects to GitHat's hosted platform at `api.githat.io`. User accounts, organizations, teams, API keys, MCP servers, and AI agents are all stored and managed by GitHat. You write frontend code only.
+[GitHat](https://githat.io) is your backend. When you run `create-githat-app`, your generated project connects to GitHat's hosted platform at `api.githat.io`. User accounts, organizations, teams, API keys, and AI agents are all stored and managed by GitHat. You write frontend code only.
 
 ## Install & Launch
 
@@ -75,7 +75,6 @@ The CLI asks you a series of questions:
 │  ◻ Forgot password
 │  ◻ Email verification
 │  ◻ Organization management
-│  ◻ MCP server identity
 │  ◻ AI agent identity
 │
 ◆  Database?
@@ -146,7 +145,7 @@ npx create-githat-app --version
 
 A production-ready project connected to GitHat's hosted backend:
 
-- **Fully-managed backend** — `api.githat.io` handles auth, orgs, teams, API keys, agents, MCP
+- **Fully-managed backend** — `api.githat.io` handles auth, orgs, teams, API keys, and agents
 - **Auth pages** — sign-in, sign-up, forgot password, email verification
 - **Protected dashboard** — sidebar navigation, org switcher, user button
 - **`@githat/nextjs` SDK** — `<GitHatProvider>`, `<ProtectedRoute>`, `useAuth()`
@@ -168,7 +167,6 @@ githat/
     auth.ts              # Login, register, forgot password, verify email
     orgs.ts              # Create/update orgs, invite/remove members
     users.ts             # List orgs, switch org
-    mcp.ts               # Register/verify MCP servers
     agents.ts            # Register/verify AI agent wallets
   auth/
     guard.tsx            # Role-based route protection component
@@ -179,7 +177,6 @@ githat/
     apps.tsx             # App + API key management
     members.tsx          # Invite members, manage roles, remove
     settings.tsx         # Edit org name, brand color, save
-    mcp-servers.tsx      # Register MCP servers, verify, remove
     agents.tsx           # Register AI agent wallets, verify, remove
 ```
 
@@ -193,23 +190,21 @@ You don't deploy or maintain a backend. GitHat's hosted platform handles:
 - **Organizations** — create, switch, branding, custom domains
 - **Team management** — invite members by email, assign roles (owner/admin/member), remove
 - **API key management** — publishable + secret keys per app, rotation
-- **MCP server registration** — domain verification via DNS TXT, OAuth2 credentials
 - **AI agent registration** — Ethereum wallet verification, challenge-response tokens
 - **Email delivery** — verification emails, invitations, password resets (via AWS SES)
-- **Database** — users, orgs, teams, apps, agents, MCP servers (DynamoDB, managed by GitHat)
-- **Public verification** — anyone can verify an agent or MCP server at `githat.io/verify/`
+- **Database** — users, orgs, teams, apps, and agents (DynamoDB, managed by GitHat)
+- **Public verification** — anyone can verify an agent at `githat.io/verify/`
 
 Your data lives in GitHat's infrastructure. You write frontend code, GitHat handles the rest.
 
-## Three Identity Types
+## Two Identity Types
 
-GitHat supports three types of identity in a single platform:
+GitHat supports two types of identity in a single platform:
 
-| Type            | Auth Method                | Dashboard Page |
-| --------------- | -------------------------- | -------------- |
-| **Humans**      | Email + password           | Members        |
-| **MCP Servers** | Domain verification        | MCP Servers    |
-| **AI Agents**   | Ethereum wallet signatures | AI Agents      |
+| Type          | Auth Method                | Dashboard Page |
+| ------------- | -------------------------- | -------------- |
+| **Humans**    | Email + password           | Members        |
+| **AI Agents** | Ethereum wallet signatures | AI Agents      |
 
 ## Project Structure
 
