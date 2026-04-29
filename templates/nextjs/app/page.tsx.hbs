@@ -1,4 +1,5 @@
 import { SignInButton, SignUpButton } from '@githat/nextjs';
+import { Wordmark } from '@githat/ui';
 
 const hasKey = !!process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY;
 
@@ -6,9 +7,7 @@ function SetupGuide() {
   return (
     <main {{#if useTailwind}}className="flex flex-col items-center justify-center min-h-screen gap-8 bg-[#09090b] text-[#fafafa] px-6"{{else}}style=\{{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '2rem', background: '#09090b', color: '#fafafa', padding: '0 1.5rem' }}{{/if}}>
       <div {{#if useTailwind}}className="text-center"{{else}}style=\{{ textAlign: 'center' }}{{/if}}>
-        <h1 {{#if useTailwind}}className="text-4xl font-bold mb-2"{{else}}style=\{{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem' }}{{/if}}>
-          {{businessName}}
-        </h1>
+        <Wordmark name="{{businessName}}" size="xl" />
         <p {{#if useTailwind}}className="text-zinc-400"{{else}}style=\{{ color: '#a1a1aa' }}{{/if}}>
           Get started in 3 steps
         </p>
@@ -58,9 +57,7 @@ export default function Home() {
 
   return (
     <main {{#if useTailwind}}className="flex flex-col items-center justify-center min-h-screen gap-6 bg-[#09090b] text-[#fafafa]"{{else}}style=\{{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1.5rem', background: '#09090b', color: '#fafafa' }}{{/if}}>
-      <h1 {{#if useTailwind}}className="text-4xl font-bold"{{else}}style=\{{ fontSize: '2.5rem', fontWeight: 700 }}{{/if}}>
-        Welcome to {{businessName}}
-      </h1>
+      <Wordmark name="{{businessName}}" size="xl" />
       <p {{#if useTailwind}}className="text-zinc-400 max-w-lg text-center"{{else}}style=\{{ color: '#a1a1aa', maxWidth: '32rem', textAlign: 'center' }}{{/if}}>
         {{description}}
       </p>
