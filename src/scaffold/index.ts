@@ -11,6 +11,7 @@ import { withSpinner, createSpinner } from '../utils/spinner.js';
 import { getInstallCommand } from '../utils/package-manager.js';
 import { initGit } from '../utils/git.js';
 import { displaySuccess } from '../utils/ascii.js';
+import { registerApp } from '../utils/register-app.js';
 
 export async function scaffold(
   context: TemplateContext,
@@ -57,7 +58,12 @@ export async function scaffold(
     }, 'package.json generated');
   }
 
-  // 3. Git init
+  // 3. Auto-register app on GitHat (Next.js only; no-ops gracefully if offline/unauthenticated)
+  if (!isFullstack && context.framework === 'nextjs') {
+    await registerApp(context.projectName, root);
+  }
+
+  // 4. Git init
   if (options.initGit) {
     const gitSpinner = createSpinner('Initializing git repository...');
     gitSpinner.start();
@@ -69,7 +75,7 @@ export async function scaffold(
     }
   }
 
-  // 4. Install dependencies
+  // 5. Install dependencies
   if (options.installDeps) {
     const installCmd = getInstallCommand(context.packageManager);
     await withSpinner(

@@ -1,22 +1,20 @@
 # {{projectName}}
 
-Built with [GitHat](https://githat.io) — your backend is already set up. Auth, teams, orgs, API keys, MCP verification, and AI agent identity are handled by GitHat's hosted platform.
+Built with [GitHat](https://githat.io) — auth, teams, orgs, API keys, MCP verification, and AI agent identity are handled by GitHat's hosted platform.
 
 ## Getting Started
 
-1. Install dependencies:
+1. Copy the env file and fill in your GitHat key:
+
+```bash
+cp .env.local.example .env.local
+```
+
+2. Install dependencies:
 
 ```bash
 {{#ifEquals packageManager "yarn"}}yarn{{else}}{{packageManager}} install{{/ifEquals}}
 ```
-
-2. Add your GitHat publishable key to `{{#ifEquals framework "nextjs"}}.env.local{{else}}.env{{/ifEquals}}`:
-
-```env
-{{#ifEquals framework "nextjs"}}NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY{{else}}VITE_GITHAT_PUBLISHABLE_KEY{{/ifEquals}}=pk_live_your_key_here
-```
-
-Get your key at [githat.io/dashboard/apps](https://githat.io/dashboard/apps).
 
 3. Start the dev server:
 
@@ -26,23 +24,38 @@ Get your key at [githat.io/dashboard/apps](https://githat.io/dashboard/apps).
 
 4. Open [http://localhost:{{#ifEquals framework "nextjs"}}3000{{else}}5173{{/ifEquals}}](http://localhost:{{#ifEquals framework "nextjs"}}3000{{else}}5173{{/ifEquals}})
 
-## Your Backend
+Your `NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY` is required — get it at [githat.io/dashboard/apps](https://githat.io/dashboard/apps) or re-run `create-githat-app` after running `githat login` to have it auto-registered.
 
-All API calls go to `api.githat.io`. Your data is stored in GitHat's database. **No backend to deploy.**
+## GitHat SDK
 
-GitHat handles:
+This project uses [`@githat/nextjs`](https://www.npmjs.com/package/@githat/nextjs):
 
-- User auth (sign-up, sign-in, email verification, password reset)
-- Organizations (create, switch, branding)
-- Team management (invite members, assign roles)
-- API key management (publishable + secret keys)
-{{#if includeMcpModule}}- MCP server registration and domain verification
-{{/if}}{{#if includeAgentModule}}- AI agent registration and wallet verification
-{{/if}}- Email delivery (verification, invitations, password resets)
+```{{#if typescript}}tsx{{else}}jsx{{/if}}
+import { useAuth, UserButton, OrgSwitcher } from '@githat/nextjs';
 
-The `githat/` folder in your project is a typed API client that talks to `api.githat.io`. You write frontend code, GitHat handles the rest.
+const { user, org, signIn, signUp, signOut } = useAuth();
+```
 
-Manage everything at [githat.io/dashboard](https://githat.io/dashboard).
+## Deploy to EC2 via GitHub Actions
+
+The scaffolded `.github/workflows/deploy.yml` deploys the Next.js standalone bundle to an EC2 instance on every push to `main`.
+
+**Required GitHub repo secrets:**
+
+| Secret | Description |
+|--------|-------------|
+| `SSH_PRIVATE_KEY` | Private key whose public key is in the EC2 instance's `~/.ssh/authorized_keys` |
+| `EC2_HOST` | `ubuntu@<ec2-ip-or-hostname>` |
+| `PROD_ENV` | Full contents of your production `.env` file (set via `gh secret set PROD_ENV < .env.local`) |
+| `GITHAT_PUBLISHABLE_KEY` | Your GitHat publishable key (baked into the client bundle at build time) |
+
+**One-time EC2 setup:**
+
+1. Create a systemd service at `/etc/systemd/system/{{projectName}}.service` that runs `node /opt/{{projectName}}/server.js` with `PORT=3000`.
+2. Create `/opt/{{projectName}}/` owned by your deploy user.
+3. Enable the service: `sudo systemctl enable {{projectName}}`.
+
+After that, every `git push origin main` triggers a build + rsync + restart. The workflow smoke-tests `/api/health` before reporting success.
 
 ## Pages
 
@@ -52,40 +65,6 @@ Manage everything at [githat.io/dashboard](https://githat.io/dashboard).
 {{/if}}{{#if includeDashboard}}- `/dashboard` — Protected dashboard
 {{/if}}{{#if includeOrgManagement}}- `/dashboard/members` — Invite members, manage roles
 {{/if}}
-
-## GitHat SDK
-
-This project uses [`@githat/nextjs`](https://www.npmjs.com/package/@githat/nextjs) for connecting to the GitHat platform:
-
-```{{#if typescript}}tsx{{else}}jsx{{/if}}
-import { useAuth, UserButton, OrgSwitcher } from '@githat/nextjs';
-
-const { user, org, signIn, signUp, signOut } = useAuth();
-```
-
-## Deploy
-
-{{#ifEquals framework "nextjs"}}### Vercel (recommended)
-
-```bash
-npx vercel
-```
-
-Add `NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY` to your Vercel project environment variables.
-{{else}}### Vercel
-
-```bash
-npx vercel
-```
-
-### Netlify
-
-```bash
-npx netlify deploy
-```
-
-Add `VITE_GITHAT_PUBLISHABLE_KEY` to your hosting provider's environment variables.
-{{/ifEquals}}
 
 ## Learn More
 

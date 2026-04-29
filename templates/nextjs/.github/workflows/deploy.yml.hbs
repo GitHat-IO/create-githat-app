@@ -1,0 +1,107 @@
+name: Deploy to EC2
+
+# Auto-deploy every push to main. Also supports manual runs from the
+# Actions tab (workflow_dispatch) so you can re-ship without a dummy commit.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Only one deploy at a time. Queue rather than race if a second push
+# lands mid-deploy.
+concurrency:
+  group: deploy-ec2
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    # Skip if commit message starts with "docs:" unless it includes [deploy].
+    if: $\{{ !startsWith(github.event.head_commit.message, 'docs:') || contains(github.event.head_commit.message, '[deploy]') }}
+    timeout-minutes: 12
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Compute BUILD_ID
+        id: build_id
+        run: |
+          BUILD_ID=$(git rev-parse --short HEAD || echo "${GITHUB_SHA:0:7}")
+          echo "BUILD_ID=$BUILD_ID" >> "$GITHUB_OUTPUT"
+          echo "Resolved BUILD_ID=$BUILD_ID"
+
+      - name: Build (Next.js standalone)
+        run: npm run build
+        env:
+          # NEXT_PUBLIC_* vars are baked into the client bundle at build time.
+          # The real value comes from the GITHAT_PUBLISHABLE_KEY repo secret.
+          NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY: $\{{ secrets.GITHAT_PUBLISHABLE_KEY }}
+          BUILD_ID: $\{{ steps.build_id.outputs.BUILD_ID }}
+
+      - name: Load SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "$\{{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${EC2_HOST#*@}" >> ~/.ssh/known_hosts
+        env:
+          EC2_HOST: $\{{ secrets.EC2_HOST }}
+
+      - name: Sync production .env
+        env:
+          PROD_ENV: $\{{ secrets.PROD_ENV }}
+          EC2_HOST: $\{{ secrets.EC2_HOST }}
+        run: |
+          if [ -z "$PROD_ENV" ]; then
+            echo "PROD_ENV secret is empty — skipping env sync."
+            exit 0
+          fi
+          SSH_OPTS="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
+          printf '%s' "$PROD_ENV" > /tmp/prod.env
+          rsync -az -e "ssh $SSH_OPTS" /tmp/prod.env "$EC2_HOST:/opt/{{projectName}}/.env"
+          shred -u /tmp/prod.env 2>/dev/null || rm -f /tmp/prod.env
+          ssh $SSH_OPTS "$EC2_HOST" \
+            "sudo chgrp {{projectName}} /opt/{{projectName}}/.env && sudo chmod 640 /opt/{{projectName}}/.env"
+
+      - name: Deploy to EC2
+        env:
+          EC2_HOST: $\{{ secrets.EC2_HOST }}
+        run: |
+          SSH_OPTS="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
+
+          rsync -az --delete -e "ssh $SSH_OPTS" \
+              --exclude .env \
+              .next/standalone/ "$EC2_HOST:/opt/{{projectName}}/"
+
+          rsync -az -e "ssh $SSH_OPTS" \
+              .next/static/ "$EC2_HOST:/opt/{{projectName}}/.next/static/"
+
+          rsync -az -e "ssh $SSH_OPTS" \
+              public/ "$EC2_HOST:/opt/{{projectName}}/public/"
+
+          ssh $SSH_OPTS "$EC2_HOST" "
+            sudo systemctl restart {{projectName}}
+            sleep 5
+            sudo systemctl is-active --quiet {{projectName}} || { sudo journalctl -u {{projectName}} -n 30 --no-pager; exit 1; }
+            echo \"deployed build \$(cat /opt/{{projectName}}/.next/BUILD_ID)\"
+          "
+
+      - name: Smoke-test the deploy
+        env:
+          EC2_HOST: $\{{ secrets.EC2_HOST }}
+        run: |
+          SSH_OPTS="-i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes"
+          ssh $SSH_OPTS "$EC2_HOST" \
+            "curl --fail --silent --show-error --max-time 10 http://127.0.0.1:3000/api/health > /dev/null && echo OK"
