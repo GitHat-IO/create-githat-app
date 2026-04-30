@@ -1,0 +1,87 @@
+/*
+ * Tailwind v4 — required because @githat/nextjs/styles is processed
+ * through @tailwindcss/postcss. Plain doesn't ship utility classes,
+ * but the import is needed for the auth pages to render styled.
+ */
+@import "tailwindcss";
+
+/*
+ * Plain template — self-contained globals.
+ *
+ * Defines the minimum CSS variables a GitHat app uses for layout and
+ * the auth-page styling that ships with @githat/nextjs/styles.
+ * Override these in your own files when you want a real theme.
+ *
+ * Light theme by default; flip --bg/--fg for dark.
+ */
+
+:root {
+  /* Surface */
+  --bg:           #ffffff;
+  --surface:      #fafafa;
+  --surface-sub:  #f4f4f5;
+
+  /* Borders */
+  --border:       #e5e7eb;
+
+  /* Foreground */
+  --fg:           #0a0a0a;
+  --fg-muted:     #525252;
+  --fg-subtle:    #737373;
+
+  /* Brand — change these two to re-skin the whole auth flow */
+  --primary:      #6366f1;
+  --accent:       #f59e0b;
+
+  /* Semantic */
+  --success:      #16a34a;
+  --warn:         #d97706;
+  --danger:       #dc2626;
+
+  /* Spacing — used by @githat/nextjs/styles */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  /* Radius */
+  --radius:    0.5rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  /* Fonts */
+  --font-sans:     'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-wordmark: 'Instrument Serif', Georgia, serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #0a0a0a;
+    --surface:      #18181b;
+    --surface-sub:  #27272a;
+    --border:       #3f3f46;
+    --fg:           #fafafa;
+    --fg-muted:     #a1a1aa;
+    --fg-subtle:    #71717a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

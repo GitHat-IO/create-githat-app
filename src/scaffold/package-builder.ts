@@ -3,11 +3,11 @@ import { DEPS } from '../constants.js';
 
 /** All Next.js-shaped templates share deps with the legacy nextjs full-kit. */
 const NEXT_LIKE = new Set<TemplateContext['framework']>([
-  'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard',
+  'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard', 'portfolio', 'classroom',
 ]);
 /** Templates we ship as minimal scaffolds (skip @githat/ui, etc.). */
 const MINIMAL = new Set<TemplateContext['framework']>([
-  'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard',
+  'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard', 'portfolio', 'classroom',
 ]);
 
 export function buildPackageJson(ctx: TemplateContext): Record<string, unknown> {

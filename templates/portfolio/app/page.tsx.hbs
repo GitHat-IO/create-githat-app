@@ -1,0 +1,86 @@
+import Link from 'next/link';
+
+/**
+ * Portfolio homepage.
+ *
+ * Personal/professional site for showing projects you've shipped.
+ * Public reads, auth-gated edits — sign in only when you want to
+ * add or edit a project. Replaces Linktree + Cargo + a static
+ * site generator + Vercel.
+ *
+ * Project data is hardcoded for the starter. Real apps store
+ * projects in a Postgres / DynamoDB table or in Markdown files,
+ * and fetch in this server component.
+ */
+
+const PROJECTS = [
+  {
+    slug: 'project-one',
+    title: 'A thing I shipped',
+    summary: 'Two-line description of the project, what it does, what was hard.',
+    year: 2026,
+    role: 'Designer + Engineer',
+  },
+  {
+    slug: 'project-two',
+    title: 'Another thing',
+    summary: 'A research project that turned into a product. Worked for two years.',
+    year: 2025,
+    role: 'Lead',
+  },
+  {
+    slug: 'project-three',
+    title: 'A side project',
+    summary: 'Built in a weekend, used by 12 people, learned three things.',
+    year: 2025,
+    role: 'Solo',
+  },
+];
+
+export default function Home() {
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)' }}>
+      <section style=\{{ padding: 'var(--space-12) var(--space-4)', maxWidth: '40rem', margin: '0 auto' }}>
+        <h1 style=\{{
+          fontFamily: 'var(--font-wordmark, Georgia, serif)',
+          fontSize: 'clamp(2rem, 5vw, 3rem)',
+          lineHeight: 1.1,
+          marginBottom: 'var(--space-3)',
+        }}>
+          {{businessName}}
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '1.125rem', lineHeight: 1.7 }}>
+          One-paragraph intro. What you do, what you care about, where to find
+          the rest of you. Edit this in <code>app/page.tsx</code>.
+          <br /><br />
+          <Link href="/about" style=\{{ color: 'var(--primary)' }}>More about me →</Link>
+        </p>
+      </section>
+
+      <section style=\{{ padding: 'var(--space-8) var(--space-4)', maxWidth: '48rem', margin: '0 auto' }}>
+        <h2 style=\{{ fontSize: '1.5rem', marginBottom: 'var(--space-6)' }}>Projects</h2>
+        <ul style=\{{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+          {PROJECTS.map((p) => (
+            <li key={p.slug}>
+              <Link href={`/${p.slug}`} style=\{{
+                display: 'block',
+                padding: 'var(--space-5)',
+                borderRadius: 'var(--radius-md, 0.5rem)',
+                border: '1px solid var(--border)',
+                background: 'var(--surface)',
+                color: 'var(--fg)',
+                textDecoration: 'none',
+              }}>
+                <div style=\{{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 'var(--space-3)', flexWrap: 'wrap', marginBottom: 'var(--space-2)' }}>
+                  <h3 style=\{{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>{p.title}</h3>
+                  <span style=\{{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>{p.role} · {p.year}</span>
+                </div>
+                <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem' }}>{p.summary}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
+}

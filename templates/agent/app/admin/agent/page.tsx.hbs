@@ -1,0 +1,127 @@
+'use client';
+
+import Link from 'next/link';
+import { useAuth } from '@githat/nextjs';
+
+/**
+ * Agent operator dashboard — control the agent you registered.
+ *
+ * Three core actions an operator does:
+ *   1. See live status (active / paused / revoked)
+ *   2. Adjust capabilities (which tools the agent can call)
+ *   3. Hit the kill switch
+ *
+ * Real apps fetch the agent record from GitHat's
+ * GET /agent/{walletAddress}. Stub below shows the data shape.
+ */
+export default function AgentAdminPage() {
+  const { isSignedIn, isLoading } = useAuth();
+
+  if (isLoading) return <div style=\{{ padding: 'var(--space-8)', color: 'var(--fg-muted)' }}>Loading…</div>;
+  if (!isSignedIn) {
+    return (
+      <div style=\{{ padding: 'var(--space-8)', textAlign: 'center' }}>
+        <Link href="/sign-in" style=\{{ color: 'var(--primary)' }}>Sign in →</Link>
+      </div>
+    );
+  }
+
+  const agent = {
+    name: 'My research agent',
+    wallet: '0xAB12…CDEf',
+    status: 'active' as 'active' | 'paused' | 'revoked',
+    capabilities: ['web.search', 'web.fetch', 'arxiv.read'],
+    actionsLast24h: 47,
+    verifyUrl: 'https://githat.io/verify/agent/0xAB12...CDEf',
+  };
+
+  return (
+    <div style=\{{ padding: 'var(--space-8) var(--space-4)', maxWidth: '48rem', margin: '0 auto' }}>
+      <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-2)' }}>
+        {agent.name}
+      </h1>
+      <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem', marginBottom: 'var(--space-6)' }}>
+        Wallet: <code>{agent.wallet}</code>
+      </p>
+
+      <section style=\{{
+        padding: 'var(--space-5)',
+        borderRadius: 'var(--radius-md, 0.5rem)',
+        border: '1px solid var(--border)',
+        background: 'var(--surface)',
+        marginBottom: 'var(--space-6)',
+      }}>
+        <div style=\{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+          <span style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)' }}>Status</span>
+          <span style=\{{
+            padding: 'var(--space-1) var(--space-3)',
+            borderRadius: 'var(--radius-full, 9999px)',
+            background: agent.status === 'active' ? 'var(--success)' : agent.status === 'paused' ? 'var(--warn)' : 'var(--danger)',
+            color: 'var(--bg)',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+          }}>
+            {agent.status.toUpperCase()}
+          </span>
+        </div>
+        <div style=\{{ fontSize: '2rem', fontWeight: 600, marginBottom: 'var(--space-1)' }}>
+          {agent.actionsLast24h}
+        </div>
+        <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>actions in the last 24 hours</div>
+      </section>
+
+      <section style=\{{ marginBottom: 'var(--space-6)' }}>
+        <h2 style=\{{ fontSize: '1.125rem', marginBottom: 'var(--space-3)' }}>Capabilities</h2>
+        <ul style=\{{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+          {agent.capabilities.map((cap) => (
+            <li key={cap} style=\{{
+              padding: 'var(--space-2) var(--space-3)',
+              borderRadius: 'var(--radius-md, 0.5rem)',
+              border: '1px solid var(--border)',
+              background: 'var(--surface)',
+              fontSize: '0.875rem',
+              fontFamily: 'var(--font-mono, monospace)',
+            }}>
+              {cap}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section style=\{{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+        <a href={agent.verifyUrl} target="_blank" rel="noopener noreferrer" style=\{{
+          padding: 'var(--space-3) var(--space-4)',
+          borderRadius: 'var(--radius-md, 0.5rem)',
+          border: '1px solid var(--border)',
+          color: 'var(--fg)',
+          textDecoration: 'none',
+        }}>
+          Public verify URL ↗
+        </a>
+        <Link href="/admin/mcp" style=\{{
+          padding: 'var(--space-3) var(--space-4)',
+          borderRadius: 'var(--radius-md, 0.5rem)',
+          border: '1px solid var(--border)',
+          color: 'var(--fg)',
+          textDecoration: 'none',
+        }}>
+          MCP servers
+        </Link>
+        <button
+          onClick={() => { /* TODO: POST /api/agent/kill */ }}
+          style=\{{
+            padding: 'var(--space-3) var(--space-4)',
+            borderRadius: 'var(--radius-md, 0.5rem)',
+            border: '1px solid var(--danger)',
+            background: 'transparent',
+            color: 'var(--danger)',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}
+        >
+          Kill switch
+        </button>
+      </section>
+    </div>
+  );
+}

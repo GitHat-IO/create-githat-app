@@ -1,0 +1,131 @@
+'use client';
+
+import Link from 'next/link';
+import { SignUpButton } from '@githat/nextjs';
+
+/**
+ * Pricing page — three tiers, monthly + annual toggle.
+ *
+ * Real apps wire each "Choose plan" button to a Sebastn checkout
+ * URL (or call /api/billing/checkout against your backend, which
+ * in turn calls Sebastn). The starter ships hardcoded prices so
+ * the page renders before any billing is wired.
+ *
+ * Tier IDs (sebastn_price_id) belong in your env, not in source —
+ * see /admin/billing for how the runtime page reads them.
+ */
+
+const TIERS = [
+  {
+    name: 'Starter',
+    price: 0,
+    blurb: 'For teams trying us out.',
+    features: ['1 org', '5 members', 'Email support', '1 GB storage'],
+    cta: 'Sign up free',
+    href: '/sign-up',
+    highlight: false,
+  },
+  {
+    name: 'Team',
+    price: 29,
+    blurb: 'For growing teams that need more.',
+    features: ['Unlimited orgs', '50 members', 'Priority support', '50 GB storage', 'API access'],
+    cta: 'Start 14-day trial',
+    href: '/sign-up?plan=team',
+    highlight: true,
+  },
+  {
+    name: 'Business',
+    price: 99,
+    blurb: 'For teams that need SSO and audit logs.',
+    features: ['Everything in Team', 'SSO (SAML)', 'Audit log', 'SLA support', 'Custom contract'],
+    cta: 'Contact sales',
+    href: '/contact',
+    highlight: false,
+  },
+];
+
+export default function PricingPage() {
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)', padding: 'var(--space-12) var(--space-4)' }}>
+      <div style=\{{ maxWidth: '64rem', margin: '0 auto' }}>
+        <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2.5rem', textAlign: 'center', marginBottom: 'var(--space-3)' }}>
+          Pricing
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', textAlign: 'center', marginBottom: 'var(--space-8)' }}>
+          Free tier is real free. Upgrade when your team outgrows it.
+        </p>
+
+        <div style=\{{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+          gap: 'var(--space-4)',
+        }}>
+          {TIERS.map((tier) => (
+            <div key={tier.name} style=\{{
+              padding: 'var(--space-6)',
+              borderRadius: 'var(--radius-md, 0.5rem)',
+              border: tier.highlight ? '2px solid var(--primary)' : '1px solid var(--border)',
+              background: 'var(--surface)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              {tier.highlight && (
+                <div style=\{{
+                  alignSelf: 'flex-start',
+                  padding: 'var(--space-1) var(--space-2)',
+                  borderRadius: 'var(--radius-sm, 0.25rem)',
+                  background: 'var(--primary)',
+                  color: 'var(--bg)',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  marginBottom: 'var(--space-3)',
+                }}>
+                  MOST POPULAR
+                </div>
+              )}
+              <h2 style=\{{ fontSize: '1.25rem', fontWeight: 600, marginBottom: 'var(--space-2)' }}>
+                {tier.name}
+              </h2>
+              <div style=\{{ marginBottom: 'var(--space-3)' }}>
+                <span style=\{{ fontSize: '2.5rem', fontWeight: 700 }}>
+                  ${tier.price}
+                </span>
+                {tier.price > 0 && (
+                  <span style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)' }}>/mo</span>
+                )}
+              </div>
+              <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem', marginBottom: 'var(--space-4)' }}>
+                {tier.blurb}
+              </p>
+              <ul style=\{{ listStyle: 'none', padding: 0, margin: 0, marginBottom: 'var(--space-4)', flex: 1 }}>
+                {tier.features.map((f) => (
+                  <li key={f} style=\{{ padding: 'var(--space-1) 0', fontSize: '0.875rem' }}>
+                    ✓ {f}
+                  </li>
+                ))}
+              </ul>
+              {tier.name === 'Starter' ? (
+                <SignUpButton />
+              ) : (
+                <Link href={tier.href} style=\{{
+                  display: 'inline-block',
+                  padding: 'var(--space-3) var(--space-4)',
+                  borderRadius: 'var(--radius-md, 0.5rem)',
+                  background: tier.highlight ? 'var(--primary)' : 'var(--surface-sub)',
+                  color: tier.highlight ? 'var(--bg)' : 'var(--fg)',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                  textAlign: 'center',
+                  border: tier.highlight ? 'none' : '1px solid var(--border)',
+                }}>
+                  {tier.cta}
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

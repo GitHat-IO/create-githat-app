@@ -1,0 +1,103 @@
+'use client';
+
+import Link from 'next/link';
+import { useAuth, SignInButton } from '@githat/nextjs';
+
+/**
+ * Classroom — projects with real-world feedback.
+ *
+ * Built for students (and anyone presenting work-in-progress) to
+ * replace the dead-end PDF. You upload a project, share a link,
+ * and audience feedback streams in as you present. The work
+ * iterates — every cohort that hits the same project sees the
+ * latest version and adds to it.
+ *
+ * The flagship feature is /projects/[id]/present + /projects/[id]/feedback —
+ * presenter sees responses live, audience submits without an account.
+ *
+ * Why this matters: a portfolio of dead PDFs is worth less than
+ * a single project with a year of audience feedback layered on top.
+ */
+const SAMPLE_PROJECTS = [
+  { id: 'sustainable-bodega', title: 'Sustainable bodega supply chain', author: 'Maria L.', cohort: 'Spring 2026', responses: 47 },
+  { id: 'after-school-tutor',  title: 'After-school tutor matching app', author: 'Devon R.',  cohort: 'Spring 2026', responses: 12 },
+  { id: 'community-fridge',    title: 'Community fridge tracker',         author: 'Aisha M.',  cohort: 'Fall 2025',   responses: 89 },
+];
+
+export default function Home() {
+  const { isSignedIn } = useAuth();
+
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)' }}>
+      <section style=\{{
+        padding: 'var(--space-12) var(--space-4)',
+        textAlign: 'center',
+        maxWidth: '40rem',
+        margin: '0 auto',
+      }}>
+        <h1 style=\{{
+          fontFamily: 'var(--font-wordmark, Georgia, serif)',
+          fontSize: 'clamp(2rem, 5vw, 3rem)',
+          lineHeight: 1.1,
+          marginBottom: 'var(--space-3)',
+        }}>
+          {{businessName}}
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '1.125rem', lineHeight: 1.6, marginBottom: 'var(--space-6)' }}>
+          Show your work. Get real feedback as you present. Watch
+          your project iterate over time — each cohort that visits
+          adds to it.
+          <br />
+          <em style=\{{ fontSize: '0.875rem' }}>The PDF is dead. Long live the living project.</em>
+        </p>
+        {!isSignedIn ? (
+          <SignInButton />
+        ) : (
+          <Link href="/admin" style=\{{
+            display: 'inline-block',
+            padding: 'var(--space-3) var(--space-6)',
+            borderRadius: 'var(--radius-md, 0.5rem)',
+            background: 'var(--primary)',
+            color: 'var(--bg)',
+            fontWeight: 600,
+            textDecoration: 'none',
+          }}>
+            New project →
+          </Link>
+        )}
+      </section>
+
+      <section style=\{{ padding: 'var(--space-8) var(--space-4)', maxWidth: '48rem', margin: '0 auto' }}>
+        <h2 style=\{{ fontSize: '1.5rem', marginBottom: 'var(--space-4)' }}>Live projects</h2>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem', marginBottom: 'var(--space-4)' }}>
+          Anyone can submit feedback — no account required. Authors
+          see responses streaming in as they present.
+        </p>
+        <ul style=\{{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+          {SAMPLE_PROJECTS.map((p) => (
+            <li key={p.id}>
+              <Link href={`/projects/${p.id}`} style=\{{
+                display: 'block',
+                padding: 'var(--space-5)',
+                borderRadius: 'var(--radius-md, 0.5rem)',
+                border: '1px solid var(--border)',
+                background: 'var(--surface)',
+                color: 'var(--fg)',
+                textDecoration: 'none',
+              }}>
+                <h3 style=\{{ fontSize: '1.125rem', fontWeight: 600, marginBottom: 'var(--space-1)' }}>{p.title}</h3>
+                <div style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)', display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+                  <span>{p.author}</span>
+                  <span>·</span>
+                  <span>{p.cohort}</span>
+                  <span>·</span>
+                  <span><strong>{p.responses}</strong> responses</span>
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+  );
+}

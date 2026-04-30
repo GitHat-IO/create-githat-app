@@ -19,7 +19,7 @@ Handlebars.registerHelper('ifEquals', function (this: unknown, a: string, b: str
 // gallery EXCEPT react-vite is a Next.js app — they share env-var
 // prefix (NEXT_PUBLIC_*), proxy.ts, and package.json scripts.
 const NEXT_LIKE = new Set([
-  'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard',
+  'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard', 'portfolio', 'classroom',
 ]);
 Handlebars.registerHelper('ifNext', function (this: unknown, framework: string, options: Handlebars.HelperOptions) {
   return NEXT_LIKE.has(framework) ? options.fn(this) : options.inverse(this);
@@ -29,7 +29,7 @@ export interface TemplateContext {
   projectName: string;
   businessName: string;
   description: string;
-  framework: 'nextjs' | 'react-vite' | 'plain' | 'saas' | 'marketplace' | 'agent' | 'content' | 'dashboard';
+  framework: 'nextjs' | 'react-vite' | 'plain' | 'saas' | 'marketplace' | 'agent' | 'content' | 'dashboard' | 'portfolio' | 'classroom';
   typescript: boolean;
   packageManager: PackageManager;
   publishableKey: string;

@@ -1,0 +1,113 @@
+'use client';
+
+import { use, useEffect, useState } from 'react';
+
+/**
+ * Presenter view — `/projects/[id]/present`.
+ *
+ * The student opens this on their second screen (or a phone next
+ * to the laptop) and presents. As the audience submits feedback
+ * via /projects/[id]/feedback, responses fade in here in real
+ * time — newest first, color-coded by the scale rating.
+ *
+ * Real implementations:
+ *  - Replace the mock interval with a polling fetch (every 3-5s)
+ *    against your backend, OR a websocket / SSE stream.
+ *  - Persist responses to your DB so the project can reiterate
+ *    over multiple cohorts.
+ */
+
+interface FeedbackEntry {
+  id: string;
+  oneThing: string;
+  stuck: string;
+  scale: number;
+  receivedAt: number;
+}
+
+const MOCK_FEEDBACK: FeedbackEntry[] = [
+  { id: 'a', oneThing: 'The slide on supply chain bottlenecks', stuck: 'How do you measure trust at scale?', scale: 9, receivedAt: Date.now() - 60_000 },
+  { id: 'b', oneThing: 'Loved the bilingual UX argument',       stuck: 'What about Mexican misceláneas?',     scale: 8, receivedAt: Date.now() - 120_000 },
+];
+
+export default function PresenterPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const [feedback, setFeedback] = useState<FeedbackEntry[]>(MOCK_FEEDBACK);
+
+  // Simulated incoming feedback. Replace with a real fetch poll or
+  // websocket subscription. The shape is the same.
+  useEffect(() => {
+    const t = setInterval(() => {
+      // setFeedback((prev) => [{ ...newOne, id: crypto.randomUUID() }, ...prev]);
+    }, 5000);
+    return () => clearInterval(t);
+  }, []);
+
+  const audienceUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/projects/${id}/feedback`
+    : `/projects/${id}/feedback`;
+
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: '100vh', padding: 'var(--space-6) var(--space-4)' }}>
+      <div style=\{{ maxWidth: '64rem', margin: '0 auto' }}>
+        <header style=\{{
+          padding: 'var(--space-5)',
+          borderRadius: 'var(--radius-md, 0.5rem)',
+          background: 'var(--surface-sub)',
+          marginBottom: 'var(--space-6)',
+          textAlign: 'center',
+        }}>
+          <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem', marginBottom: 'var(--space-2)' }}>
+            Audience submits feedback at:
+          </p>
+          <code style=\{{
+            fontSize: '1.25rem',
+            fontFamily: 'var(--font-mono, monospace)',
+            color: 'var(--primary)',
+            wordBreak: 'break-all',
+          }}>
+            {audienceUrl}
+          </code>
+        </header>
+
+        <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '1.75rem', marginBottom: 'var(--space-4)' }}>
+          Live feedback ({feedback.length})
+        </h1>
+
+        <ul style=\{{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+          {feedback.map((f) => (
+            <li key={f.id} style=\{{
+              padding: 'var(--space-5)',
+              borderRadius: 'var(--radius-md, 0.5rem)',
+              border: `2px solid ${f.scale >= 8 ? 'var(--success)' : f.scale >= 5 ? 'var(--info)' : 'var(--warn)'}`,
+              background: 'var(--surface)',
+            }}>
+              <div style=\{{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+                <div style=\{{ flex: 1 }}>
+                  <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginBottom: 'var(--space-1)' }}>What landed</div>
+                  <div style=\{{ fontWeight: 600 }}>{f.oneThing}</div>
+                </div>
+                <div style=\{{
+                  padding: 'var(--space-1) var(--space-3)',
+                  borderRadius: 'var(--radius-full, 9999px)',
+                  background: f.scale >= 8 ? 'var(--success)' : f.scale >= 5 ? 'var(--info)' : 'var(--warn)',
+                  color: 'var(--bg)',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                }}>
+                  {f.scale}/10
+                </div>
+              </div>
+              {f.stuck && (
+                <div style=\{{ marginTop: 'var(--space-3)', paddingTop: 'var(--space-3)', borderTop: '1px solid var(--border)' }}>
+                  <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginBottom: 'var(--space-1)' }}>Wants more on</div>
+                  <div style=\{{ fontSize: '0.9375rem', color: 'var(--fg)' }}>{f.stuck}</div>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}

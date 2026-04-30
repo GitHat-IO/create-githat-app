@@ -16,10 +16,12 @@ dev`, and sees the platform working. No reading required.
 |---|---|---|---|---|
 | 1 | **plain** | `--plain` | Auth + a homepage. Smallest possible GitHat app. | "Hello world" |
 | 2 | **saas** | `--saas` | Orgs, teams, RBAC, subscription billing via Sebastn. | Clerk + Stripe + Vercel + a starter kit |
-| 3 | **marketplace** | `--marketplace` | Multi-vendor commerce. Anonymous-first browsing, auth-as-needed at checkout, Sebastn Connect for seller payouts. | Shopify + Stripe Connect + Vercel |
-| 4 | **ai-agent** | `--agent` | Web4 wallet-bound autonomous agent, MCP server registration, public verification at /verify. | LangChain Hub + a key-management tool |
-| 5 | **content** | `--content` | Paywalled posts, newsletter, one-time purchases via Sebastn. | Substack + Stripe + Ghost |
-| 6 | **dashboard** | `--dashboard` | Admin UI over your existing PostgreSQL / MySQL / DynamoDB, auth-gated. | Retool + Auth0 + Vercel |
+| 3 | **marketplace** | `--marketplace` | Multi-vendor commerce. Anonymous-first, Sebastn Connect. | Shopify + Stripe Connect + Vercel |
+| 4 | **content** | `--content` | Paywalled posts, newsletter, one-time purchases. | Substack + Stripe + Ghost |
+| 5 | **dashboard** | `--dashboard` | Auth-gated admin UI over your existing database. | Retool + Auth0 + Vercel |
+| 6 | **portfolio** | `--portfolio` | Personal site: public projects, auth-gated editor. | Linktree + Cargo + a static site generator |
+| 7 | **classroom** | `--classroom` | Live student presentations with real-time audience feedback. The PDF is dead. | A PDF + Google Forms + nothing |
+| 8 | **ai-agent** | `--agent` | Web4 wallet-bound autonomous agent, MCP server, public /verify. | LangChain Hub + a key-management tool |
 
 (`--ts` / `--js` and `-y` work for all six. `npx create-githat-app my-thing --<flag>` is the cold-start command.)
 

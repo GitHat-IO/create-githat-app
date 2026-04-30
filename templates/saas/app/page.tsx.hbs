@@ -1,123 +1,108 @@
 'use client';
 
-import { SignInButton, SignUpButton, UserButton, useAuth } from '@githat/nextjs';
+import Link from 'next/link';
+import { SignUpButton, useAuth } from '@githat/nextjs';
 
 /**
- * Plain GitHat homepage.
+ * SaaS landing page.
  *
- * No dashboard, no orgs, no agents — just one page that flips between
- * "signed out" and "signed in." The smallest possible example of "I
- * have GitHat wired up." Replace this file with whatever your app
- * actually does — auth keeps working.
+ * Replaces Clerk + Stripe + Vercel + a starter kit. Demonstrates:
+ *  - GitHat orgs & RBAC out of the box (owner / admin / member)
+ *  - Sebastn subscription billing wired to /admin/billing
+ *  - One-stack deploy (this same project deploys to GitHat hosting)
+ *
+ * The homepage is the conversion surface; the signed-in product
+ * lives under /admin.
  */
 export default function Home() {
-  const { isSignedIn, isLoading, user } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div
-        style=\{{
-          display: 'flex',
-          minHeight: 'calc(100vh - 64px)',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--fg-muted)',
-        }}
-      >
-        Loading…
-      </div>
-    );
-  }
+  const { isSignedIn } = useAuth();
 
   return (
-    <div
-      style=\{{
-        display: 'flex',
-        minHeight: 'calc(100vh - 64px)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'var(--space-8) var(--space-4)',
-        background: 'var(--bg)',
-      }}
-    >
-      <main
-        style=\{{
-          width: '100%',
-          maxWidth: '32rem',
-          textAlign: 'center',
-          color: 'var(--fg)',
-        }}
-      >
-        {!isSignedIn ? (
-          <>
-            <h1
-              style=\{{
-                fontFamily: 'var(--font-wordmark)',
-                fontSize: '2.5rem',
-                lineHeight: 1.1,
-                marginBottom: 'var(--space-3)',
-              }}
-            >
-              Welcome to {{businessName}}
-            </h1>
-            <p
-              style=\{{
-                color: 'var(--fg-muted)',
-                marginBottom: 'var(--space-6)',
-                lineHeight: 1.6,
-              }}
-            >
-              Sign in to continue, or create an account in 30 seconds.
-              We use GitHat for identity — your password never touches
-              this app.
-            </p>
-            <div
-              style=\{{
-                display: 'flex',
-                gap: 'var(--space-3)',
-                justifyContent: 'center',
-                flexWrap: 'wrap',
-              }}
-            >
-              <SignInButton />
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)' }}>
+      <section style=\{{
+        padding: 'var(--space-12) var(--space-4)',
+        textAlign: 'center',
+        maxWidth: '48rem',
+        margin: '0 auto',
+      }}>
+        <h1 style=\{{
+          fontFamily: 'var(--font-wordmark, Georgia, serif)',
+          fontSize: 'clamp(2rem, 5vw, 3rem)',
+          lineHeight: 1.1,
+          marginBottom: 'var(--space-3)',
+        }}>
+          {{businessName}}
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '1.25rem', marginBottom: 'var(--space-6)' }}>
+          The fastest way to ship a B2B product. Auth, teams, RBAC, and
+          subscription billing — wired up before you write a line.
+        </p>
+        <div style=\{{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'center', flexWrap: 'wrap' }}>
+          {!isSignedIn ? (
+            <>
               <SignUpButton />
-            </div>
-          </>
-        ) : (
-          <>
-            <div
-              style=\{{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'var(--space-4)',
-                marginBottom: 'var(--space-6)',
-              }}
-            >
-              <UserButton />
-              <h1
-                style=\{{
-                  fontFamily: 'var(--font-wordmark)',
-                  fontSize: '2rem',
-                  margin: 0,
-                }}
-              >
-                Hello{user?.name ? `, ${user.name}` : ''}.
-              </h1>
-            </div>
-            <p
-              style=\{{
-                color: 'var(--fg-muted)',
-                lineHeight: 1.6,
-              }}
-            >
-              That's it. The plain template doesn't ship a dashboard or
-              any other route — replace this page with whatever your
-              app actually does. Authentication will keep working.
-            </p>
-          </>
-        )}
-      </main>
+              <Link href="/pricing" style=\{{ alignSelf: 'center', color: 'var(--primary)' }}>
+                See pricing →
+              </Link>
+            </>
+          ) : (
+            <Link href="/admin" style=\{{
+              padding: 'var(--space-3) var(--space-6)',
+              borderRadius: 'var(--radius-md, 0.5rem)',
+              background: 'var(--primary)',
+              color: 'var(--bg)',
+              fontWeight: 600,
+              textDecoration: 'none',
+            }}>
+              Open dashboard →
+            </Link>
+          )}
+        </div>
+      </section>
+
+      <section style=\{{ padding: 'var(--space-8) var(--space-4)', background: 'var(--surface-sub)' }}>
+        <div style=\{{
+          maxWidth: '64rem',
+          margin: '0 auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 'var(--space-6)',
+        }}>
+          <Feature emoji="🏢" title="Orgs & teams" body="Create organisations, invite teammates, assign roles. RBAC built in (owner, admin, member)." />
+          <Feature emoji="💳" title="Subscriptions" body="Sebastn-powered billing — Stripe Checkout under the hood. Trials, plan changes, dunning, invoices, all handled." />
+          <Feature emoji="🚀" title="Ship in a weekend" body="Auth + payments + hosting are this one stack. No Vercel + Clerk + Stripe + a billing service to glue together." />
+        </div>
+      </section>
+
+      <section style=\{{ padding: 'var(--space-12) var(--space-4)', textAlign: 'center', maxWidth: '48rem', margin: '0 auto' }}>
+        <h2 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '1.75rem', marginBottom: 'var(--space-3)' }}>
+          Simple pricing
+        </h2>
+        <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-6)' }}>
+          Free tier for the team trying us out. Paid tiers for the team that's growing.
+          Three plans, no hidden fees.
+        </p>
+        <Link href="/pricing" style=\{{
+          display: 'inline-block',
+          padding: 'var(--space-3) var(--space-6)',
+          borderRadius: 'var(--radius-md, 0.5rem)',
+          border: '1px solid var(--border)',
+          color: 'var(--fg)',
+          textDecoration: 'none',
+        }}>
+          Compare plans →
+        </Link>
+      </section>
+    </div>
+  );
+}
+
+function Feature({ emoji, title, body }: { emoji: string; title: string; body: string }) {
+  return (
+    <div>
+      <div style=\{{ fontSize: '2rem', marginBottom: 'var(--space-2)' }} aria-hidden>{emoji}</div>
+      <h3 style=\{{ fontWeight: 600, marginBottom: 'var(--space-2)' }}>{title}</h3>
+      <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem' }}>{body}</p>
     </div>
   );
 }

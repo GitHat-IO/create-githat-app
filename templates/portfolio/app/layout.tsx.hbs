@@ -1,0 +1,41 @@
+import { GitHatProvider } from '@githat/nextjs';
+import '@githat/nextjs/styles';
+import './globals.css';
+
+export const metadata = {
+  title: '{{businessName}}',
+  description: '{{description}}',
+};
+
+export default function RootLayout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+  return (
+    <html lang="en">
+      <body>
+        {/*
+          Plain template: no @githat/ui dep, no Wordmark. The
+          full-kit (`nextjs`) template uses @githat/ui for the
+          shared design system; the plain scaffold is the smallest
+          working app, so we avoid extra deps.
+        */}
+        <GitHatProvider config=\{{
+          publishableKey: process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY || '',
+          signInUrl: '/sign-in',
+          signUpUrl: '/sign-up',
+          afterSignInUrl: '/',
+          afterSignOutUrl: '/',
+        }}>
+          <header style=\{{
+            padding: '1rem 1.5rem',
+            borderBottom: '1px solid var(--border, #e5e7eb)',
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+          }}>
+            <a href="/" style=\{{ textDecoration: 'none', color: 'inherit', fontWeight: 600 }}>
+              {{businessName}}
+            </a>
+          </header>
+          <main>{children}</main>
+        </GitHatProvider>
+      </body>
+    </html>
+  );
+}

@@ -1,0 +1,59 @@
+'use client';
+
+import Link from 'next/link';
+import { useAuth } from '@githat/nextjs';
+
+/**
+ * Auth-gated admin home — overview of every entity in your DB.
+ *
+ * The list is hardcoded for the starter. Real apps generate it
+ * from your schema (drizzle, prisma) or list it server-side via
+ * `listEntities()` from src/lib/db.ts.
+ */
+const ENTITIES = ['users', 'orders', 'invoices', 'products'];
+
+export default function AdminPage() {
+  const { isSignedIn, isLoading } = useAuth();
+
+  if (isLoading) return <div style=\{{ padding: 'var(--space-8)', color: 'var(--fg-muted)' }}>Loading…</div>;
+  if (!isSignedIn) {
+    return (
+      <div style=\{{ padding: 'var(--space-8)', textAlign: 'center' }}>
+        <p>Sign in to access admin.</p>
+        <Link href="/sign-in" style=\{{ color: 'var(--primary)' }}>Sign in →</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div style=\{{ padding: 'var(--space-8) var(--space-4)', maxWidth: '48rem', margin: '0 auto' }}>
+      <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-6)' }}>
+        Admin
+      </h1>
+      <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-6)' }}>
+        Pick an entity to browse. Edit src/lib/db.ts to point at your
+        real database.
+      </p>
+      <ul style=\{{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 'var(--space-3)' }}>
+        {ENTITIES.map((e) => (
+          <li key={e}>
+            <Link href={`/admin/data/${e}`} style=\{{
+              display: 'block',
+              padding: 'var(--space-4)',
+              borderRadius: 'var(--radius-md, 0.5rem)',
+              border: '1px solid var(--border)',
+              background: 'var(--surface)',
+              color: 'var(--fg)',
+              textDecoration: 'none',
+            }}>
+              <div style=\{{ fontWeight: 600 }}>{e}</div>
+              <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-muted)', marginTop: 'var(--space-1)' }}>
+                Browse {e} →
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

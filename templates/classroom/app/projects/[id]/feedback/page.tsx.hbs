@@ -1,0 +1,159 @@
+'use client';
+
+import { use, useState } from 'react';
+import Link from 'next/link';
+
+/**
+ * Audience feedback form — `/projects/[id]/feedback`.
+ *
+ * Anyone with the link can fill this out. NO sign-in required —
+ * that's the whole point. Anonymous responses go to a queue the
+ * presenter watches in real time on /present.
+ *
+ * The form questions are deliberately short — long forms kill
+ * response rates and the value of this template is volume of
+ * feedback over time, not depth per response.
+ */
+export default function FeedbackPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const [submitted, setSubmitted] = useState(false);
+  const [oneThing, setOneThing] = useState('');
+  const [stuck, setStuck] = useState('');
+  const [scale, setScale] = useState(7);
+
+  if (submitted) {
+    return (
+      <div style=\{{
+        background: 'var(--bg)',
+        color: 'var(--fg)',
+        minHeight: 'calc(100vh - 64px)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'var(--space-4)',
+      }}>
+        <div style=\{{ maxWidth: '32rem', textAlign: 'center' }}>
+          <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-3)' }}>
+            ¡Gracias!
+          </h1>
+          <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-4)' }}>
+            The presenter sees your feedback live on their screen.
+            You can submit again with a new thought any time.
+          </p>
+          <button
+            onClick={() => { setSubmitted(false); setOneThing(''); setStuck(''); setScale(7); }}
+            style=\{{
+              padding: 'var(--space-3) var(--space-5)',
+              borderRadius: 'var(--radius-md, 0.5rem)',
+              background: 'var(--primary)',
+              color: 'var(--bg)',
+              border: 'none',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Add another thought
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)', padding: 'var(--space-8) var(--space-4)' }}>
+      <div style=\{{ maxWidth: '32rem', margin: '0 auto' }}>
+        <Link href={`/projects/${id}`} style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem', display: 'inline-block', marginBottom: 'var(--space-4)' }}>
+          ← Project
+        </Link>
+        <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '1.75rem', marginBottom: 'var(--space-2)' }}>
+          Tell them what you think
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-6)' }}>
+          No account, no email. Just three quick questions while
+          they're presenting.
+        </p>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            /* TODO: POST /api/projects/[id]/feedback { oneThing, stuck, scale } */
+            setSubmitted(true);
+          }}
+          style=\{{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}
+        >
+          <Field label="One thing that landed for you">
+            <input
+              type="text"
+              required
+              value={oneThing}
+              onChange={(e) => setOneThing(e.target.value)}
+              placeholder="The thing you'll remember tomorrow"
+              style=\{{
+                width: '100%',
+                padding: 'var(--space-3)',
+                borderRadius: 'var(--radius-md, 0.5rem)',
+                border: '1px solid var(--border)',
+                background: 'var(--surface)',
+                color: 'var(--fg)',
+                fontSize: '1rem',
+              }}
+            />
+          </Field>
+
+          <Field label="One thing you'd want them to dig into more">
+            <textarea
+              value={stuck}
+              onChange={(e) => setStuck(e.target.value)}
+              rows={3}
+              placeholder="A question, a doubt, a what-if"
+              style=\{{
+                width: '100%',
+                padding: 'var(--space-3)',
+                borderRadius: 'var(--radius-md, 0.5rem)',
+                border: '1px solid var(--border)',
+                background: 'var(--surface)',
+                color: 'var(--fg)',
+                fontSize: '1rem',
+                fontFamily: 'inherit',
+                resize: 'vertical',
+              }}
+            />
+          </Field>
+
+          <Field label={`How likely are you to share this with someone? (${scale}/10)`}>
+            <input
+              type="range"
+              min={1}
+              max={10}
+              value={scale}
+              onChange={(e) => setScale(Number(e.target.value))}
+              style=\{{ width: '100%' }}
+            />
+          </Field>
+
+          <button type="submit" style=\{{
+            padding: 'var(--space-3) var(--space-5)',
+            borderRadius: 'var(--radius-md, 0.5rem)',
+            background: 'var(--primary)',
+            color: 'var(--bg)',
+            border: 'none',
+            fontWeight: 600,
+            fontSize: '1rem',
+            cursor: 'pointer',
+          }}>
+            Send feedback
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label style=\{{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+      <span style=\{{ fontSize: '0.875rem', fontWeight: 600 }}>{label}</span>
+      {children}
+    </label>
+  );
+}

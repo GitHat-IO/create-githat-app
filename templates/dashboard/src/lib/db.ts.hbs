@@ -1,0 +1,39 @@
+/**
+ * Database adapter — bring your own.
+ *
+ * The dashboard template stays database-agnostic on purpose. Pick
+ * whatever fits and replace the stubs below:
+ *
+ *   Postgres:   `import { Pool } from 'pg';`
+ *   DynamoDB:   `import { DynamoDBClient } from '@aws-sdk/client-dynamodb';`
+ *   MySQL:      `import mysql from 'mysql2/promise';`
+ *   Drizzle/Prisma: drop in your existing client
+ *
+ * Set DATABASE_URL in .env.local.
+ *
+ * The `listEntities` and `getEntity` shapes are what the routes
+ * under /admin/data expect — keep the function names so the UI
+ * keeps working when you swap the body.
+ */
+
+export interface EntityRow {
+  id: string;
+  [key: string]: unknown;
+}
+
+export async function listEntities(entity: string): Promise<EntityRow[]> {
+  // TODO: replace with your real query, e.g.
+  //   const { rows } = await pool.query('SELECT * FROM ' + entity + ' LIMIT 100');
+  //   return rows;
+  void entity;
+  return [
+    { id: '1', name: 'Sample row 1', createdAt: new Date().toISOString() },
+    { id: '2', name: 'Sample row 2', createdAt: new Date().toISOString() },
+  ];
+}
+
+export async function getEntity(entity: string, id: string): Promise<EntityRow | null> {
+  // TODO: replace with your real query
+  void entity;
+  return { id, name: 'Sample row', createdAt: new Date().toISOString() };
+}

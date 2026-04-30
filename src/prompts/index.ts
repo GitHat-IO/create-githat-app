@@ -27,7 +27,7 @@ function toDisplayName(projectName: string): string {
 }
 
 /** Templates that aren't the legacy `nextjs` full-kit. */
-type Template = 'plain' | 'saas' | 'marketplace' | 'agent' | 'content' | 'dashboard';
+type Template = 'plain' | 'saas' | 'marketplace' | 'agent' | 'content' | 'dashboard' | 'portfolio' | 'classroom';
 
 function getDefaults(
   projectName: string,

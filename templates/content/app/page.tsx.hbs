@@ -1,123 +1,105 @@
 'use client';
 
-import { SignInButton, SignUpButton, UserButton, useAuth } from '@githat/nextjs';
+import Link from 'next/link';
+import { useAuth } from '@githat/nextjs';
 
 /**
- * Plain GitHat homepage.
+ * Content site homepage.
  *
- * No dashboard, no orgs, no agents — just one page that flips between
- * "signed out" and "signed in." The smallest possible example of "I
- * have GitHat wired up." Replace this file with whatever your app
- * actually does — auth keeps working.
+ * Replaces Substack + Stripe + a paywall plugin. Demonstrates:
+ *  - Free posts, paid posts, subscriber-only posts
+ *  - Sebastn for one-time tips and recurring subscriptions
+ *  - GitHat email for the newsletter
+ *
+ * Sample posts are hardcoded — replace with a fetch from your CMS,
+ * Markdown files, or a Postgres `posts` table.
  */
-export default function Home() {
-  const { isSignedIn, isLoading, user } = useAuth();
 
-  if (isLoading) {
-    return (
-      <div
-        style=\{{
-          display: 'flex',
-          minHeight: 'calc(100vh - 64px)',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--fg-muted)',
-        }}
-      >
-        Loading…
-      </div>
-    );
-  }
+const SAMPLE_POSTS = [
+  { slug: 'welcome',         title: 'Welcome to {{businessName}}',          excerpt: 'What this newsletter is about.',          gated: false },
+  { slug: 'first-deep-dive', title: 'Why I started this',                   excerpt: 'The one thing nobody told me.',           gated: false },
+  { slug: 'paid-essay-1',    title: 'Paid essay: the long version',         excerpt: 'For paid subscribers — the unfiltered take.', gated: true },
+];
+
+export default function Home() {
+  const { isSignedIn } = useAuth();
 
   return (
-    <div
-      style=\{{
-        display: 'flex',
-        minHeight: 'calc(100vh - 64px)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 'var(--space-8) var(--space-4)',
-        background: 'var(--bg)',
-      }}
-    >
-      <main
-        style=\{{
-          width: '100%',
-          maxWidth: '32rem',
-          textAlign: 'center',
-          color: 'var(--fg)',
-        }}
-      >
-        {!isSignedIn ? (
-          <>
-            <h1
-              style=\{{
-                fontFamily: 'var(--font-wordmark)',
-                fontSize: '2.5rem',
-                lineHeight: 1.1,
-                marginBottom: 'var(--space-3)',
-              }}
-            >
-              Welcome to {{businessName}}
-            </h1>
-            <p
-              style=\{{
-                color: 'var(--fg-muted)',
-                marginBottom: 'var(--space-6)',
-                lineHeight: 1.6,
-              }}
-            >
-              Sign in to continue, or create an account in 30 seconds.
-              We use GitHat for identity — your password never touches
-              this app.
-            </p>
-            <div
-              style=\{{
-                display: 'flex',
-                gap: 'var(--space-3)',
-                justifyContent: 'center',
-                flexWrap: 'wrap',
-              }}
-            >
-              <SignInButton />
-              <SignUpButton />
-            </div>
-          </>
-        ) : (
-          <>
-            <div
-              style=\{{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 'var(--space-4)',
-                marginBottom: 'var(--space-6)',
-              }}
-            >
-              <UserButton />
-              <h1
-                style=\{{
-                  fontFamily: 'var(--font-wordmark)',
-                  fontSize: '2rem',
-                  margin: 0,
-                }}
-              >
-                Hello{user?.name ? `, ${user.name}` : ''}.
-              </h1>
-            </div>
-            <p
-              style=\{{
-                color: 'var(--fg-muted)',
-                lineHeight: 1.6,
-              }}
-            >
-              That's it. The plain template doesn't ship a dashboard or
-              any other route — replace this page with whatever your
-              app actually does. Authentication will keep working.
-            </p>
-          </>
-        )}
-      </main>
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)' }}>
+      <section style=\{{
+        padding: 'var(--space-12) var(--space-4)',
+        textAlign: 'center',
+        maxWidth: '40rem',
+        margin: '0 auto',
+      }}>
+        <h1 style=\{{
+          fontFamily: 'var(--font-wordmark, Georgia, serif)',
+          fontSize: 'clamp(2rem, 5vw, 3rem)',
+          lineHeight: 1.1,
+          marginBottom: 'var(--space-3)',
+        }}>
+          {{businessName}}
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '1.125rem', marginBottom: 'var(--space-6)' }}>
+          {{description}}
+        </p>
+        <Link href="/newsletter" style=\{{
+          display: 'inline-block',
+          padding: 'var(--space-3) var(--space-6)',
+          borderRadius: 'var(--radius-md, 0.5rem)',
+          background: 'var(--primary)',
+          color: 'var(--bg)',
+          fontWeight: 600,
+          textDecoration: 'none',
+        }}>
+          Subscribe to the newsletter →
+        </Link>
+      </section>
+
+      <section style=\{{ padding: 'var(--space-8) var(--space-4)', maxWidth: '48rem', margin: '0 auto' }}>
+        <h2 style=\{{ fontSize: '1.5rem', marginBottom: 'var(--space-4)' }}>Recent posts</h2>
+        <ul style=\{{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+          {SAMPLE_POSTS.map((post) => (
+            <li key={post.slug}>
+              <Link href={`/posts/${post.slug}`} style=\{{
+                display: 'block',
+                padding: 'var(--space-5)',
+                borderRadius: 'var(--radius-md, 0.5rem)',
+                border: '1px solid var(--border)',
+                background: 'var(--surface)',
+                color: 'var(--fg)',
+                textDecoration: 'none',
+              }}>
+                <div style=\{{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-2)' }}>
+                  <h3 style=\{{ fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>{post.title}</h3>
+                  {post.gated && (
+                    <span style=\{{
+                      padding: '2px var(--space-2)',
+                      borderRadius: 'var(--radius-full, 9999px)',
+                      background: 'var(--accent)',
+                      color: 'var(--bg)',
+                      fontSize: '0.625rem',
+                      fontWeight: 700,
+                    }}>
+                      PAID
+                    </span>
+                  )}
+                </div>
+                <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem' }}>{post.excerpt}</p>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {!isSignedIn && (
+        <section style=\{{ padding: 'var(--space-8) var(--space-4)', background: 'var(--surface-sub)', textAlign: 'center' }}>
+          <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-3)' }}>
+            Already a subscriber?
+          </p>
+          <Link href="/sign-in" style=\{{ color: 'var(--primary)' }}>Sign in →</Link>
+        </section>
+      )}
     </div>
   );
 }

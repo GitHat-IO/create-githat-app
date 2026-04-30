@@ -29,6 +29,8 @@ program
   .option('--agent',       'Web4 wallet-bound autonomous agent + MCP server registration.')
   .option('--content',     'Paywalled posts, newsletter, one-time purchases via Sebastn.')
   .option('--dashboard',   'Admin UI over your existing database, auth-gated.')
+  .option('--portfolio',   'Personal portfolio: public projects, auth-gated editor.')
+  .option('--classroom',   'Live student presentations with real-time audience feedback.')
   .option('--fullstack', 'Create fullstack project (Turborepo)')
   .option('--backend <framework>', 'Backend framework (hono, express, fastify)')
   .option('-y, --yes', 'Skip prompts and use defaults')
@@ -42,6 +44,8 @@ program
     agent?: boolean;
     content?: boolean;
     dashboard?: boolean;
+    portfolio?: boolean;
+    classroom?: boolean;
     fullstack?: boolean;
     backend?: string;
     yes?: boolean;
@@ -83,6 +87,8 @@ program
       // Resolve the chosen template flag (last-wins if multiple are set).
       const template =
         opts.marketplace ? 'marketplace' :
+        opts.classroom   ? 'classroom' :
+        opts.portfolio   ? 'portfolio' :
         opts.agent       ? 'agent' :
         opts.saas        ? 'saas' :
         opts.content     ? 'content' :

@@ -1,0 +1,90 @@
+'use client';
+
+import { useState } from 'react';
+
+/**
+ * Free newsletter sign-up.
+ *
+ * Newsletters work without a GitHat account — readers just give an
+ * email. Real apps POST to /api/newsletter/subscribe which calls
+ * GitHat's POST /email/send to confirm + your audience-of-record
+ * (Postgres `subscribers` table, MailerLite, etc.).
+ *
+ * Keep this page simple — adding fields kills conversion.
+ */
+export default function NewsletterPage() {
+  const [email, setEmail] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+
+  return (
+    <div style=\{{
+      background: 'var(--bg)',
+      color: 'var(--fg)',
+      minHeight: 'calc(100vh - 64px)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 'var(--space-4)',
+    }}>
+      <div style=\{{ maxWidth: '32rem', width: '100%', textAlign: 'center' }}>
+        {submitted ? (
+          <>
+            <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-3)' }}>
+              Check your inbox
+            </h1>
+            <p style=\{{ color: 'var(--fg-muted)' }}>
+              We sent a confirmation to <strong>{email}</strong>. Click the link
+              and you'll get the next post when it ships.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-3)' }}>
+              Get the newsletter
+            </h1>
+            <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-6)' }}>
+              Free posts, occasional extras. Unsubscribe any time.
+            </p>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                /* TODO: POST /api/newsletter/subscribe { email } */
+                setSubmitted(true);
+              }}
+              style=\{{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap', justifyContent: 'center' }}
+            >
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                style=\{{
+                  flex: '1 1 240px',
+                  padding: 'var(--space-3) var(--space-4)',
+                  borderRadius: 'var(--radius-md, 0.5rem)',
+                  border: '1px solid var(--border)',
+                  background: 'var(--surface)',
+                  color: 'var(--fg)',
+                  fontSize: '1rem',
+                }}
+              />
+              <button type="submit" style=\{{
+                padding: 'var(--space-3) var(--space-6)',
+                borderRadius: 'var(--radius-md, 0.5rem)',
+                border: 'none',
+                background: 'var(--primary)',
+                color: 'var(--bg)',
+                fontWeight: 600,
+                fontSize: '1rem',
+                cursor: 'pointer',
+              }}>
+                Subscribe
+              </button>
+            </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

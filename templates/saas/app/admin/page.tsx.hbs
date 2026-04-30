@@ -1,0 +1,106 @@
+'use client';
+
+import Link from 'next/link';
+import { useAuth } from '@githat/nextjs';
+
+/**
+ * Admin dashboard — auth-gated.
+ *
+ * Three tiles a B2B operator looks at on Monday morning:
+ *   1. Active members on the org
+ *   2. Subscription status (trial / active / past-due / canceled)
+ *   3. Usage against plan limits (seats, storage, API calls)
+ *
+ * Tile data is hardcoded in the starter — wire to your data layer.
+ * Real org info comes from useGitHat().org once the user has joined
+ * or created an org.
+ */
+export default function AdminPage() {
+  const { isSignedIn, user, isLoading } = useAuth();
+
+  if (isLoading) return <Loading />;
+  if (!isSignedIn) return <SignInPrompt />;
+
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)' }}>
+      <div style=\{{ maxWidth: '64rem', margin: '0 auto', padding: 'var(--space-8) var(--space-4)' }}>
+        <header style=\{{ marginBottom: 'var(--space-8)' }}>
+          <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-2)' }}>
+            Welcome back{user?.name ? `, ${user.name}` : ''}
+          </h1>
+          <p style=\{{ color: 'var(--fg-muted)' }}>
+            Your org dashboard. Wire each tile to real data.
+          </p>
+        </header>
+
+        <div style=\{{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 'var(--space-4)',
+          marginBottom: 'var(--space-8)',
+        }}>
+          <Tile label="Members" value="—" hint="Active org members" />
+          <Tile label="Plan" value="Trial" hint="14 days remaining" />
+          <Tile label="Usage" value="—" hint="API calls this month" />
+        </div>
+
+        <nav style=\{{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 'var(--space-3)',
+        }}>
+          <AdminLink href="/admin/team"     title="Team"     hint="Invite members, set roles" />
+          <AdminLink href="/admin/billing"  title="Billing"  hint="Subscription, invoices, payment method" />
+          <AdminLink href="/admin/settings" title="Settings" hint="Org name, custom domain, branding" />
+        </nav>
+      </div>
+    </div>
+  );
+}
+
+function Tile({ label, value, hint }: { label: string; value: string; hint: string }) {
+  return (
+    <div style=\{{
+      padding: 'var(--space-5)',
+      borderRadius: 'var(--radius-md, 0.5rem)',
+      border: '1px solid var(--border)',
+      background: 'var(--surface)',
+    }}>
+      <div style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)', marginBottom: 'var(--space-1)' }}>{label}</div>
+      <div style=\{{ fontSize: '2rem', fontWeight: 600 }}>{value}</div>
+      <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-subtle)', marginTop: 'var(--space-1)' }}>{hint}</div>
+    </div>
+  );
+}
+
+function AdminLink({ href, title, hint }: { href: string; title: string; hint: string }) {
+  return (
+    <Link href={href} style=\{{
+      display: 'block',
+      padding: 'var(--space-5)',
+      borderRadius: 'var(--radius-md, 0.5rem)',
+      border: '1px solid var(--border)',
+      background: 'var(--surface)',
+      color: 'var(--fg)',
+      textDecoration: 'none',
+    }}>
+      <div style=\{{ fontWeight: 600, marginBottom: 'var(--space-1)' }}>{title} →</div>
+      <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-muted)' }}>{hint}</div>
+    </Link>
+  );
+}
+
+function Loading() {
+  return <div style=\{{ display: 'flex', minHeight: 'calc(100vh - 64px)', alignItems: 'center', justifyContent: 'center', color: 'var(--fg-muted)' }}>Loading…</div>;
+}
+
+function SignInPrompt() {
+  return (
+    <div style=\{{ display: 'flex', minHeight: 'calc(100vh - 64px)', alignItems: 'center', justifyContent: 'center' }}>
+      <div style=\{{ textAlign: 'center' }}>
+        <h2 style=\{{ marginBottom: 'var(--space-3)' }}>Sign in to continue</h2>
+        <Link href="/sign-in" style=\{{ color: 'var(--primary)' }}>Sign in →</Link>
+      </div>
+    </div>
+  );
+}

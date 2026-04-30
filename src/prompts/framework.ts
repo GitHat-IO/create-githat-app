@@ -2,7 +2,7 @@ import * as p from '@clack/prompts';
 import { detectPackageManager, type PackageManager } from '../utils/package-manager.js';
 
 export interface FrameworkAnswers {
-  framework: 'nextjs' | 'react-vite' | 'plain' | 'saas' | 'marketplace' | 'agent' | 'content' | 'dashboard';
+  framework: 'nextjs' | 'react-vite' | 'plain' | 'saas' | 'marketplace' | 'agent' | 'content' | 'dashboard' | 'portfolio' | 'classroom';
   typescript: boolean;
   packageManager: PackageManager;
 }
@@ -20,10 +20,12 @@ export async function promptFramework(typescriptOverride?: boolean, isFullstack?
     : [
         { value: 'plain',       label: 'Plain',       hint: 'Auth + a homepage. Smallest possible GitHat app.' },
         { value: 'saas',        label: 'SaaS',        hint: 'Orgs, teams, RBAC, subscription billing. Replaces Clerk + Stripe.' },
-        { value: 'marketplace', label: 'Marketplace', hint: 'Multi-vendor commerce. Anonymous-first browsing, Sebastn Connect.' },
-        { value: 'agent',       label: 'AI Agent',    hint: 'Web4 wallet-bound agent + MCP server. Public verification.' },
-        { value: 'content',     label: 'Content',     hint: 'Paywalled posts, newsletter, one-time purchases. Replaces Substack.' },
+        { value: 'marketplace', label: 'Marketplace', hint: 'Multi-vendor commerce. Anonymous-first, Sebastn Connect.' },
+        { value: 'content',     label: 'Content',     hint: 'Paywalled posts, newsletter. Replaces Substack.' },
         { value: 'dashboard',   label: 'Dashboard',   hint: 'Auth-gated admin UI over your existing database.' },
+        { value: 'portfolio',   label: 'Portfolio',   hint: 'Personal site: public projects, auth-gated editor.' },
+        { value: 'classroom',   label: 'Classroom',   hint: 'Live student presentations + real-time audience feedback.' },
+        { value: 'agent',       label: 'AI Agent',    hint: 'Web4 wallet-bound agent + MCP server. Public verification.' },
         { value: 'nextjs',      label: 'Next.js (full kit)', hint: 'Legacy: dashboard + orgs + agents + MCP scaffolding.' },
         { value: 'react-vite',  label: 'React + Vite', hint: 'SPA · client-side routing.' },
       ];

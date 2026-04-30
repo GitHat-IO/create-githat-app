@@ -62,7 +62,7 @@ export async function scaffold(
   //    the same .env.local shape, so the registration call is the
   //    same. No-ops gracefully if offline/unauthenticated.
   const NEXT_LIKE = new Set<string>([
-    'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard',
+    'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard', 'portfolio', 'classroom',
   ]);
   if (!isFullstack && NEXT_LIKE.has(context.framework)) {
     await registerApp(context.projectName, root);
