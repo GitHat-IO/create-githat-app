@@ -21,11 +21,31 @@ program
   .option('--key <key>', 'GitHat publishable key (pk_live_...)')
   .option('--ts', 'Use TypeScript (default)')
   .option('--js', 'Use JavaScript')
-  .option('--plain', 'Smallest scaffold: auth + a homepage. No dashboard, no orgs.')
+  // Six template flags. Pick one — they're mutually exclusive.
+  // See TEMPLATES.md in this repo for the full lineup and what each demonstrates.
+  .option('--plain',       'Smallest scaffold: auth + a homepage. No dashboard.')
+  .option('--saas',        'B2B starter: orgs, teams, RBAC, subscription billing.')
+  .option('--marketplace', 'Multi-vendor commerce: anonymous-first browsing, Sebastn Connect.')
+  .option('--agent',       'Web4 wallet-bound autonomous agent + MCP server registration.')
+  .option('--content',     'Paywalled posts, newsletter, one-time purchases via Sebastn.')
+  .option('--dashboard',   'Admin UI over your existing database, auth-gated.')
   .option('--fullstack', 'Create fullstack project (Turborepo)')
   .option('--backend <framework>', 'Backend framework (hono, express, fastify)')
   .option('-y, --yes', 'Skip prompts and use defaults')
-  .action(async (projectName: string | undefined, opts: { key?: string; ts?: boolean; js?: boolean; plain?: boolean; fullstack?: boolean; backend?: string; yes?: boolean }) => {
+  .action(async (projectName: string | undefined, opts: {
+    key?: string;
+    ts?: boolean;
+    js?: boolean;
+    plain?: boolean;
+    saas?: boolean;
+    marketplace?: boolean;
+    agent?: boolean;
+    content?: boolean;
+    dashboard?: boolean;
+    fullstack?: boolean;
+    backend?: string;
+    yes?: boolean;
+  }) => {
     try {
       displayBanner();
 
@@ -60,12 +80,22 @@ program
         process.exit(1);
       }
 
+      // Resolve the chosen template flag (last-wins if multiple are set).
+      const template =
+        opts.marketplace ? 'marketplace' :
+        opts.agent       ? 'agent' :
+        opts.saas        ? 'saas' :
+        opts.content     ? 'content' :
+        opts.dashboard   ? 'dashboard' :
+        opts.plain       ? 'plain' :
+        undefined;
+
       const answers = await runPrompts({
         initialName: projectName,
         publishableKey: opts.key,
         typescript,
         yes: opts.yes,
-        plain: opts.plain,
+        template,
         fullstack: opts.fullstack,
         backendFramework: opts.backend as 'hono' | 'express' | 'fastify' | undefined,
       });

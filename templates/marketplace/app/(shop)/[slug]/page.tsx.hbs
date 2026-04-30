@@ -1,0 +1,90 @@
+/**
+ * A single colmadero's storefront — `/<slug>`.
+ *
+ * Server component. Take the slug, fetch the colmado's profile +
+ * products from your data layer, render. The starter ships static
+ * sample content so the route renders even without a backend.
+ *
+ * Real implementations:
+ *  - Read by slug from your `colmados` table (Postgres, DynamoDB,
+ *    whatever)
+ *  - 404 via `notFound()` from 'next/navigation' if the slug is
+ *    unknown
+ *  - Pre-render the popular ones via `generateStaticParams()`
+ */
+
+import Link from 'next/link';
+
+interface PageProps {
+  params: Promise<{ slug: string }>;
+}
+
+export default async function ShopPage({ params }: PageProps) {
+  const { slug } = await params;
+
+  // TODO: replace with a real fetch
+  const colmado = {
+    name: 'Colmado de ejemplo',
+    slug,
+    owner: 'Don Tito',
+    address: 'Calle Duarte #42',
+    open: true,
+    products: [
+      { id: '1', name: 'Plátanos verdes (libra)', price: 0.5, fresh: true },
+      { id: '2', name: 'Café Santo Domingo (1lb)', price: 6.99, fresh: false },
+      { id: '3', name: 'Salami Induveca', price: 4.5, fresh: false },
+      { id: '4', name: 'Recarga Claro $5', price: 5.0, fresh: false },
+    ],
+  };
+
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)' }}>
+      <div style=\{{ maxWidth: '48rem', margin: '0 auto', padding: 'var(--space-8) var(--space-4)' }}>
+        <header style=\{{ marginBottom: 'var(--space-8)' }}>
+          <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2.25rem', marginBottom: 'var(--space-2)' }}>
+            {colmado.name}
+          </h1>
+          <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-2)' }}>
+            Tu colmadero: <strong>{colmado.owner}</strong>
+          </p>
+          <p style=\{{ color: 'var(--fg-subtle)', fontSize: '0.875rem', display: 'flex', gap: 'var(--space-3)', alignItems: 'center' }}>
+            <span>{colmado.address}</span>
+            <span>·</span>
+            <span style=\{{ color: colmado.open ? 'var(--success)' : 'var(--danger)' }}>
+              {colmado.open ? 'Abierto ahorita' : 'Cerrado'}
+            </span>
+          </p>
+        </header>
+
+        <section>
+          <h2 style=\{{ fontSize: '1.5rem', marginBottom: 'var(--space-4)' }}>Productos</h2>
+          <ul style=\{{ listStyle: 'none', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 'var(--space-3)' }}>
+            {colmado.products.map((p) => (
+              <li key={p.id}>
+                <Link href={`/${slug}/p/${p.id}`} style=\{{
+                  display: 'block',
+                  padding: 'var(--space-4)',
+                  borderRadius: 'var(--radius-md, 0.5rem)',
+                  border: '1px solid var(--border)',
+                  background: 'var(--surface)',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                }}>
+                  <div style=\{{ fontWeight: 600, marginBottom: 'var(--space-1)' }}>{p.name}</div>
+                  {p.fresh && (
+                    <div style=\{{ fontSize: '0.75rem', color: 'var(--success)', marginBottom: 'var(--space-1)' }}>
+                      Está fresquecito
+                    </div>
+                  )}
+                  <div style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)' }}>
+                    ${p.price.toFixed(2)}
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+    </div>
+  );
+}

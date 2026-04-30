@@ -1,0 +1,78 @@
+import Link from 'next/link';
+
+/**
+ * Seller pitch page — `/sell`.
+ *
+ * Bodega owners land here from the homepage CTA "Vende en
+ * {{businessName}}." The job of this page is to convince a small
+ * shop owner — often someone who's never used a SaaS — that the
+ * platform is worth five minutes of their time.
+ *
+ * Three commitments worth making explicit:
+ *  1. They keep 96% (we take 4% as the platform fee)
+ *  2. Sebastn handles payouts directly to their bank
+ *  3. No lock-in — they can leave any time
+ */
+export default function SellPage() {
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)' }}>
+      <section style=\{{ padding: 'var(--space-12) var(--space-4)', textAlign: 'center', maxWidth: '48rem', margin: '0 auto' }}>
+        <h1 style=\{{
+          fontFamily: 'var(--font-wordmark)',
+          fontSize: 'clamp(2rem, 5vw, 3rem)',
+          lineHeight: 1.1,
+          marginBottom: 'var(--space-3)',
+        }}>
+          Tu colmado, online en 5 minutos.
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '1.125rem', marginBottom: 'var(--space-6)' }}>
+          Take orders from your block, take payment to your bank. We handle
+          the website, the cart, the receipts. You handle the colmado.
+        </p>
+        <Link href="/sign-up?role=seller" style=\{{
+          display: 'inline-block',
+          padding: 'var(--space-4) var(--space-8)',
+          borderRadius: 'var(--radius-md, 0.5rem)',
+          background: 'var(--primary)',
+          color: 'var(--bg)',
+          fontWeight: 600,
+          fontSize: '1.125rem',
+          textDecoration: 'none',
+        }}>
+          Empieza gratis →
+        </Link>
+      </section>
+
+      <section style=\{{ padding: 'var(--space-8) var(--space-4)', background: 'var(--surface-sub)' }}>
+        <div style=\{{ maxWidth: '48rem', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-6)' }}>
+          <Promise emoji="💵" title="Te quedas con el 96%" body="We take a flat 4% on each order. No monthly fee on the free tier. No surprise charges." />
+          <Promise emoji="🏦" title="Pagos directo a tu cuenta" body="Sebastn pays you to your bank the next business day. You keep your existing bank account." />
+          <Promise emoji="🚪" title="Sin contratos" body="Cancel any time. Export your customers, your products, your orders. They're yours." />
+        </div>
+      </section>
+
+      <section style=\{{ padding: 'var(--space-12) var(--space-4)', textAlign: 'center', maxWidth: '40rem', margin: '0 auto' }}>
+        <h2 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '1.75rem', marginBottom: 'var(--space-3)' }}>
+          ¿Cómo funciona?
+        </h2>
+        <ol style=\{{ textAlign: 'left', color: 'var(--fg-muted)', lineHeight: 1.8, paddingLeft: 'var(--space-6)' }}>
+          <li>Te creas tu cuenta de {{businessName}} (es gratis).</li>
+          <li>Conectas tu banco (a través de Sebastn).</li>
+          <li>Subes tus productos — o los importas de un CSV.</li>
+          <li>Tu colmado vive en <code>{{businessName}}/tu-tienda</code>.</li>
+          <li>Los pedidos te llegan por email. Tú decides cómo entregar.</li>
+        </ol>
+      </section>
+    </div>
+  );
+}
+
+function Promise({ emoji, title, body }: { emoji: string; title: string; body: string }) {
+  return (
+    <div>
+      <div style=\{{ fontSize: '2rem', marginBottom: 'var(--space-2)' }} aria-hidden>{emoji}</div>
+      <h3 style=\{{ fontWeight: 600, marginBottom: 'var(--space-2)' }}>{title}</h3>
+      <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem' }}>{body}</p>
+    </div>
+  );
+}

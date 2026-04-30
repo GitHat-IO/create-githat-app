@@ -1,0 +1,95 @@
+'use client';
+
+import { useAuth } from '@githat/nextjs';
+
+/**
+ * Seller dashboard — `/admin`.
+ *
+ * Auth-gated: a logged-in colmadero lands here to manage products,
+ * orders, hours, and bank payouts. This is a placeholder shell —
+ * wire the data fetches in your own backend.
+ *
+ * The four sections below mirror what a real bodega owner asks first:
+ *   1. ¿Quién me debe? (today's pending orders)
+ *   2. ¿Qué se está vendiendo? (this week's revenue)
+ *   3. ¿Qué tengo en stock? (inventory)
+ *   4. ¿Cuándo me pagan? (next payout date)
+ */
+export default function AdminPage() {
+  const { isSignedIn, user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+  if (!isSignedIn) {
+    return <SignInPrompt />;
+  }
+
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)' }}>
+      <div style=\{{ maxWidth: '64rem', margin: '0 auto', padding: 'var(--space-8) var(--space-4)' }}>
+        <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-2)' }}>
+          Hola, {user?.name || 'colmadero'}.
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-8)' }}>
+          Esto es lo que está pasando hoy en tu colmado.
+        </p>
+
+        <div style=\{{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 'var(--space-4)',
+        }}>
+          <Stat label="Pedidos pendientes" value="—" hint="Today's open orders" />
+          <Stat label="Ventas esta semana" value="$—" hint="This week's revenue" />
+          <Stat label="Productos activos" value="—" hint="In stock right now" />
+          <Stat label="Próximo pago" value="—" hint="Next bank payout" />
+        </div>
+
+        <p style=\{{ marginTop: 'var(--space-12)', fontSize: '0.875rem', color: 'var(--fg-subtle)' }}>
+          This dashboard is a starter shell — wire each tile to your
+          real data layer (Postgres, DynamoDB, Sebastn webhooks).
+          See <code>src/lib/anon-session.ts</code> for the cart-side
+          model.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function Stat({ label, value, hint }: { label: string; value: string; hint: string }) {
+  return (
+    <div style=\{{
+      padding: 'var(--space-5)',
+      borderRadius: 'var(--radius-md, 0.5rem)',
+      border: '1px solid var(--border)',
+      background: 'var(--surface)',
+    }}>
+      <div style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)', marginBottom: 'var(--space-1)' }}>{label}</div>
+      <div style=\{{ fontSize: '2rem', fontWeight: 600, marginBottom: 'var(--space-1)' }}>{value}</div>
+      <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>{hint}</div>
+    </div>
+  );
+}
+
+function Loading() {
+  return (
+    <div style=\{{ display: 'flex', minHeight: 'calc(100vh - 64px)', alignItems: 'center', justifyContent: 'center', color: 'var(--fg-muted)' }}>
+      Un momentico…
+    </div>
+  );
+}
+
+function SignInPrompt() {
+  return (
+    <div style=\{{ display: 'flex', minHeight: 'calc(100vh - 64px)', alignItems: 'center', justifyContent: 'center' }}>
+      <div style=\{{ textAlign: 'center', maxWidth: '24rem' }}>
+        <h2 style=\{{ fontFamily: 'var(--font-wordmark)', marginBottom: 'var(--space-3)' }}>Inicia sesión</h2>
+        <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-4)' }}>
+          Sign in to see your colmado's dashboard.
+        </p>
+        <a href="/sign-in" style=\{{ color: 'var(--primary)' }}>Sign in →</a>
+      </div>
+    </div>
+  );
+}

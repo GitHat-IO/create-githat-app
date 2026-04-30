@@ -1,0 +1,123 @@
+'use client';
+
+import { SignInButton, SignUpButton, UserButton, useAuth } from '@githat/nextjs';
+
+/**
+ * Plain GitHat homepage.
+ *
+ * No dashboard, no orgs, no agents — just one page that flips between
+ * "signed out" and "signed in." The smallest possible example of "I
+ * have GitHat wired up." Replace this file with whatever your app
+ * actually does — auth keeps working.
+ */
+export default function Home() {
+  const { isSignedIn, isLoading, user } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div
+        style=\{{
+          display: 'flex',
+          minHeight: 'calc(100vh - 64px)',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'var(--fg-muted)',
+        }}
+      >
+        Loading…
+      </div>
+    );
+  }
+
+  return (
+    <div
+      style=\{{
+        display: 'flex',
+        minHeight: 'calc(100vh - 64px)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'var(--space-8) var(--space-4)',
+        background: 'var(--bg)',
+      }}
+    >
+      <main
+        style=\{{
+          width: '100%',
+          maxWidth: '32rem',
+          textAlign: 'center',
+          color: 'var(--fg)',
+        }}
+      >
+        {!isSignedIn ? (
+          <>
+            <h1
+              style=\{{
+                fontFamily: 'var(--font-wordmark)',
+                fontSize: '2.5rem',
+                lineHeight: 1.1,
+                marginBottom: 'var(--space-3)',
+              }}
+            >
+              Welcome to {{businessName}}
+            </h1>
+            <p
+              style=\{{
+                color: 'var(--fg-muted)',
+                marginBottom: 'var(--space-6)',
+                lineHeight: 1.6,
+              }}
+            >
+              Sign in to continue, or create an account in 30 seconds.
+              We use GitHat for identity — your password never touches
+              this app.
+            </p>
+            <div
+              style=\{{
+                display: 'flex',
+                gap: 'var(--space-3)',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+              }}
+            >
+              <SignInButton />
+              <SignUpButton />
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              style=\{{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 'var(--space-4)',
+                marginBottom: 'var(--space-6)',
+              }}
+            >
+              <UserButton />
+              <h1
+                style=\{{
+                  fontFamily: 'var(--font-wordmark)',
+                  fontSize: '2rem',
+                  margin: 0,
+                }}
+              >
+                Hello{user?.name ? `, ${user.name}` : ''}.
+              </h1>
+            </div>
+            <p
+              style=\{{
+                color: 'var(--fg-muted)',
+                lineHeight: 1.6,
+              }}
+            >
+              That's it. The plain template doesn't ship a dashboard or
+              any other route — replace this page with whatever your
+              app actually does. Authentication will keep working.
+            </p>
+          </>
+        )}
+      </main>
+    </div>
+  );
+}

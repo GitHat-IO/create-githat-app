@@ -1,0 +1,77 @@
+import { GitHatProvider } from '@githat/nextjs';
+import '@githat/nextjs/styles';
+import Link from 'next/link';
+import './globals.css';
+
+export const metadata = {
+  title: '{{businessName}} — el colmado de tu barrio',
+  description: '{{description}}',
+};
+
+/**
+ * Root layout for the marketplace template.
+ *
+ * Header has three slots, in order of importance:
+ *   1. Wordmark (always visible)
+ *   2. Tu funda — cart icon, anonymous-aware
+ *   3. "Save my stuff" / Sign in — low contrast, never a gate
+ *
+ * The "Vende en {{businessName}}" link sits in the footer, not the
+ * header. Sellers are a small minority of visitors; shoppers come first.
+ */
+export default function RootLayout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+  return (
+    <html lang="es">
+      <body>
+        <GitHatProvider config=\{{
+          publishableKey: process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY || '',
+          signInUrl: '/sign-in',
+          signUpUrl: '/sign-up',
+          afterSignInUrl: '/',
+          afterSignOutUrl: '/',
+        }}>
+          <header style=\{{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: 'var(--space-4, 1rem) var(--space-6, 1.5rem)',
+            borderBottom: '1px solid var(--border, #e5e7eb)',
+            background: 'var(--surface, #fafafa)',
+          }}>
+            <Link href="/" style=\{{
+              fontFamily: 'var(--font-wordmark, Georgia, serif)',
+              fontSize: '1.5rem',
+              color: 'var(--fg, inherit)',
+              textDecoration: 'none',
+            }}>
+              {{businessName}}
+            </Link>
+            <nav style=\{{ display: 'flex', alignItems: 'center', gap: 'var(--space-4, 1rem)', fontSize: '0.875rem' }}>
+              <Link href="/cart" style=\{{ color: 'var(--fg, inherit)', textDecoration: 'none' }}>
+                Tu funda
+              </Link>
+              <Link href="/sign-in" style=\{{ color: 'var(--fg-subtle, #71717a)', textDecoration: 'none' }}>
+                Save my stuff
+              </Link>
+            </nav>
+          </header>
+          <main>{children}</main>
+          <footer style=\{{
+            padding: 'var(--space-6, 1.5rem)',
+            borderTop: '1px solid var(--border, #e5e7eb)',
+            fontSize: '0.75rem',
+            color: 'var(--fg-subtle, #71717a)',
+            textAlign: 'center',
+          }}>
+            <Link href="/sell" style=\{{ color: 'var(--fg-muted, #525252)', textDecoration: 'none' }}>
+              ¿Tienes un colmado? Vende aquí →
+            </Link>
+            <span style=\{{ display: 'block', marginTop: 'var(--space-2, 0.5rem)' }}>
+              {{businessName}} — built on GitHat + Sebastn.
+            </span>
+          </footer>
+        </GitHatProvider>
+      </body>
+    </html>
+  );
+}

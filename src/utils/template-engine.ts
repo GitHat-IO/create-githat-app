@@ -15,18 +15,21 @@ Handlebars.registerHelper('ifEquals', function (this: unknown, a: string, b: str
   return a === b ? options.fn(this) : options.inverse(this);
 });
 
-// True for any Next.js-shaped framework. Treat 'plain' (the minimal
-// Next.js scaffold) the same as 'nextjs' — same env-var prefix
-// (NEXT_PUBLIC_*), same proxy.ts, same package.json scripts.
+// True for any Next.js-shaped framework. Every template in the
+// gallery EXCEPT react-vite is a Next.js app — they share env-var
+// prefix (NEXT_PUBLIC_*), proxy.ts, and package.json scripts.
+const NEXT_LIKE = new Set([
+  'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard',
+]);
 Handlebars.registerHelper('ifNext', function (this: unknown, framework: string, options: Handlebars.HelperOptions) {
-  return (framework === 'nextjs' || framework === 'plain') ? options.fn(this) : options.inverse(this);
+  return NEXT_LIKE.has(framework) ? options.fn(this) : options.inverse(this);
 });
 
 export interface TemplateContext {
   projectName: string;
   businessName: string;
   description: string;
-  framework: 'nextjs' | 'react-vite' | 'plain';
+  framework: 'nextjs' | 'react-vite' | 'plain' | 'saas' | 'marketplace' | 'agent' | 'content' | 'dashboard';
   typescript: boolean;
   packageManager: PackageManager;
   publishableKey: string;

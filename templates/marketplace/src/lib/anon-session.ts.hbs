@@ -1,0 +1,117 @@
+/**
+ * Anonymous shopper session helpers.
+ *
+ * The marketplace template is anonymous-first: shoppers can browse,
+ * search, fill a cart, and even check out as guests without ever
+ * touching GitHat auth. This module manages the cookie that binds
+ * that anonymous activity to a server-side cart row.
+ *
+ * GitHat is only invoked when the shopper opts in to "Save my stuff."
+ * At that point, server code can migrate the anon-cart onto the new
+ * GitHat user — see migrateAnonCart() below.
+ *
+ * The cookie is signed (HMAC-SHA-256) with COLMADO_ANON_SECRET so
+ * a malicious shopper can't steal another anon's cart by guessing
+ * the session id.
+ */
+
+import { cookies } from 'next/headers';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+
+const COOKIE_NAME = 'anon_session';
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+
+function secret(): string {
+  const s = process.env.COLMADO_ANON_SECRET || process.env.MARKETPLACE_ANON_SECRET;
+  if (!s) {
+    throw new Error(
+      [
+        'Missing COLMADO_ANON_SECRET (or MARKETPLACE_ANON_SECRET) env var.',
+        'Generate one with the openssl one-liner:',
+        '  openssl rand -hex 32',
+        'and add it to .env.local before running `npm run dev` again.',
+      ].join(' ')
+    );
+  }
+  return s;
+}
+
+function sign(id: string): string {
+  return createHmac('sha256', secret()).update(id).digest('hex');
+}
+
+function verify(id: string, sig: string): boolean {
+  try {
+    const expected = sign(id);
+    const a = Buffer.from(expected, 'hex');
+    const b = Buffer.from(sig, 'hex');
+    return a.length === b.length && timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Returns the current anon session id (creating one if needed).
+ * Use this in any server component / route handler that needs to
+ * read or write the anon cart.
+ */
+export async function getOrCreateAnonSession(): Promise<string> {
+  const jar = await cookies();
+  const raw = jar.get(COOKIE_NAME)?.value;
+
+  if (raw) {
+    const [id, sig] = raw.split('.');
+    if (id && sig && verify(id, sig)) {
+      return id;
+    }
+  }
+
+  // No valid cookie — issue a fresh one
+  const id = randomBytes(16).toString('hex');
+  const sig = sign(id);
+  jar.set(COOKIE_NAME, `${id}.${sig}`, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: COOKIE_MAX_AGE,
+    path: '/',
+  });
+  return id;
+}
+
+/**
+ * Read-only — returns the anon session id if a valid one exists,
+ * otherwise null. Use this when you don't want to mint a new cookie
+ * just to check.
+ */
+export async function readAnonSession(): Promise<string | null> {
+  const jar = await cookies();
+  const raw = jar.get(COOKIE_NAME)?.value;
+  if (!raw) return null;
+  const [id, sig] = raw.split('.');
+  if (id && sig && verify(id, sig)) return id;
+  return null;
+}
+
+/**
+ * Migrate an anonymous cart onto a freshly-created GitHat user.
+ * Call this from a `useEffect` (or server action) right after a
+ * successful sign-up: hand it the new user.id and we'll rewrite the
+ * cart row, then drop the cookie.
+ *
+ * Stub for now — wire it to your database in your own code.
+ */
+export async function migrateAnonCart(userId: string): Promise<void> {
+  const anonId = await readAnonSession();
+  if (!anonId) return;
+
+  // TODO: in your project's data layer, transfer cart rows from
+  // `cart:anon:${anonId}` to `cart:user:${userId}`. This file is
+  // deliberately backend-agnostic — the marketplace template doesn't
+  // ship a database, you bring your own.
+  void userId;
+
+  const jar = await cookies();
+  jar.delete(COOKIE_NAME);
+}

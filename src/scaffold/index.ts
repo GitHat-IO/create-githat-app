@@ -58,9 +58,13 @@ export async function scaffold(
     }, 'package.json generated');
   }
 
-  // 3. Auto-register app on GitHat (Next.js / plain — both share the
-  //    same .env.local shape; no-ops gracefully if offline/unauthenticated).
-  if (!isFullstack && (context.framework === 'nextjs' || context.framework === 'plain')) {
+  // 3. Auto-register app on GitHat. Every Next-like template shares
+  //    the same .env.local shape, so the registration call is the
+  //    same. No-ops gracefully if offline/unauthenticated.
+  const NEXT_LIKE = new Set<string>([
+    'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard',
+  ]);
+  if (!isFullstack && NEXT_LIKE.has(context.framework)) {
     await registerApp(context.projectName, root);
   }
 

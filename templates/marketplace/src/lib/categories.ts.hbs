@@ -1,0 +1,35 @@
+/**
+ * Category seed for the marketplace template.
+ *
+ * Default values are shaped for a Caribbean colmado (Dominican-flavored),
+ * which is the {{businessName}} project's first audience. Replace as
+ * needed for your region — see CULTURE.md for what's region-specific
+ * vs universal.
+ *
+ * Each category is bilingual on purpose: the Spanish term is what
+ * the shopper actually says ("recargas," "víveres") and the English
+ * gloss helps Anglophone shoppers navigate without hiding the
+ * cultural identity.
+ */
+
+export interface Category {
+  slug: string;
+  es: string;
+  en: string;
+  emoji: string;
+}
+
+export const CATEGORIES: Category[] = [
+  { slug: 'viveres',   es: 'Víveres',          en: 'Staples',         emoji: '🍚' },
+  { slug: 'frutas',    es: 'Frutas y verduras', en: 'Produce',        emoji: '🥑' },
+  { slug: 'carnes',    es: 'Carnes',            en: 'Meat',           emoji: '🥩' },
+  { slug: 'lacteos',   es: 'Lácteos y huevos',  en: 'Dairy & eggs',   emoji: '🥚' },
+  { slug: 'bebidas',   es: 'Bebidas',           en: 'Drinks',         emoji: '🍺' },
+  { slug: 'hielo',     es: 'Hielo',             en: 'Ice',            emoji: '🧊' },
+  { slug: 'pan',       es: 'Pan y galletas',    en: 'Bread & crackers', emoji: '🍞' },
+  { slug: 'recargas',  es: 'Recargas',          en: 'Phone top-ups',  emoji: '📱' },
+  { slug: 'limpieza',  es: 'Limpieza',          en: 'Cleaning',       emoji: '🧼' },
+  { slug: 'higiene',   es: 'Higiene personal',  en: 'Personal care',  emoji: '🪥' },
+  { slug: 'sazon',     es: 'Sazón',             en: 'Seasonings',     emoji: '🧂' },
+  { slug: 'fritura',   es: 'Frituras',          en: 'Hot snacks',     emoji: '🥟' },
+];

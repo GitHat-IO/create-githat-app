@@ -1,0 +1,14 @@
+/*
+ * Plain template — Tailwind v4 PostCSS plugin is required even though
+ * the plain scaffold doesn't use Tailwind utility classes. The auth
+ * page CSS shipped by `@githat/nextjs/styles` is processed through
+ * @tailwindcss/postcss at build time. Drop this config and the
+ * auth pages render unstyled.
+ */
+const config = {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+};
+
+export default config;

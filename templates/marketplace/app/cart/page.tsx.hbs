@@ -1,0 +1,157 @@
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { SignInButton, SignUpButton, useAuth } from '@githat/nextjs';
+
+/**
+ * Tu funda — anonymous-aware cart.
+ *
+ * Three checkout choices, in the order they should appear:
+ *   1. Continue as guest (the DEFAULT) — primary button.
+ *   2. Sign in (existing GitHat user).
+ *   3. Sign up (new GitHat user, gets cart history).
+ *
+ * The order matters: the colmado UX promise is "you don't have to
+ * make an account to shop." If you're tempted to make sign-up the
+ * primary button "for the data," re-read CULTURE.md.
+ *
+ * Real cart line items should come from your backend (read by the
+ * anon-session id from `src/lib/anon-session.ts`). The hard-coded
+ * sample below is just the shell.
+ */
+export default function CartPage() {
+  const { isSignedIn } = useAuth();
+  const [emailForReceipt, setEmailForReceipt] = useState('');
+  const sampleItems = [
+    { id: '1', name: 'Plátanos verdes (3)', price: 1.5, store: "Doña Yolanda" },
+    { id: '2', name: 'Presidente fría (6-pack)', price: 9.0, store: "Don Tito" },
+    { id: '3', name: 'Recarga Claro $5', price: 5.0, store: "Doña Yolanda" },
+  ];
+  const total = sampleItems.reduce((s, i) => s + i.price, 0);
+
+  return (
+    <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)' }}>
+      <div style=\{{ maxWidth: '40rem', margin: '0 auto', padding: 'var(--space-8) var(--space-4)' }}>
+        <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-2)' }}>
+          Tu funda
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-6)' }}>
+          Your bag. Edit, then choose how you want to pay.
+        </p>
+
+        <ul style=\{{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
+          {sampleItems.map((it) => (
+            <li key={it.id} style=\{{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: 'var(--space-3) var(--space-4)',
+              borderRadius: 'var(--radius-md, 0.5rem)',
+              border: '1px solid var(--border)',
+              background: 'var(--surface)',
+            }}>
+              <div>
+                <div style=\{{ fontWeight: 600 }}>{it.name}</div>
+                <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-muted)' }}>De tu colmadero, {it.store}</div>
+              </div>
+              <div style=\{{ fontWeight: 600 }}>${it.price.toFixed(2)}</div>
+            </li>
+          ))}
+        </ul>
+
+        <div style=\{{
+          display: 'flex',
+          justifyContent: 'space-between',
+          fontSize: '1.125rem',
+          fontWeight: 600,
+          paddingTop: 'var(--space-3)',
+          borderTop: '1px solid var(--border)',
+          marginBottom: 'var(--space-8)',
+        }}>
+          <span>Total</span>
+          <span>${total.toFixed(2)}</span>
+        </div>
+
+        {/* The auth choice — guest is the default, sign-in is opt-in */}
+        <section style=\{{
+          padding: 'var(--space-6)',
+          borderRadius: 'var(--radius-md, 0.5rem)',
+          border: '1px solid var(--border)',
+          background: 'var(--surface-sub)',
+        }}>
+          <h2 style=\{{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>¿Cómo lo pagamos?</h2>
+          <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-4)', fontSize: '0.875rem' }}>
+            How would you like to pay? You don't need an account.
+          </p>
+
+          {!isSignedIn && (
+            <>
+              {/* Primary: continue as guest */}
+              <form
+                onSubmit={(e) => { e.preventDefault(); /* TODO: submit guest order */ }}
+                style=\{{ marginBottom: 'var(--space-4)' }}
+              >
+                <label htmlFor="email" style=\{{ display: 'block', marginBottom: 'var(--space-2)', fontSize: '0.875rem' }}>
+                  Email para el recibo (we'll send the receipt and that's it)
+                </label>
+                <div style=\{{ display: 'flex', gap: 'var(--space-2)' }}>
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    value={emailForReceipt}
+                    onChange={(e) => setEmailForReceipt(e.target.value)}
+                    placeholder="tu@email.com"
+                    style=\{{
+                      flex: 1,
+                      padding: 'var(--space-3)',
+                      borderRadius: 'var(--radius-md, 0.5rem)',
+                      border: '1px solid var(--border)',
+                      background: 'var(--surface)',
+                      color: 'var(--fg)',
+                    }}
+                  />
+                  <button type="submit" style=\{{
+                    padding: 'var(--space-3) var(--space-5)',
+                    borderRadius: 'var(--radius-md, 0.5rem)',
+                    border: 'none',
+                    background: 'var(--primary)',
+                    color: 'var(--bg)',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}>
+                    Pagar como invitado
+                  </button>
+                </div>
+                <p style=\{{ marginTop: 'var(--space-2)', fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>
+                  Continue as guest. No password, no account, no saved data.
+                </p>
+              </form>
+
+              <div style=\{{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', alignItems: 'center', marginTop: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTop: '1px dashed var(--border)' }}>
+                <span style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)' }}>O si quieres guardar tus datos:</span>
+                <SignInButton />
+                <SignUpButton />
+              </div>
+            </>
+          )}
+
+          {isSignedIn && (
+            <Link href="/checkout" style=\{{
+              display: 'inline-block',
+              padding: 'var(--space-3) var(--space-5)',
+              borderRadius: 'var(--radius-md, 0.5rem)',
+              background: 'var(--primary)',
+              color: 'var(--bg)',
+              fontWeight: 600,
+              textDecoration: 'none',
+            }}>
+              Pagar →
+            </Link>
+          )}
+        </section>
+      </div>
+    </div>
+  );
+}

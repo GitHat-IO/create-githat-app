@@ -26,19 +26,32 @@ function toDisplayName(projectName: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/** Templates that aren't the legacy `nextjs` full-kit. */
+type Template = 'plain' | 'saas' | 'marketplace' | 'agent' | 'content' | 'dashboard';
+
 function getDefaults(
   projectName: string,
   publishableKey?: string,
   typescript?: boolean,
   fullstack?: boolean,
   backendFramework?: BackendFramework,
-  plain?: boolean
+  template?: Template
 ): AllAnswers {
   const displayName = toDisplayName(projectName);
   const projectType: ProjectType = fullstack ? 'fullstack' : 'frontend';
-  // --plain forces the smallest scaffold: framework='plain', no
-  // dashboard, no githat/ helper folder. Overrides anything else.
-  const framework = plain ? 'plain' : 'nextjs';
+
+  // The framework value tells the scaffolder which template directory
+  // to render. When --saas / --content / etc. are passed but the
+  // dedicated template doesn't exist yet, fall back to 'plain' so the
+  // CLI never crashes — the resulting project is still a working
+  // GitHat app, just without the demo content.
+  const framework = template ?? 'nextjs';
+
+  // Marketplace is the only currently-shipping non-plain template
+  // with feature shape distinct from the full-kit nextjs baseline.
+  // saas / agent / content / dashboard currently render plain content.
+  const isMinimal = template !== undefined;
+
   return {
     projectName,
     businessName: displayName,
@@ -50,11 +63,11 @@ function getDefaults(
     packageManager: detectPackageManager(),
     publishableKey: publishableKey || '',
     apiUrl: DEFAULT_API_URL,
-    authFeatures: plain ? [] : ['forgot-password'],
+    authFeatures: isMinimal ? [] : ['forgot-password'],
     databaseChoice: 'none',
     useTailwind: true,
-    includeDashboard: !plain,
-    includeGithatFolder: !plain && projectType === 'frontend',
+    includeDashboard: !isMinimal,
+    includeGithatFolder: !isMinimal && projectType === 'frontend',
     initGit: true,
     installDeps: true,
   };
@@ -65,14 +78,18 @@ export async function runPrompts(args: {
   publishableKey?: string;
   typescript?: boolean;
   yes?: boolean;
-  plain?: boolean;
+  template?: Template;
   fullstack?: boolean;
   backendFramework?: BackendFramework;
 }): Promise<AllAnswers> {
   // --yes flag: skip all prompts, use defaults
   if (args.yes && args.initialName) {
-    p.log.info(args.plain ? 'Using plain defaults (--yes --plain)' : 'Using defaults (--yes flag)');
-    return getDefaults(args.initialName, args.publishableKey, args.typescript, args.fullstack, args.backendFramework, args.plain);
+    p.log.info(
+      args.template
+        ? `Using ${args.template} defaults (--yes --${args.template})`
+        : 'Using defaults (--yes flag)'
+    );
+    return getDefaults(args.initialName, args.publishableKey, args.typescript, args.fullstack, args.backendFramework, args.template);
   }
 
   p.intro("Let's set up your GitHat app");
