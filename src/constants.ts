@@ -1,4 +1,4 @@
-export const VERSION = '1.0.13';
+export const VERSION = '1.0.14';
 export const DEFAULT_API_URL = 'https://api.githat.io';
 export const DOCS_URL = 'https://githat.io/docs/sdk';
 export const DASHBOARD_URL = 'https://githat.io/dashboard/apps';

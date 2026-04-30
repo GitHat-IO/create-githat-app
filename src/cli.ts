@@ -21,12 +21,36 @@ program
   .option('--key <key>', 'GitHat publishable key (pk_live_...)')
   .option('--ts', 'Use TypeScript (default)')
   .option('--js', 'Use JavaScript')
+  .option('--plain', 'Smallest scaffold: auth + a homepage. No dashboard, no orgs.')
   .option('--fullstack', 'Create fullstack project (Turborepo)')
   .option('--backend <framework>', 'Backend framework (hono, express, fastify)')
   .option('-y, --yes', 'Skip prompts and use defaults')
-  .action(async (projectName: string | undefined, opts: { key?: string; ts?: boolean; js?: boolean; fullstack?: boolean; backend?: string; yes?: boolean }) => {
+  .action(async (projectName: string | undefined, opts: { key?: string; ts?: boolean; js?: boolean; plain?: boolean; fullstack?: boolean; backend?: string; yes?: boolean }) => {
     try {
       displayBanner();
+
+      // Make the two onboarding paths obvious BEFORE we start asking questions.
+      // Some developers will go to the dashboard first then run the CLI;
+      // others will run the CLI first and want to be guided into sign-up.
+      // Either order is fine — this preamble shows them both options.
+      if (!opts.yes && !opts.key) {
+        p.note(
+          [
+            chalk.bold('Two ways to connect this app to GitHat:'),
+            '',
+            `  ${chalk.cyan('1.')} ${chalk.bold('Already signed up?')}  Pass your key:`,
+            `       ${chalk.dim('npx create-githat-app my-app --key pk_live_...')}`,
+            `       Get the key at ${chalk.cyan('https://githat.io/dashboard/apps')}`,
+            '',
+            `  ${chalk.cyan('2.')} ${chalk.bold("Don't have an account yet?")}  Press Enter`,
+            `       below — we'll open a browser, you sign up in 30s,`,
+            `       and the key is stitched in for you.`,
+            '',
+            chalk.dim('Either path lands you in the same place.'),
+          ].join('\n'),
+          'First time with GitHat?'
+        );
+      }
 
       const typescript = opts.js ? false : opts.ts ? true : undefined;
 
@@ -41,6 +65,7 @@ program
         publishableKey: opts.key,
         typescript,
         yes: opts.yes,
+        plain: opts.plain,
         fullstack: opts.fullstack,
         backendFramework: opts.backend as 'hono' | 'express' | 'fastify' | undefined,
       });

@@ -58,8 +58,9 @@ export async function scaffold(
     }, 'package.json generated');
   }
 
-  // 3. Auto-register app on GitHat (Next.js only; no-ops gracefully if offline/unauthenticated)
-  if (!isFullstack && context.framework === 'nextjs') {
+  // 3. Auto-register app on GitHat (Next.js / plain — both share the
+  //    same .env.local shape; no-ops gracefully if offline/unauthenticated).
+  if (!isFullstack && (context.framework === 'nextjs' || context.framework === 'plain')) {
     await registerApp(context.projectName, root);
   }
 

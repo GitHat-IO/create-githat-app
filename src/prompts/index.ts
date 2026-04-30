@@ -31,26 +31,30 @@ function getDefaults(
   publishableKey?: string,
   typescript?: boolean,
   fullstack?: boolean,
-  backendFramework?: BackendFramework
+  backendFramework?: BackendFramework,
+  plain?: boolean
 ): AllAnswers {
   const displayName = toDisplayName(projectName);
   const projectType: ProjectType = fullstack ? 'fullstack' : 'frontend';
+  // --plain forces the smallest scaffold: framework='plain', no
+  // dashboard, no githat/ helper folder. Overrides anything else.
+  const framework = plain ? 'plain' : 'nextjs';
   return {
     projectName,
     businessName: displayName,
     description: `${displayName} — Built with GitHat`,
     projectType,
     backendFramework: fullstack ? (backendFramework || 'hono') : undefined,
-    framework: 'nextjs',
+    framework,
     typescript: typescript ?? true,
     packageManager: detectPackageManager(),
     publishableKey: publishableKey || '',
     apiUrl: DEFAULT_API_URL,
-    authFeatures: ['forgot-password'],
+    authFeatures: plain ? [] : ['forgot-password'],
     databaseChoice: 'none',
     useTailwind: true,
-    includeDashboard: true,
-    includeGithatFolder: projectType === 'frontend',
+    includeDashboard: !plain,
+    includeGithatFolder: !plain && projectType === 'frontend',
     initGit: true,
     installDeps: true,
   };
@@ -61,13 +65,14 @@ export async function runPrompts(args: {
   publishableKey?: string;
   typescript?: boolean;
   yes?: boolean;
+  plain?: boolean;
   fullstack?: boolean;
   backendFramework?: BackendFramework;
 }): Promise<AllAnswers> {
   // --yes flag: skip all prompts, use defaults
   if (args.yes && args.initialName) {
-    p.log.info('Using defaults (--yes flag)');
-    return getDefaults(args.initialName, args.publishableKey, args.typescript, args.fullstack, args.backendFramework);
+    p.log.info(args.plain ? 'Using plain defaults (--yes --plain)' : 'Using defaults (--yes flag)');
+    return getDefaults(args.initialName, args.publishableKey, args.typescript, args.fullstack, args.backendFramework, args.plain);
   }
 
   p.intro("Let's set up your GitHat app");

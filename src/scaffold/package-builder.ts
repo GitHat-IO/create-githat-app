@@ -2,7 +2,8 @@ import type { TemplateContext } from '../utils/template-engine.js';
 import { DEPS } from '../constants.js';
 
 export function buildPackageJson(ctx: TemplateContext): Record<string, unknown> {
-  const isNext = ctx.framework === 'nextjs';
+  // 'plain' is also a Next.js app — same deps, just a smaller scaffold.
+  const isNext = ctx.framework === 'nextjs' || ctx.framework === 'plain';
 
   const deps: Record<string, string> = {
     ...(isNext ? DEPS.nextjs.dependencies : DEPS['react-vite'].dependencies),
@@ -12,8 +13,22 @@ export function buildPackageJson(ctx: TemplateContext): Record<string, unknown> 
     ...(isNext ? DEPS.nextjs.devDependencies : DEPS['react-vite'].devDependencies),
   };
 
-  // Tailwind
-  if (ctx.useTailwind) {
+  // The plain template is the minimum viable GitHat app — auth + a
+  // homepage. It does NOT pull @githat/ui (still unpublished as of
+  // 2026-04-30); a developer who later wants the design system can
+  // add it with one `npm install` command.
+  //
+  // It DOES keep Tailwind — @githat/nextjs/styles is processed by
+  // @tailwindcss/postcss at build time, so removing the dep breaks
+  // the auth-page CSS at `next build`. This is an upstream coupling
+  // we can't fix here.
+  if (ctx.framework === 'plain') {
+    delete deps['@githat/ui'];
+  }
+
+  // Tailwind — added as a devDep when useTailwind is set OR when the
+  // framework is plain (because @githat/nextjs/styles needs it).
+  if (ctx.useTailwind || ctx.framework === 'plain') {
     if (isNext) {
       Object.assign(devDeps, DEPS.tailwind.devDependencies);
     } else {
