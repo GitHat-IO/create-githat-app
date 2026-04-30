@@ -60,6 +60,22 @@ export function sectionHeader(title: string): void {
   console.log('');
 }
 
+/**
+ * Three-line block shown in the success banner when no publishable
+ * key was provided at scaffold time. The dev's next move is to open
+ * `.env.local` and paste their key — never the terminal.
+ */
+function keyNextSteps(): string[] {
+  return [
+    chalk.bold('Next:') + ' add your GitHat key',
+    `  1. Open ${violet('.env.local')}`,
+    `  2. Paste your key from ${violet('https://githat.io/dashboard/apps')}`,
+    `  3. Run ${violet('npm run dev')} again`,
+    dim('   (.env.local is gitignored — your key never gets committed.)'),
+    '',
+  ];
+}
+
 export function displaySuccess(
   projectName: string,
   packageManager: string,
@@ -87,11 +103,7 @@ export function displaySuccess(
       `${violet('apps/api')}       API backend`,
       `${violet('packages/')}      Shared code`,
       '',
-      ...(hasPublishableKey ? [] : [
-        chalk.yellow('No key configured — auth works on localhost.'),
-        `For production: ${violet('githat.io/dashboard/apps')}`,
-        '',
-      ]),
+      ...(hasPublishableKey ? [] : keyNextSteps()),
       dim('Docs → https://githat.io/docs/sdk'),
     ]);
   } else {
@@ -108,11 +120,7 @@ export function displaySuccess(
       `${violet('/sign-up')}       Create account`,
       `${violet('/dashboard')}     Protected dashboard`,
       '',
-      ...(hasPublishableKey ? [] : [
-        chalk.yellow('No key configured — auth works on localhost.'),
-        `For production: ${violet('githat.io/dashboard/apps')}`,
-        '',
-      ]),
+      ...(hasPublishableKey ? [] : keyNextSteps()),
       dim('Docs → https://githat.io/docs/sdk'),
     ]);
   }

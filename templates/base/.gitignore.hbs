@@ -1,11 +1,26 @@
 node_modules
-{{#ifEquals framework "nextjs"}}
+{{#ifNext framework}}
 .next
 out
 {{else}}
 dist
-{{/ifEquals}}
+{{/ifNext}}
+
+# Environment files — NEVER commit these. Real keys live here.
+# `.env.local`, `.env.development.local`, `.env.production.local`,
+# and any per-package `.env*.local` are matched by the patterns below.
 .env
+.env.local
 .env*.local
+.env.*.local
+
+# OS / editor
 .DS_Store
 *.tgz
+.idea/
+.vscode/
+
+# Logs / coverage
+*.log
+.turbo/
+coverage/

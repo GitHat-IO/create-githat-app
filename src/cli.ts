@@ -18,7 +18,7 @@ program
 program
   .command('create [project-name]', { isDefault: true })
   .description('Scaffold a new GitHat app')
-  .option('--key <key>', 'GitHat publishable key (pk_live_...)')
+  .option('--key <key>', 'CI only: bake key into .env.local. Default flow is paste into .env.local after scaffold.')
   .option('--ts', 'Use TypeScript (default)')
   .option('--js', 'Use JavaScript')
   // Six template flags. Pick one — they're mutually exclusive.
@@ -53,24 +53,27 @@ program
     try {
       displayBanner();
 
-      // Make the two onboarding paths obvious BEFORE we start asking questions.
-      // Some developers will go to the dashboard first then run the CLI;
-      // others will run the CLI first and want to be guided into sign-up.
-      // Either order is fine — this preamble shows them both options.
+      // Make the onboarding flow obvious BEFORE we start asking questions.
+      // The default path is "scaffold now, paste your key into
+      // .env.local afterward" — that keeps real keys out of shell
+      // history. The CLI also supports `--key` for CI flows where
+      // pasting is impractical.
       if (!opts.yes && !opts.key) {
         p.note(
           [
-            chalk.bold('Two ways to connect this app to GitHat:'),
+            chalk.bold('How the GitHat key flow works:'),
             '',
-            `  ${chalk.cyan('1.')} ${chalk.bold('Already signed up?')}  Pass your key:`,
-            `       ${chalk.dim('npx create-githat-app my-app --key pk_live_...')}`,
-            `       Get the key at ${chalk.cyan('https://githat.io/dashboard/apps')}`,
+            `  ${chalk.cyan('1.')} We'll scaffold your project with a placeholder`,
+            `     in ${chalk.bold('.env.local')} (gitignored — safe to keep secrets here)`,
             '',
-            `  ${chalk.cyan('2.')} ${chalk.bold("Don't have an account yet?")}  Press Enter`,
-            `       below — we'll open a browser, you sign up in 30s,`,
-            `       and the key is stitched in for you.`,
+            `  ${chalk.cyan('2.')} You open ${chalk.cyan('https://githat.io/dashboard/apps')}`,
+            `     and copy your publishable key`,
             '',
-            chalk.dim('Either path lands you in the same place.'),
+            `  ${chalk.cyan('3.')} You paste it into ${chalk.bold('.env.local')} and run`,
+            `     ${chalk.dim('npm run dev')}`,
+            '',
+            chalk.dim('Why not pass the key on the command line? Shell'),
+            chalk.dim('history is forever. .env.local is more secure.'),
           ].join('\n'),
           'First time with GitHat?'
         );

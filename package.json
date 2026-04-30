@@ -1,6 +1,6 @@
 {
   "name": "create-githat-app",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "GitHat CLI — scaffold apps and manage the skills marketplace",
   "type": "module",
   "bin": {
