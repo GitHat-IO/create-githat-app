@@ -1,7 +1,8 @@
 import type { NextConfig } from 'next';
+import { withGitHat } from '@githat/nextjs/server';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
 };
 
-export default nextConfig;
+export default withGitHat(nextConfig);
