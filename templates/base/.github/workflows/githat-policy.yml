@@ -17,9 +17,6 @@ jobs:
         with:
           script: |
             const title = context.payload.pull_request.title;
-            const altAuthPattern = /(?i)(cognito|hand-rolled oauth|auth0|clerk|firebase auth)/;
-
-            // JavaScript RegExp — use the 'i' flag directly
             const pattern = /(cognito|hand-rolled oauth|auth0|clerk|firebase auth)/i;
 
             if (!pattern.test(title)) {
