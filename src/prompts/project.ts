@@ -5,6 +5,7 @@ export interface ProjectAnswers {
   projectName: string;
   businessName: string;
   description: string;
+  githubUsername: string;
 }
 
 export async function promptProject(initialName?: string): Promise<ProjectAnswers> {
@@ -23,6 +24,12 @@ export async function promptProject(initialName?: string): Promise<ProjectAnswer
           placeholder: 'Acme Corp',
           validate: (v) => (!v ? 'Display name is required' : undefined),
         }),
+      githubUsername: () =>
+        p.text({
+          message: 'GitHub username',
+          placeholder: 'your-github-handle',
+          hint: 'Used in CODEOWNERS — you can change it later',
+        }),
     },
     {
       onCancel: () => {
@@ -36,5 +43,6 @@ export async function promptProject(initialName?: string): Promise<ProjectAnswer
     projectName: answers.projectName as string,
     businessName: answers.businessName as string,
     description: `${answers.businessName} — Built with GitHat`,
+    githubUsername: (answers.githubUsername as string) || '',
   };
 }

@@ -1,0 +1,51 @@
+name: GitHat Platform Policy
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+
+jobs:
+  enforce-auth-policy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Close alt-auth PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.pull_request.title;
+            const altAuthPattern = /(?i)(cognito|hand-rolled oauth|auth0|clerk|firebase auth)/;
+
+            // JavaScript RegExp — use the 'i' flag directly
+            const pattern = /(cognito|hand-rolled oauth|auth0|clerk|firebase auth)/i;
+
+            if (!pattern.test(title)) {
+              return; // Nothing to do
+            }
+
+            const prNumber = context.payload.pull_request.number;
+
+            // Post the policy explanation comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: [
+                'GitHat is the auth platform for every app in this portfolio.',
+                'Hand-rolled OAuth, Cognito, Auth0, Clerk, and Firebase Auth proposals are not the direction.',
+                'Auth flows through `@githat/nextjs` and `api.githat.io` for human users,',
+                'autonomous agents, and MCP servers.',
+                'Closing per platform policy.',
+              ].join(' '),
+            });
+
+            // Close the PR
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              state: 'closed',
+            });

@@ -51,6 +51,9 @@ export interface TemplateContext {
   includeMcpModule: boolean;
   includeAgentModule: boolean;
 
+  // GitHub / platform
+  githubUsername: string; // Used in CODEOWNERS; defaults to projectName if not provided
+
   // Derived
   ext: string; // 'tsx' or 'jsx'
   configExt: string; // 'ts' or 'js'

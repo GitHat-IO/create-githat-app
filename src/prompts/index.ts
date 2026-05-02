@@ -35,7 +35,8 @@ function getDefaults(
   typescript?: boolean,
   fullstack?: boolean,
   backendFramework?: BackendFramework,
-  template?: Template
+  template?: Template,
+  githubUsername?: string,
 ): AllAnswers {
   const displayName = toDisplayName(projectName);
   const projectType: ProjectType = fullstack ? 'fullstack' : 'frontend';
@@ -56,6 +57,7 @@ function getDefaults(
     projectName,
     businessName: displayName,
     description: `${displayName} — Built with GitHat`,
+    githubUsername: githubUsername || projectName,
     projectType,
     backendFramework: fullstack ? (backendFramework || 'hono') : undefined,
     framework,
@@ -81,6 +83,7 @@ export async function runPrompts(args: {
   template?: Template;
   fullstack?: boolean;
   backendFramework?: BackendFramework;
+  githubUsername?: string;
 }): Promise<AllAnswers> {
   // --yes flag: skip all prompts, use defaults
   if (args.yes && args.initialName) {
@@ -89,7 +92,7 @@ export async function runPrompts(args: {
         ? `Using ${args.template} defaults (--yes --${args.template})`
         : 'Using defaults (--yes flag)'
     );
-    return getDefaults(args.initialName, args.publishableKey, args.typescript, args.fullstack, args.backendFramework, args.template);
+    return getDefaults(args.initialName, args.publishableKey, args.typescript, args.fullstack, args.backendFramework, args.template, args.githubUsername);
   }
 
   p.intro("Let's set up your GitHat app");
@@ -125,6 +128,7 @@ export function answersToContext(answers: AllAnswers): TemplateContext {
     projectName: answers.projectName,
     businessName: answers.businessName,
     description: answers.description,
+    githubUsername: answers.githubUsername || answers.projectName,
     framework: answers.framework,
     typescript: answers.typescript,
     packageManager: answers.packageManager,
