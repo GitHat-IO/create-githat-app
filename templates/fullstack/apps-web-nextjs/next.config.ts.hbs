@@ -1,8 +1,9 @@
-import type { NextConfig } from 'next';
-import { withGitHat } from '@githat/nextjs/server';
+{{#if typescript}}import type { NextConfig } from 'next';
+{{/if}}import { withGitHat } from '@githat/nextjs/server';
 
-const nextConfig: NextConfig = {
-  // Proxy API calls to the backend in development
+{{#if typescript}}const nextConfig: NextConfig = {
+{{else}}const nextConfig = {
+{{/if}}  // Proxy API calls to the backend in development
   async rewrites() {
     return [
       {
