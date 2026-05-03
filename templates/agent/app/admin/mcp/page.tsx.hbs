@@ -1,0 +1,156 @@
+'use client';
+
+import { useAuth } from '@githat/nextjs';
+
+const DEMO_SERVERS = [
+  {
+    name: 'web-search',
+    description: 'Search the web and fetch pages',
+    tools: ['web.search', 'web.fetch'],
+    status: 'connected' as const,
+  },
+  {
+    name: 'arxiv',
+    description: 'Read and search arXiv papers',
+    tools: ['arxiv.read', 'arxiv.search'],
+    status: 'connected' as const,
+  },
+  {
+    name: 'github',
+    description: 'Read and write GitHub repos',
+    tools: ['github.read', 'github.push'],
+    status: 'disconnected' as const,
+  },
+];
+
+export default function McpAdminPage() {
+  const { isSignedIn, isLoading } = useAuth();
+
+  if (isLoading) return <div style=\{{ padding: 'var(--space-8)', color: 'var(--fg-muted)' }}>Loading…</div>;
+  if (!isSignedIn) return null;
+
+  return (
+    <div style=\{{ padding: 'var(--space-8) var(--space-6)', maxWidth: '52rem' }}>
+      <div style=\{{ marginBottom: 'var(--space-6)' }}>
+        <h1 style=\{{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 'var(--space-2)' }}>MCP Servers</h1>
+        <p style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)' }}>
+          Model Context Protocol servers expose tools your agent can call. Connect servers
+          to grant your agent access to the tools they expose.
+        </p>
+      </div>
+
+      <div style=\{{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+        {DEMO_SERVERS.map((server) => (
+          <div
+            key={server.name}
+            style=\{{
+              padding: 'var(--space-5)',
+              borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--border)',
+              background: 'var(--surface)',
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: 'var(--space-4)',
+            }}
+          >
+            <div style=\{{ flex: 1 }}>
+              <div style=\{{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+                <code style=\{{ fontFamily: 'var(--font-mono)', fontSize: '0.9375rem', fontWeight: 600 }}>
+                  {server.name}
+                </code>
+                <span style=\{{
+                  padding: '0.125rem var(--space-2)',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.6875rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                  background: server.status === 'connected' ? 'var(--success)' : 'var(--border)',
+                  color: server.status === 'connected' ? '#fff' : 'var(--fg-muted)',
+                }}>
+                  {server.status}
+                </span>
+              </div>
+              <p style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)', marginBottom: 'var(--space-3)' }}>
+                {server.description}
+              </p>
+              <div style=\{{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+                {server.tools.map((tool) => (
+                  <span
+                    key={tool}
+                    style=\{{
+                      padding: 'var(--space-1) var(--space-2)',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid var(--border)',
+                      fontSize: '0.75rem',
+                      fontFamily: 'var(--font-mono)',
+                      color: 'var(--fg-muted)',
+                    }}
+                  >
+                    {tool}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <button
+              style=\{{
+                flexShrink: 0,
+                padding: 'var(--space-2) var(--space-4)',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--border)',
+                background: 'transparent',
+                color: server.status === 'connected' ? 'var(--danger)' : 'var(--primary)',
+                fontSize: '0.875rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {server.status === 'connected' ? 'Disconnect' : 'Connect'}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <div style=\{{
+        marginTop: 'var(--space-8)',
+        padding: 'var(--space-5)',
+        borderRadius: 'var(--radius-lg)',
+        border: '1px dashed var(--border)',
+        textAlign: 'center',
+      }}>
+        <p style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)', marginBottom: 'var(--space-3)' }}>
+          Connect a custom MCP server by URL
+        </p>
+        <div style=\{{ display: 'flex', gap: 'var(--space-2)', maxWidth: '28rem', margin: '0 auto' }}>
+          <input
+            type="url"
+            placeholder="https://my-mcp-server.com/sse"
+            style=\{{
+              flex: 1,
+              padding: 'var(--space-2) var(--space-3)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--border)',
+              background: 'var(--bg)',
+              color: 'var(--fg)',
+              fontSize: '0.875rem',
+              fontFamily: 'var(--font-mono)',
+            }}
+          />
+          <button style=\{{
+            padding: 'var(--space-2) var(--space-4)',
+            borderRadius: 'var(--radius-md)',
+            border: 'none',
+            background: 'var(--primary)',
+            color: '#fff',
+            fontSize: '0.875rem',
+            fontWeight: 600,
+            cursor: 'pointer',
+          }}>
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

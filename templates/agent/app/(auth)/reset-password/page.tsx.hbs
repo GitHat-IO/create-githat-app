@@ -1,0 +1,39 @@
+{{#if includeForgotPassword}}
+'use client';
+
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { ResetPasswordForm } from '@githat/nextjs';
+
+function ResetPasswordContent() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+
+  if (!token) {
+    return (
+      <main {{#if useTailwind}}className="flex flex-col items-center justify-center min-h-screen gap-4"{{else}}style=\{{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1rem', background: 'var(--bg)' }}{{/if}}>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem' }}>No reset token found.</p>
+        <a href="/forgot-password" style=\{{ color: 'var(--primary)', fontSize: '0.875rem' }}>Request a new link →</a>
+      </main>
+    );
+  }
+
+  return (
+    <main {{#if useTailwind}}className="flex items-center justify-center min-h-screen"{{else}}style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)' }}{{/if}}>
+      <ResetPasswordForm token={token} signInUrl="/sign-in" />
+    </main>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg-muted)', fontSize: '0.875rem' }}>
+        Loading…
+      </div>
+    }>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
+{{/if}}

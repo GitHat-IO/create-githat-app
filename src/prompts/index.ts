@@ -65,7 +65,9 @@ function getDefaults(
     packageManager: detectPackageManager(),
     publishableKey: publishableKey || '',
     apiUrl: DEFAULT_API_URL,
-    authFeatures: isMinimal ? [] : ['forgot-password'],
+    authFeatures: template === 'agent'
+      ? ['forgot-password', 'email-verification', 'mcp-servers', 'ai-agents']
+      : isMinimal ? [] : ['forgot-password'],
     databaseChoice: 'none',
     useTailwind: true,
     includeDashboard: !isMinimal,

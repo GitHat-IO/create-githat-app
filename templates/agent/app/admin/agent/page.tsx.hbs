@@ -1,86 +1,166 @@
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@githat/nextjs';
+{{#if typescript}}
+type AgentStatus = 'active' | 'paused' | 'revoked';
 
-/**
- * Agent operator dashboard — control the agent you registered.
- *
- * Three core actions an operator does:
- *   1. See live status (active / paused / revoked)
- *   2. Adjust capabilities (which tools the agent can call)
- *   3. Hit the kill switch
- *
- * Real apps fetch the agent record from GitHat's
- * GET /agent/{walletAddress}. Stub below shows the data shape.
- */
+interface Agent {
+  name: string;
+  wallet: string;
+  status: AgentStatus;
+  capabilities: string[];
+  actionsLast24h: number;
+  verifyUrl: string;
+}
+{{/if}}
+
+const STATUS_COLOR{{#if typescript}}: Record<string, string>{{/if}} = {
+  active:  'var(--success)',
+  paused:  'var(--warn)',
+  revoked: 'var(--danger)',
+};
+
 export default function AgentAdminPage() {
-  const { isSignedIn, isLoading } = useAuth();
+  const { isSignedIn, isLoading, getToken } = useAuth();
+  const [agent, setAgent] = useState{{#if typescript}}<Agent | null>{{/if}}(null);
+  const [fetching, setFetching] = useState(true);
+  const [killing, setKilling] = useState(false);
 
-  if (isLoading) return <div style=\{{ padding: 'var(--space-8)', color: 'var(--fg-muted)' }}>Loading…</div>;
+  const fetchAgent = useCallback(async () => {
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/githat/agent/me', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAgent(data.agent ?? data);
+      }
+    } catch {
+      // no agent registered yet
+    } finally {
+      setFetching(false);
+    }
+  }, [getToken]);
+
+  useEffect(() => {
+    if (isSignedIn) fetchAgent();
+  }, [isSignedIn, fetchAgent]);
+
+  const handleKillSwitch = async () => {
+    if (!agent || killing) return;
+    if (!confirm('Revoke this agent? All existing tokens stop working immediately.')) return;
+
+    setKilling(true);
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/githat/agent/revoke', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ wallet: agent.wallet }),
+      });
+      if (res.ok) {
+        setAgent((prev) => prev ? { ...prev, status: 'revoked' } : prev);
+      }
+    } finally {
+      setKilling(false);
+    }
+  };
+
+  if (isLoading || fetching) {
+    return <div style=\{{ padding: 'var(--space-8)', color: 'var(--fg-muted)', fontSize: '0.875rem' }}>Loading…</div>;
+  }
+
   if (!isSignedIn) {
     return (
       <div style=\{{ padding: 'var(--space-8)', textAlign: 'center' }}>
-        <Link href="/sign-in" style=\{{ color: 'var(--primary)' }}>Sign in →</Link>
+        <Link href="/sign-in" style=\{{ color: 'var(--primary)', fontWeight: 600 }}>Sign in →</Link>
       </div>
     );
   }
 
-  const agent = {
-    name: 'My research agent',
-    wallet: '0xAB12…CDEf',
-    status: 'active' as 'active' | 'paused' | 'revoked',
-    capabilities: ['web.search', 'web.fetch', 'arxiv.read'],
-    actionsLast24h: 47,
-    verifyUrl: 'https://githat.io/verify/agent/0xAB12...CDEf',
-  };
+  if (!agent) {
+    return (
+      <div style=\{{ padding: 'var(--space-8) var(--space-6)', maxWidth: '32rem' }}>
+        <h1 style=\{{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 'var(--space-3)' }}>No agent registered</h1>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem', marginBottom: 'var(--space-6)' }}>
+          Register a wallet-bound agent to get started. Each agent gets an Ethereum-style
+          key pair — it signs requests so clients can verify its identity on-chain.
+        </p>
+        <Link href="/sign-up" style=\{{
+          display: 'inline-block',
+          padding: 'var(--space-3) var(--space-5)',
+          borderRadius: 'var(--radius-md)',
+          background: 'var(--primary)',
+          color: '#fff',
+          fontWeight: 600,
+          textDecoration: 'none',
+          fontSize: '0.875rem',
+        }}>
+          Register agent →
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div style=\{{ padding: 'var(--space-8) var(--space-4)', maxWidth: '48rem', margin: '0 auto' }}>
-      <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-2)' }}>
-        {agent.name}
-      </h1>
-      <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem', marginBottom: 'var(--space-6)' }}>
-        Wallet: <code>{agent.wallet}</code>
-      </p>
+    <div style=\{{ padding: 'var(--space-8) var(--space-6)', maxWidth: '48rem' }}>
+      <div style=\{{ marginBottom: 'var(--space-6)' }}>
+        <h1 style=\{{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 'var(--space-1)' }}>
+          {agent.name}
+        </h1>
+        <p style=\{{ color: 'var(--fg-muted)', fontSize: '0.8125rem', fontFamily: 'var(--font-mono)' }}>
+          {agent.wallet}
+        </p>
+      </div>
 
+      {/* Status card */}
       <section style=\{{
         padding: 'var(--space-5)',
-        borderRadius: 'var(--radius-md, 0.5rem)',
+        borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--border)',
         background: 'var(--surface)',
         marginBottom: 'var(--space-6)',
       }}>
-        <div style=\{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-3)' }}>
+        <div style=\{{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-4)' }}>
           <span style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)' }}>Status</span>
           <span style=\{{
             padding: 'var(--space-1) var(--space-3)',
-            borderRadius: 'var(--radius-full, 9999px)',
-            background: agent.status === 'active' ? 'var(--success)' : agent.status === 'paused' ? 'var(--warn)' : 'var(--danger)',
-            color: 'var(--bg)',
-            fontSize: '0.75rem',
+            borderRadius: 'var(--radius-full)',
+            background: STATUS_COLOR[agent.status] ?? 'var(--border)',
+            color: '#fff',
+            fontSize: '0.6875rem',
             fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
           }}>
-            {agent.status.toUpperCase()}
+            {agent.status}
           </span>
         </div>
-        <div style=\{{ fontSize: '2rem', fontWeight: 600, marginBottom: 'var(--space-1)' }}>
+        <div style=\{{ fontSize: '2rem', fontWeight: 700, marginBottom: 'var(--space-1)' }}>
           {agent.actionsLast24h}
         </div>
         <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>actions in the last 24 hours</div>
       </section>
 
+      {/* Capabilities */}
       <section style=\{{ marginBottom: 'var(--space-6)' }}>
-        <h2 style=\{{ fontSize: '1.125rem', marginBottom: 'var(--space-3)' }}>Capabilities</h2>
+        <h2 style=\{{ fontSize: '1rem', fontWeight: 600, marginBottom: 'var(--space-3)' }}>Capabilities</h2>
         <ul style=\{{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
           {agent.capabilities.map((cap) => (
             <li key={cap} style=\{{
               padding: 'var(--space-2) var(--space-3)',
-              borderRadius: 'var(--radius-md, 0.5rem)',
+              borderRadius: 'var(--radius-md)',
               border: '1px solid var(--border)',
               background: 'var(--surface)',
-              fontSize: '0.875rem',
-              fontFamily: 'var(--font-mono, monospace)',
+              fontSize: '0.8125rem',
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--fg-muted)',
             }}>
               {cap}
             </li>
@@ -88,39 +168,52 @@ export default function AgentAdminPage() {
         </ul>
       </section>
 
+      {/* Actions */}
       <section style=\{{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-        <a href={agent.verifyUrl} target="_blank" rel="noopener noreferrer" style=\{{
-          padding: 'var(--space-3) var(--space-4)',
-          borderRadius: 'var(--radius-md, 0.5rem)',
-          border: '1px solid var(--border)',
-          color: 'var(--fg)',
-          textDecoration: 'none',
-        }}>
+        <a
+          href={agent.verifyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style=\{{
+            padding: 'var(--space-3) var(--space-4)',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border)',
+            color: 'var(--fg)',
+            textDecoration: 'none',
+            fontSize: '0.875rem',
+          }}
+        >
           Public verify URL ↗
         </a>
         <Link href="/admin/mcp" style=\{{
           padding: 'var(--space-3) var(--space-4)',
-          borderRadius: 'var(--radius-md, 0.5rem)',
+          borderRadius: 'var(--radius-md)',
           border: '1px solid var(--border)',
           color: 'var(--fg)',
           textDecoration: 'none',
+          fontSize: '0.875rem',
         }}>
           MCP servers
         </Link>
-        <button
-          onClick={() => { /* TODO: POST /api/agent/kill */ }}
-          style=\{{
-            padding: 'var(--space-3) var(--space-4)',
-            borderRadius: 'var(--radius-md, 0.5rem)',
-            border: '1px solid var(--danger)',
-            background: 'transparent',
-            color: 'var(--danger)',
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-        >
-          Kill switch
-        </button>
+        {agent.status !== 'revoked' && (
+          <button
+            onClick={handleKillSwitch}
+            disabled={killing}
+            style=\{{
+              padding: 'var(--space-3) var(--space-4)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--danger)',
+              background: 'transparent',
+              color: 'var(--danger)',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              cursor: killing ? 'not-allowed' : 'pointer',
+              opacity: killing ? 0.6 : 1,
+            }}
+          >
+            {killing ? 'Revoking…' : 'Kill switch'}
+          </button>
+        )}
       </section>
     </div>
   );

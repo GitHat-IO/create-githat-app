@@ -1,0 +1,30 @@
+{{#if includeEmailVerification}}
+'use client';
+
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { VerifyEmailForm } from '@githat/nextjs';
+
+function VerifyEmailContent() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+
+  return (
+    <main {{#if useTailwind}}className="flex items-center justify-center min-h-screen"{{else}}style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)' }}{{/if}}>
+      <VerifyEmailForm token={token ?? undefined} signInUrl="/sign-in" />
+    </main>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)', color: 'var(--fg-muted)', fontSize: '0.875rem' }}>
+        Loading…
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
+  );
+}
+{{/if}}
