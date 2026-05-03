@@ -3,15 +3,26 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { VerifyEmailForm } from '@githat/nextjs';
+import { VerifyEmailStatus } from '@githat/nextjs';
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
 
+  if (!token) {
+    return (
+      <main style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)' }}>
+        <div style=\{{ textAlign: 'center' }}>
+          <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: 'var(--fg)', marginBottom: '0.5rem' }}>Invalid verification link</h1>
+          <p style=\{{ color: 'var(--fg-muted)' }}>The link may have expired. <a href="/sign-up" style=\{{ color: 'var(--primary)' }}>Try again</a>.</p>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main {{#if useTailwind}}className="flex items-center justify-center min-h-screen"{{else}}style=\{{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: 'var(--bg)' }}{{/if}}>
-      <VerifyEmailForm token={token ?? undefined} signInUrl="/sign-in" />
+      <VerifyEmailStatus token={token} signInUrl="/sign-in" />
     </main>
   );
 }

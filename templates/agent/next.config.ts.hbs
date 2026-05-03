@@ -1,9 +1,7 @@
-{{#if typescript}}import type { NextConfig } from 'next';
-{{/if}}import { withGitHat } from '@githat/nextjs/server';
+import { withGitHat } from '@githat/nextjs/server';
 
-{{#if typescript}}const nextConfig: NextConfig = {
-{{else}}const nextConfig = {
-{{/if}}  output: 'standalone',
+const nextConfig = {
+  output: 'standalone',
 };
 
 export default withGitHat(nextConfig);
