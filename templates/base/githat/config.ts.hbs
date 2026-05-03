@@ -1,15 +1,13 @@
 {{#if includeGithatFolder}}
 export const githatConfig = {
   appName: '{{businessName}}',
-  publishableKey: {{#ifEquals framework "nextjs"}}process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY{{else}}import.meta.env.VITE_GITHAT_PUBLISHABLE_KEY{{/ifEquals}} || '',
-  // For nextjs we point at the same-origin proxy mounted at
-  // src/app/api/githat/[...path]/route.ts — that proxy forwards to the
-  // real api.githat.io upstream and re-emits Set-Cookie on this app's
-  // domain so cookies are visible to proxy.ts and getAuth(). For
-  // react-vite (no Next.js API routes) we hit api.githat.io directly,
-  // which only works for browser-token auth flows that don't depend on
-  // cookies.
-  apiUrl: {{#ifEquals framework "nextjs"}}process.env.NEXT_PUBLIC_GITHAT_API_URL || '/api/githat'{{else}}import.meta.env.VITE_GITHAT_API_URL || '{{apiUrl}}'{{/ifEquals}},
+  publishableKey: {{#ifNext framework}}process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY{{else}}import.meta.env.VITE_GITHAT_PUBLISHABLE_KEY{{/ifNext}} || '',
+  // For Next.js-shaped frameworks we point at the same-origin proxy
+  // mounted at app/api/githat/[...path]/route.ts — that proxy forwards
+  // to api.githat.io and re-emits Set-Cookie on this app's domain so
+  // cookies are visible to proxy.ts and getAuth(). For react-vite we
+  // hit api.githat.io directly (browser-token flows only).
+  apiUrl: {{#ifNext framework}}process.env.NEXT_PUBLIC_GITHAT_API_URL || '/api/githat'{{else}}import.meta.env.VITE_GITHAT_API_URL || '{{apiUrl}}'{{/ifNext}},
   signInUrl: '/sign-in',
   signUpUrl: '/sign-up',
   afterSignInUrl: '/dashboard',
