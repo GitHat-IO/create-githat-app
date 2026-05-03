@@ -20,6 +20,7 @@ export default function RootLayout({ children }{{#if typescript}}: { children: R
           ...githatConfig,
 {{else}}
           publishableKey: process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY || '',
+          apiUrl: '/api/githat',
           signInUrl: '/sign-in',
           signUpUrl: '/sign-up',
           afterSignInUrl: '/dashboard',
