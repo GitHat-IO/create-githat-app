@@ -1,0 +1,133 @@
+{{#if includeDashboard}}
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@githat/nextjs';
+{{#if typescript}}
+interface AgentSummary {
+  total: number;
+  active: number;
+  actionsLast24h: number;
+  mcpServers: number;
+}
+{{/if}}
+
+export default function DashboardPage() {
+  const { user, org, getToken } = useAuth();
+  const [summary, setSummary] = useState{{#if typescript}}<AgentSummary>{{/if}}({
+    total: 0,
+    active: 0,
+    actionsLast24h: 0,
+    mcpServers: 0,
+  });
+
+  useEffect(() => {
+    getToken().then((token) => {
+      if (!token) return;
+      fetch('/api/githat/agents/summary', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.ok ? r.json() : null)
+        .then((data) => { if (data) setSummary(data); })
+        .catch(() => {});
+    });
+  }, [getToken]);
+
+  return (
+    <div>
+      <div style=\{{ marginBottom: '2rem' }}>
+        <h1 style=\{{ fontSize: '1.5rem', fontWeight: 700, color: '#fafafa', marginBottom: '0.375rem' }}>
+          Welcome back{user?.name ? `, ${user.name}` : ''}
+        </h1>
+        {org && (
+          <p style=\{{ color: '#71717a', fontSize: '0.875rem' }}>
+            {org.name} · <span style=\{{ color: '#a1a1aa' }}>{org.role}</span>
+          </p>
+        )}
+      </div>
+
+      {/* Stats row */}
+      <div style=\{{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(14rem, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+        {[
+          { label: 'Total agents',        value: summary.total,            sub: 'Registered' },
+          { label: 'Active agents',        value: summary.active,           sub: 'Running now' },
+          { label: 'Actions (24h)',        value: summary.actionsLast24h,   sub: 'Across all agents' },
+          { label: 'MCP servers',          value: summary.mcpServers,       sub: `Plan: ${org?.tier ?? 'Free'}` },
+        ].map(({ label, value, sub }) => (
+          <div key={label} style=\{{
+            background: '#111113',
+            border: '1px solid #1e1e2e',
+            borderRadius: '0.75rem',
+            padding: '1.5rem',
+          }}>
+            <p style=\{{ fontSize: '0.8125rem', color: '#71717a', marginBottom: '0.375rem' }}>{label}</p>
+            <p style=\{{ fontSize: '1.5rem', fontWeight: 700, color: '#fafafa', marginBottom: '0.25rem' }}>{value}</p>
+            <p style=\{{ fontSize: '0.75rem', color: '#52525b' }}>{sub}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick actions */}
+      <div style=\{{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(20rem, 1fr))', gap: '1rem' }}>
+        {[
+          {
+            title: 'Register an AI agent',
+            desc: 'Assign a wallet-bound identity to a new autonomous agent. Capability-scoped, kill-switchable, fully audited.',
+            cta: 'Register agent',
+            href: '/dashboard/agents',
+            accent: '#6366f1',
+          },
+          {
+            title: 'Connect an MCP server',
+            desc: 'Grant your agents access to new tools by connecting a Model Context Protocol server.',
+            cta: 'Connect server',
+            href: '/dashboard/mcp',
+            accent: '#0ea5e9',
+          },
+          {
+            title: 'Invite team members',
+            desc: 'Add collaborators who can monitor agents, adjust capabilities, or trigger the kill switch.',
+            cta: 'Invite',
+            href: '/dashboard/members',
+            accent: '#10b981',
+          },
+          {
+            title: 'Agent operator console',
+            desc: 'View live status, adjust capabilities, and hit the kill switch for a specific agent.',
+            cta: 'Open console',
+            href: '/admin/agent',
+            accent: '#f59e0b',
+          },
+        ].map(({ title, desc, cta, href, accent }) => (
+          <div key={title} style=\{{
+            background: '#111113',
+            border: '1px solid #1e1e2e',
+            borderRadius: '0.75rem',
+            padding: '1.5rem',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.75rem',
+          }}>
+            <h3 style=\{{ fontSize: '0.9375rem', fontWeight: 600, color: '#fafafa' }}>{title}</h3>
+            <p style=\{{ fontSize: '0.875rem', color: '#71717a', lineHeight: 1.6, flex: 1 }}>{desc}</p>
+            <Link href={href} style=\{{
+              display: 'inline-block',
+              background: accent,
+              color: '#fff',
+              textDecoration: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              fontWeight: 600,
+              alignSelf: 'flex-start',
+            }}>
+              {cta} →
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+{{/if}}

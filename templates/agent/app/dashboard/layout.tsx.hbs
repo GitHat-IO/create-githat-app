@@ -1,0 +1,9 @@
+{{#if includeDashboard}}
+{{#if includeGithatFolder}}
+import { DashboardLayout } from '../../githat/dashboard/layout{{#unless typescript}}.jsx{{/unless}}';
+
+export default function Layout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
+  return <DashboardLayout>{children}</DashboardLayout>;
+}
+{{/if}}
+{{/if}}

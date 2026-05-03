@@ -1,0 +1,9 @@
+{{#if includeMcpModule}}
+{{#if includeGithatFolder}}
+import { DashboardMcpServers } from '../../../githat/dashboard/mcp-servers{{#unless typescript}}.jsx{{/unless}}';
+
+export default function McpPage() {
+  return <DashboardMcpServers />;
+}
+{{/if}}
+{{/if}}

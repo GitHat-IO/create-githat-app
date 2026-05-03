@@ -1,6 +1,7 @@
 {{#unless includeDashboard}}{{else}}
 'use client';
 
+import Link from 'next/link';
 import { useAuth } from '@githat/nextjs';
 
 export function DashboardOverview() {
@@ -8,29 +9,118 @@ export function DashboardOverview() {
 
   return (
     <div>
-      <h1 style=\{{ fontSize: '1.5rem', fontWeight: 600, color: '#fafafa', marginBottom: '0.5rem' }}>
-        Welcome{user?.name ? `, ${user.name}` : ''}
-      </h1>
-      {org && (
-        <p style=\{{ color: '#a1a1aa', marginBottom: '2rem' }}>
-          Organization: <strong style=\{{ color: '#7c3aed' }}>{org.name}</strong> ({org.role})
-        </p>
-      )}
+      <div style=\{{ marginBottom: '2rem' }}>
+        <h1 style=\{{ fontSize: '1.5rem', fontWeight: 700, color: '#fafafa', marginBottom: '0.375rem' }}>
+          Welcome back{user?.name ? `, ${user.name}` : ''}
+        </h1>
+        {org && (
+          <p style=\{{ color: '#71717a', fontSize: '0.875rem' }}>
+            {org.name} · <span style=\{{ color: '#a1a1aa' }}>{org.role}</span>
+          </p>
+        )}
+      </div>
 
-      <div style=\{{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(16rem, 1fr))', gap: '1rem' }}>
-        <StatCard title="Status" value="Active" />
-        <StatCard title="Plan" value={org?.tier || 'Free'} />
-        <StatCard title="Identity" value="GitHat" />
+      {/* Stats row */}
+      <div style=\{{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(14rem, 1fr))', gap: '1rem', marginBottom: '2.5rem' }}>
+        <StatCard label="Status"   value="Active"              sub="Account health" />
+        <StatCard label="Plan"     value={org?.tier ?? 'Free'} sub="Current tier" />
+        <StatCard label="Identity" value="GitHat"              sub="Auth provider" />
+        {{#if includeOrgManagement}}
+        <StatCard label="Members"  value={String(org?.memberCount ?? 1)} sub="Team size" />
+        {{/if}}
+      </div>
+
+      {/* Quick actions */}
+      <div style=\{{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(20rem, 1fr))', gap: '1rem' }}>
+        {{#if includeOrgManagement}}
+        <ActionCard
+          title="Invite team members"
+          desc="Add your business partner, accountant, or employee to your org."
+          cta="Invite"
+          href="/dashboard/members"
+          accent="#6366f1"
+        />
+        <ActionCard
+          title="Organization settings"
+          desc="Update your org name, billing plan, and member permissions."
+          cta="Settings"
+          href="/dashboard/settings"
+          accent="#8b5cf6"
+        />
+        {{/if}}
+        {{#if includeMcpModule}}
+        <ActionCard
+          title="Connect an MCP server"
+          desc="Hook your data into any AI assistant via the Model Context Protocol."
+          cta="Connect"
+          href="/dashboard/mcp"
+          accent="#0ea5e9"
+        />
+        {{/if}}
+        {{#if includeAgentModule}}
+        <ActionCard
+          title="Deploy an AI agent"
+          desc="Register a wallet-bound autonomous agent with capability scoping and a kill switch."
+          cta="Deploy"
+          href="/dashboard/agents"
+          accent="#10b981"
+        />
+        {{/if}}
+        <ActionCard
+          title="Manage apps"
+          desc="View and rotate your publishable keys, configure allowed origins."
+          cta="View apps"
+          href="/dashboard/apps"
+          accent="#f59e0b"
+        />
       </div>
     </div>
   );
 }
 
-function StatCard({ title, value }{{#if typescript}}: { title: string; value: string }{{/if}}) {
+function StatCard({ label, value, sub }{{#if typescript}}: { label: string; value: string; sub: string }{{/if}}) {
   return (
-    <div style=\{{ padding: '1.5rem', background: '#111113', border: '1px solid #1e1e2e', borderRadius: '0.5rem' }}>
-      <p style=\{{ fontSize: '0.875rem', color: '#71717a', marginBottom: '0.25rem' }}>{title}</p>
-      <p style=\{{ fontSize: '1.25rem', fontWeight: 600, color: '#fafafa' }}>{value}</p>
+    <div style=\{{
+      background: '#111113',
+      border: '1px solid #1e1e2e',
+      borderRadius: '0.75rem',
+      padding: '1.5rem',
+    }}>
+      <p style=\{{ fontSize: '0.8125rem', color: '#71717a', marginBottom: '0.375rem' }}>{label}</p>
+      <p style=\{{ fontSize: '1.5rem', fontWeight: 700, color: '#fafafa', marginBottom: '0.25rem' }}>{value}</p>
+      <p style=\{{ fontSize: '0.75rem', color: '#52525b' }}>{sub}</p>
+    </div>
+  );
+}
+
+function ActionCard({ title, desc, cta, href, accent }{{#if typescript}}: {
+  title: string; desc: string; cta: string; href: string; accent: string;
+}{{/if}}) {
+  return (
+    <div style=\{{
+      background: '#111113',
+      border: '1px solid #1e1e2e',
+      borderRadius: '0.75rem',
+      padding: '1.5rem',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.75rem',
+    }}>
+      <h3 style=\{{ fontSize: '0.9375rem', fontWeight: 600, color: '#fafafa' }}>{title}</h3>
+      <p style=\{{ fontSize: '0.875rem', color: '#71717a', lineHeight: 1.6, flex: 1 }}>{desc}</p>
+      <Link href={href} style=\{{
+        display: 'inline-block',
+        background: accent,
+        color: '#fff',
+        textDecoration: 'none',
+        padding: '0.5rem 1rem',
+        borderRadius: '0.375rem',
+        fontSize: '0.875rem',
+        fontWeight: 600,
+        alignSelf: 'flex-start',
+      }}>
+        {cta} →
+      </Link>
     </div>
   );
 }

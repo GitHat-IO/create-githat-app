@@ -70,8 +70,8 @@ function getDefaults(
       : isMinimal ? [] : ['forgot-password'],
     databaseChoice: 'none',
     useTailwind: true,
-    includeDashboard: !isMinimal,
-    includeGithatFolder: !isMinimal && projectType === 'frontend',
+    includeDashboard: template === 'agent' ? true : !isMinimal,
+    includeGithatFolder: template === 'agent' ? true : (!isMinimal && projectType === 'frontend'),
     initGit: true,
     installDeps: true,
   };
