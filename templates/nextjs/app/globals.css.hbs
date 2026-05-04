@@ -1,7 +1,76 @@
-@import "@githat/ui/tokens.css";
+/*
+ * Tailwind v4 — required because @githat/nextjs/styles is processed
+ * through @tailwindcss/postcss. Import the utilities if you want them;
+ * the auth pages only need the CSS variables below.
+ */
 {{#if useTailwind}}
 @import "tailwindcss";
 {{/if}}
+
+/*
+ * Self-contained design tokens.
+ *
+ * Defines the CSS variables used by @githat/nextjs/styles and all
+ * template components. Override these to re-skin the whole app.
+ */
+
+:root {
+  /* Surface */
+  --bg:           #ffffff;
+  --surface:      #fafafa;
+  --surface-sub:  #f4f4f5;
+
+  /* Borders */
+  --border:       #e5e7eb;
+
+  /* Foreground */
+  --fg:           #0a0a0a;
+  --fg-muted:     #525252;
+  --fg-subtle:    #737373;
+
+  /* Brand — change these two to re-skin the whole auth flow */
+  --primary:      #6366f1;
+  --accent:       #f59e0b;
+
+  /* Semantic */
+  --success:      #16a34a;
+  --warn:         #d97706;
+  --danger:       #dc2626;
+  --info:         #0ea5e9;
+
+  /* Spacing — used by @githat/nextjs/styles */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-12: 3rem;
+
+  /* Radius */
+  --radius:    0.5rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Fonts */
+  --font-sans:     'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-wordmark: 'Instrument Serif', Georgia, serif;
+  --font-mono:     'Fira Code', 'Cascadia Code', Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #09090b;
+    --surface:      #111113;
+    --surface-sub:  #1e1e2e;
+    --border:       #27272a;
+    --fg:           #fafafa;
+    --fg-muted:     #a1a1aa;
+    --fg-subtle:    #71717a;
+  }
+}
 
 * {
   box-sizing: border-box;
@@ -13,6 +82,7 @@ body {
   font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   background: var(--bg, #09090b);
   color: var(--fg, #fafafa);
+  line-height: 1.5;
 }
 
 a {

@@ -1,0 +1,93 @@
+'use client';
+
+import Link from 'next/link';
+import { useAuth } from '@githat/nextjs';
+
+{{#if typescript}}
+interface Post {
+  title: string;
+  gated: boolean;
+  body: string;
+}
+
+interface PostContentProps {
+  slug: string;
+  post: Post | null;
+}
+{{/if}}
+
+export default function PostContent({ slug, post }{{#if typescript}}: PostContentProps{{/if}}) {
+  const { isSignedIn } = useAuth();
+
+  // Stub: real apps fetch the user's subscription state from your
+  // backend (which watches Sebastn webhooks for the source of truth).
+  const hasActiveSubscription = false;
+
+  if (!post) {
+    return (
+      <div style=\{{ padding: 'var(--space-12)', textAlign: 'center' }}>
+        <p>Post not found.</p>
+        <Link href="/" style=\{{ color: 'var(--primary)' }}>← Home</Link>
+      </div>
+    );
+  }
+
+  const showPaywall = post.gated && (!isSignedIn || !hasActiveSubscription);
+
+  return (
+    <article style=\{{ maxWidth: '40rem', margin: '0 auto', padding: 'var(--space-8) var(--space-4)' }}>
+      <Link href="/" style=\{{ color: 'var(--fg-muted)', fontSize: '0.875rem', display: 'inline-block', marginBottom: 'var(--space-4)' }}>
+        ← All posts
+      </Link>
+      <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2.25rem', lineHeight: 1.2, marginBottom: 'var(--space-4)' }}>
+        {post.title}
+      </h1>
+
+      <div style=\{{ color: 'var(--fg)', lineHeight: 1.8, fontSize: '1.0625rem' }}>
+        {showPaywall ? (
+          <>
+            <p style=\{{ marginBottom: 'var(--space-4)' }}>{post.body.slice(0, 200)}…</p>
+            <Paywall />
+          </>
+        ) : (
+          <p>{post.body}</p>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function Paywall() {
+  return (
+    <div style=\{{
+      marginTop: 'var(--space-8)',
+      padding: 'var(--space-6)',
+      borderRadius: 'var(--radius-md, 0.5rem)',
+      border: '2px solid var(--accent)',
+      background: 'var(--surface-sub)',
+      textAlign: 'center',
+    }}>
+      <h3 style=\{{ fontFamily: 'var(--font-wordmark)', marginBottom: 'var(--space-2)' }}>
+        This post is for subscribers
+      </h3>
+      <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-4)' }}>
+        Get access to every paid essay, plus the newsletter.
+      </p>
+      <button
+        onClick={() => { /* TODO: open Sebastn checkout */ }}
+        style=\{{
+          padding: 'var(--space-3) var(--space-6)',
+          borderRadius: 'var(--radius-md, 0.5rem)',
+          border: 'none',
+          background: 'var(--primary)',
+          color: 'var(--bg)',
+          fontWeight: 600,
+          fontSize: '1rem',
+          cursor: 'pointer',
+        }}
+      >
+        Subscribe — $5/mo
+      </button>
+    </div>
+  );
+}

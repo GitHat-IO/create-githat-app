@@ -7,7 +7,7 @@ const NEXT_LIKE = new Set<TemplateContext['framework']>([
 ]);
 /** Templates we ship as minimal scaffolds (skip @githat/ui, etc.). */
 const MINIMAL = new Set<TemplateContext['framework']>([
-  'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard', 'portfolio', 'classroom',
+  'nextjs', 'plain', 'saas', 'marketplace', 'agent', 'content', 'dashboard', 'portfolio', 'classroom',
 ]);
 
 export function buildPackageJson(ctx: TemplateContext): Record<string, unknown> {

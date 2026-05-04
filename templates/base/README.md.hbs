@@ -22,7 +22,7 @@ cp .env.local.example .env.local
 {{#ifEquals packageManager "npm"}}npm run dev{{else}}{{packageManager}} dev{{/ifEquals}}
 ```
 
-4. Open [http://localhost:{{#ifEquals framework "nextjs"}}3000{{else}}5173{{/ifEquals}}](http://localhost:{{#ifEquals framework "nextjs"}}3000{{else}}5173{{/ifEquals}})
+4. Open [http://localhost:{{#ifNext framework}}3000{{else}}5173{{/ifNext}}](http://localhost:{{#ifNext framework}}3000{{else}}5173{{/ifNext}})
 
 Your `NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY` is required — get it at [githat.io/dashboard/apps](https://githat.io/dashboard/apps) or re-run `create-githat-app` after running `githat login` to have it auto-registered.
 
@@ -71,3 +71,4 @@ After that, every `git push origin main` triggers a build + rsync + restart. The
 - [GitHat Documentation](https://githat.io/docs)
 - [SDK Reference](https://www.npmjs.com/package/@githat/nextjs)
 - [API Reference](https://githat.io/docs/api)
+tps://githat.io/docs/api)

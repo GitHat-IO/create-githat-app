@@ -4,12 +4,12 @@
 import { UserButton, OrgSwitcher } from '@githat/nextjs';
 import { AuthGuard } from '../auth/guard{{#unless typescript}}.jsx{{/unless}}';
 import { githatConfig } from '../config{{#unless typescript}}.js{{/unless}}';
-{{#ifEquals framework "nextjs"}}
+{{#ifNext framework}}
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 {{else}}
 import { Link, useLocation } from 'react-router-dom';
-{{/ifEquals}}
+{{/ifNext}}
 
 const navItems = [
   { label: 'Overview', href: '/dashboard' },
@@ -27,11 +27,11 @@ const navItems = [
 ];
 
 export function DashboardLayout({ children }{{#if typescript}}: { children: React.ReactNode }{{/if}}) {
-{{#ifEquals framework "nextjs"}}
+{{#ifNext framework}}
   const pathname = usePathname();
 {{else}}
   const { pathname } = useLocation();
-{{/ifEquals}}
+{{/ifNext}}
 
   return (
     <AuthGuard>
@@ -45,11 +45,11 @@ export function DashboardLayout({ children }{{#if typescript}}: { children: Reac
             {navItems.map((item) => (
               <Link
                 key={item.href}
-{{#ifEquals framework "nextjs"}}
+{{#ifNext framework}}
                 href={item.href}
 {{else}}
                 to={item.href}
-{{/ifEquals}}
+{{/ifNext}}
                 style=\{{
                   padding: '0.5rem 0.75rem',
                   borderRadius: '0.375rem',

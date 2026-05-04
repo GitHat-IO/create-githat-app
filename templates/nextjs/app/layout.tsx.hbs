@@ -1,5 +1,4 @@
 import { GitHatProvider } from '@githat/nextjs';
-import { Wordmark } from '@githat/ui';
 import '@githat/nextjs/styles';
 import './globals.css';
 {{#if includeGithatFolder}}
@@ -33,7 +32,9 @@ export default function RootLayout({ children }{{#if typescript}}: { children: R
 {{/if}}
         }}>
           <header style=\{{ padding: 'var(--space-4, 1rem) var(--space-6, 1.5rem)', borderBottom: '1px solid var(--border, #e5e7eb)' }}>
-            <Wordmark name="{{businessName}}" size="md" href="/" />
+            <a href="/" style=\{{ textDecoration: 'none', color: 'inherit', fontWeight: 700, fontSize: '1.125rem' }}>
+              {{businessName}}
+            </a>
           </header>
           <main>{children}</main>
         </GitHatProvider>

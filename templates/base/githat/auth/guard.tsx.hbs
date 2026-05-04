@@ -2,11 +2,11 @@
 'use client';
 
 import { useAuth } from '@githat/nextjs';
-{{#ifEquals framework "nextjs"}}
+{{#ifNext framework}}
 import { useRouter } from 'next/navigation';
 {{else}}
 import { useNavigate } from 'react-router-dom';
-{{/ifEquals}}
+{{/ifNext}}
 import { githatConfig } from '../config{{#unless typescript}}.js{{/unless}}';
 
 export function AuthGuard({ children, requiredRole }{{#if typescript}}: {
@@ -14,11 +14,11 @@ export function AuthGuard({ children, requiredRole }{{#if typescript}}: {
   requiredRole?: 'owner' | 'admin' | 'member';
 }{{/if}}) {
   const { isSignedIn, isLoading, org } = useAuth();
-{{#ifEquals framework "nextjs"}}
+{{#ifNext framework}}
   const router = useRouter();
 {{else}}
   const navigate = useNavigate();
-{{/ifEquals}}
+{{/ifNext}}
 
   if (isLoading) {
     return (
@@ -29,11 +29,11 @@ export function AuthGuard({ children, requiredRole }{{#if typescript}}: {
   }
 
   if (!isSignedIn) {
-{{#ifEquals framework "nextjs"}}
+{{#ifNext framework}}
     router.push(githatConfig.signInUrl);
 {{else}}
     navigate(githatConfig.signInUrl);
-{{/ifEquals}}
+{{/ifNext}}
     return null;
   }
 

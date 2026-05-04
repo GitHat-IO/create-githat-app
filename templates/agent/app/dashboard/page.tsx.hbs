@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@githat/nextjs';
-import { githatApi } from '../../../githat/api/client{{#unless typescript}}.js{{/unless}}';
+import { githatApi } from '../../githat/api/client{{#unless typescript}}.js{{/unless}}';
 {{#if typescript}}
 interface AgentSummary {
   total: number;

@@ -8,7 +8,20 @@ import { listEntities } from '../../../../src/lib/db';
  * implement in src/lib/db.ts) and renders rows as a basic table.
  * Auth-gating happens client-side via `useAuth` in the static export;
  * if you need entity-level RBAC, check `verifyToken` claims here.
+ *
+ * generateStaticParams is required for `output: "export"`. Add the
+ * entity names your app actually uses. Unknown slugs are blocked by
+ * `dynamicParams = false`.
  */
+
+const ENTITIES = ['users', 'products', 'orders'];
+
+export function generateStaticParams() {
+  return ENTITIES.map((entity) => ({ entity }));
+}
+
+export const dynamicParams = false;
+
 export default async function EntityPage({
   params,
 }: {
