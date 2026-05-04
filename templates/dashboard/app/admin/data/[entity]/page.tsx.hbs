@@ -6,8 +6,8 @@ import { listEntities } from '../../../../src/lib/db';
  *
  * Server component — runs `listEntities(entityName)` (which you
  * implement in src/lib/db.ts) and renders rows as a basic table.
- * Auth-gating is enforced by the middleware in proxy.ts; if you
- * need entity-level RBAC, check `verifyToken` claims here.
+ * Auth-gating happens client-side via `useAuth` in the static export;
+ * if you need entity-level RBAC, check `verifyToken` claims here.
  */
 export default async function EntityPage({
   params,

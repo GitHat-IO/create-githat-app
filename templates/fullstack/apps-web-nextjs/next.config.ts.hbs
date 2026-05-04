@@ -1,6 +1,8 @@
 import { withGitHat } from '@githat/nextjs/server';
 
 const nextConfig = {
+  output: 'export',
+  images: { unoptimized: true },
   // Proxy API calls to the backend in development
   async rewrites() {
     return [

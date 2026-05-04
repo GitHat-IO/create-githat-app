@@ -25,7 +25,12 @@ export default function RootLayout({ children }{{#if typescript}}: { children: R
       <body>
         <GitHatProvider config=\{{
           publishableKey: process.env.NEXT_PUBLIC_GITHAT_PUBLISHABLE_KEY || '',
-          apiUrl: '/api/githat',
+          apiUrl: 'https://api.githat.io',
+{{#if typescript}}
+          tokenStorage: 'localStorage' as const,
+{{else}}
+          tokenStorage: 'localStorage',
+{{/if}}
           signInUrl: '/sign-in',
           signUpUrl: '/sign-up',
           afterSignInUrl: '/',
