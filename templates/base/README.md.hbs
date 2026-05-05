@@ -175,6 +175,70 @@ your site, never elsewhere, even if a user has the same passkey
 "saved" in their password manager. This is the correct security
 model.
 
+## Realtime subscriptions
+
+`useRealtime()` gives you a live WebSocket connection to GitHat's realtime
+API. Any event GitHat records (sign-in, MFA toggle, file upload, webhook
+delivery) is pushed to subscribed clients instantly — no polling required.
+
+A common use: keep `/account/activity` up-to-date without a page reload.
+
+```tsx
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useAuth, useRealtime, useAuditLog } from '@githat/nextjs';
+import type { AuditEvent } from '@githat/nextjs';
+
+export default function ActivityFeedPage() {
+  const { user } = useAuth();
+  const { subscribe, status } = useRealtime();
+  const { list } = useAuditLog();
+  const [events, setEvents] = useState<AuditEvent[]>([]);
+
+  // Initial load
+  useEffect(() => {
+    list({ limit: 50 }).then(({ events }) => setEvents(events));
+  }, [list]);
+
+  // Live updates via WebSocket
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const unsub = subscribe(`audit.${user.id}`, () => {
+      // Refresh the list whenever a new audit event arrives
+      list({ limit: 50 }).then(({ events }) => setEvents(events));
+    });
+
+    return unsub; // unsubscribes on unmount
+  }, [user?.id, subscribe, list]);
+
+  return (
+    <div>
+      <p>Connection: {status}</p>
+      <ul>
+        {events.map((e) => (
+          <li key={e.sk}>{e.action} — {e.created_at}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+**Topic conventions:**
+
+| Topic | Events pushed |
+|---|---|
+| `audit.{userId}` | Sign-in, MFA changes, passkey changes |
+| `webhook.{webhookId}` | Webhook delivery results |
+| `storage.{appId}` | File uploads finalized in your app |
+| `users.{userId}` | MFA enabled, passkey added |
+
+Resource-level wildcards are supported: `audit.*` receives every audit event
+for every user in your app. The connection auto-reconnects with exponential
+back-off (1 s → 2 s → 4 s → 8 s → 30 s cap).
+
 ## Learn More
 
 - [GitHat Documentation](https://githat.io/docs)
