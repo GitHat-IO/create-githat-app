@@ -219,3 +219,38 @@ When you're ready to persist products in a backend (Postgres, DynamoDB,
 Sebastn), replace `getAvailableProducts()` in `app/page.tsx` with a
 `fetch()` to your API. The `Product` interface in `src/data/products.ts`
 stays the same so your UI components don't need to change.
+
+## File storage
+
+`/account/files` lets users upload files directly to per-app S3 buckets
+via the GitHat storage API. Files never route through the GitHat server —
+the SDK gets a presigned POST URL, uploads directly to S3, then calls
+`/storage/finalize` to record the object.
+
+```tsx
+import { useStorage, StorageDropzone } from '@githat/nextjs';
+
+const { upload, list, getUrl, remove, update } = useStorage();
+
+// Drag-drop upload UI with progress bar (no extra dependencies)
+<StorageDropzone
+  accept="image/*,application/pdf"
+  onUpload={(obj) => console.log('uploaded:', obj.objectId)}
+/>
+
+// Programmatic upload
+const obj = await upload(file, { isPublic: false, metadata: { tag: 'avatar' } });
+
+// List user's files (paginated)
+const { items, nextCursor } = await list({ prefix: 'avatars/', limit: 20 });
+
+// Get a 5-minute presigned download URL (or permanent URL for public objects)
+const { downloadUrl } = await getUrl(obj.objectId);
+```
+
+Key properties:
+- **Per-app S3 buckets** — each app gets its own bucket (`githat-storage-<hash>`)
+  with CORS configured for the app's verified domain.
+- **Static-export-friendly** — no server actions. All storage calls are
+  client-side fetches against the GitHat API.
+- **Private by default** — set `isPublic: true` for public CDN URLs.

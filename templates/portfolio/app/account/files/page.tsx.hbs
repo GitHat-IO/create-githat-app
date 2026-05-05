@@ -1,0 +1,241 @@
+'use client';
+
+import { useEffect, useState, useRef } from 'react';
+import { useStorage, StorageDropzone } from '@githat/nextjs';
+import type { StorageObject } from '@githat/nextjs';
+
+/**
+ * /account/files — File storage for {{businessName}}.
+ *
+ * Lists uploaded files with download links. Uses <StorageDropzone/>
+ * for browser-direct uploads to S3 via the GitHat storage API.
+ * Works with Next.js static export — no server actions required.
+ */
+export default function FilesPage() {
+  const { list, getUrl, remove } = useStorage();
+  const [files, setFiles] = useState<StorageObject[]>([]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  async function load(cursor?: string) {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await list({ limit: 20, cursor });
+      if (cursor) {
+        setFiles((prev) => [...prev, ...result.items]);
+      } else {
+        setFiles(result.items);
+      }
+      setNextCursor(result.nextCursor);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load files');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function handleDownload(objectId: string) {
+    try {
+      const obj = await getUrl(objectId);
+      if (obj.downloadUrl) {
+        window.open(obj.downloadUrl, '_blank', 'noopener,noreferrer');
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to get download URL');
+    }
+  }
+
+  async function handleDelete(objectId: string) {
+    if (!confirm('Delete this file? This cannot be undone.')) return;
+    setDeletingId(objectId);
+    try {
+      await remove(objectId);
+      setFiles((prev) => prev.filter((f) => f.objectId !== objectId));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to delete file');
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  function formatBytes(bytes: number): string {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  }
+
+  return (
+    <main
+      style=\{{
+        maxWidth: '720px',
+        margin: '0 auto',
+        padding: 'var(--space-8, 2rem) var(--space-4, 1rem)',
+        color: 'var(--fg, #111)',
+      }}
+    >
+      <header style=\{{ marginBottom: '1.5rem' }}>
+        <h1 style=\{{ fontSize: '1.875rem', fontWeight: 700, margin: 0 }}>Files</h1>
+        <p style=\{{ color: 'var(--fg-muted, #666)', marginTop: '0.25rem' }}>
+          Upload and manage files in your {{businessName}} account.
+        </p>
+      </header>
+
+      {/* Upload dropzone */}
+      <StorageDropzone
+        accept="image/*,application/pdf,text/*"
+        onUpload={() => load()}
+        onError={(err) => setError(err.message)}
+        uploadOptions=\{{ isPublic: false }}
+        style=\{{ marginBottom: '1.5rem' }}
+      />
+
+      {error && (
+        <div
+          style=\{{
+            padding: '0.75rem 1rem',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: '6px',
+            color: '#dc2626',
+            marginBottom: '1rem',
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      {loading && files.length === 0 ? (
+        <p style=\{{ color: 'var(--fg-muted, #666)' }}>Loading files...</p>
+      ) : files.length === 0 ? (
+        <p style=\{{ color: 'var(--fg-muted, #666)', textAlign: 'center', padding: '2rem 0' }}>
+          No files uploaded yet. Drop a file above to get started.
+        </p>
+      ) : (
+        <div style=\{{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
+          {files.map((file) => (
+            <div
+              key={file.objectId}
+              style=\{{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '0.875rem 1rem',
+                border: '1px solid var(--border, #e5e7eb)',
+                borderRadius: '8px',
+              }}
+            >
+              {/* File icon */}
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#9ca3af"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style=\{{ flexShrink: 0 }}
+                aria-hidden
+              >
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+
+              {/* File info */}
+              <div style=\{{ flex: 1, minWidth: 0 }}>
+                <p
+                  style=\{{
+                    margin: 0,
+                    fontWeight: 500,
+                    fontSize: '0.9rem',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {file.objectKey}
+                </p>
+                <p style=\{{ margin: '0.125rem 0 0', fontSize: '0.78rem', color: 'var(--fg-muted, #666)' }}>
+                  {formatBytes(file.size)} · {file.contentType} ·{' '}
+                  {new Date(file.uploadedAt).toLocaleDateString()}
+                  {file.isPublic && (
+                    <span
+                      style=\{{
+                        marginLeft: '0.5rem',
+                        padding: '0.1rem 0.4rem',
+                        background: '#dcfce7',
+                        color: '#16a34a',
+                        borderRadius: '4px',
+                        fontSize: '0.7rem',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Public
+                    </span>
+                  )}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div style=\{{ display: 'flex', gap: '0.5rem', flexShrink: 0 }}>
+                <button
+                  onClick={() => handleDownload(file.objectId)}
+                  style=\{{
+                    padding: '0.35rem 0.75rem',
+                    fontSize: '0.825rem',
+                    border: '1px solid var(--border, #e5e7eb)',
+                    borderRadius: '6px',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                  }}
+                  aria-label={`Download ${file.objectKey}`}
+                >
+                  Download
+                </button>
+                <button
+                  onClick={() => handleDelete(file.objectId)}
+                  disabled={deletingId === file.objectId}
+                  style=\{{
+                    padding: '0.35rem 0.75rem',
+                    fontSize: '0.825rem',
+                    border: '1px solid #fecaca',
+                    borderRadius: '6px',
+                    background: 'transparent',
+                    color: '#dc2626',
+                    cursor: deletingId === file.objectId ? 'not-allowed' : 'pointer',
+                  }}
+                  aria-label={`Delete ${file.objectKey}`}
+                >
+                  {deletingId === file.objectId ? '...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {nextCursor && (
+            <button
+              onClick={() => load(nextCursor)}
+              disabled={loading}
+              style=\{{
+                padding: '0.6rem 1.25rem',
+                marginTop: '0.5rem',
+                border: '1px solid var(--border, #e5e7eb)',
+                borderRadius: '6px',
+                background: 'transparent',
+                cursor: loading ? 'not-allowed' : 'pointer',
+                fontSize: '0.875rem',
+              }}
+            >
+              {loading ? 'Loading...' : 'Load more'}
+            </button>
+          )}
+        </div>
+      )}
+    </main>
+  );
+}
