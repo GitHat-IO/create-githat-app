@@ -1,0 +1,158 @@
+'use client';
+
+import { useEffect, useState, useCallback } from 'react';
+import { useAuth, useAppBilling } from '@githat/nextjs';
+import type { AppBillingStatus } from '@githat/nextjs';
+
+/**
+ * /billing — Subscription management for {{businessName}} end-users.
+ *
+ * Lets your users manage their subscription on your app. Backed by
+ * Stripe Connect — charges go to your connected Stripe account and
+ * GitHat takes a small platform fee.
+ *
+ * Usage:
+ *  1. Complete Stripe Connect onboarding in the GitHat dashboard
+ *     (Apps → your app → Billing → Connect Stripe).
+ *  2. This page shows users a "Manage subscription" button that
+ *     opens the Stripe Customer Portal in their name.
+ *
+ * For new subscriptions, call createCheckout() from useAppBilling()
+ * with the relevant Stripe price IDs for your plans.
+ */
+export default function BillingPage() {
+  const { user, org } = useAuth();
+  const appId = process.env.NEXT_PUBLIC_GITHAT_APP_ID || '';
+  const orgId = org?.id || '';
+
+  const { getStatus, connectOnboarding, openPortal } = useAppBilling(appId, orgId);
+
+  const [status, setStatus] = useState<AppBillingStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [portalLoading, setPortalLoading] = useState(false);
+
+  const load = useCallback(async () => {
+    if (!appId || !orgId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getStatus();
+      setStatus(data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load billing info');
+    } finally {
+      setLoading(false);
+    }
+  }, [getStatus, appId, orgId]);
+
+  useEffect(() => {
+    if (user) load();
+  }, [user, load]);
+
+  async function handlePortal() {
+    if (!user) return;
+    setPortalLoading(true);
+    setError(null);
+    try {
+      // In a real app, pass the Stripe customer ID for this user.
+      // You would look this up from your database or pass it as a prop.
+      const customerId = (user as Record<string, unknown>).stripeCustomerId as string | undefined;
+      if (!customerId) {
+        setError('No billing account found. Subscribe to a plan first.');
+        return;
+      }
+      const { url } = await openPortal({ customerId });
+      window.location.href = url;
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to open billing portal');
+    } finally {
+      setPortalLoading(false);
+    }
+  }
+
+  if (!user) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <p>Sign in to manage your subscription.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: '640px', margin: '0 auto', padding: '2rem 1rem' }}>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+        Billing
+      </h1>
+      <p style={{ color: '#64748b', marginBottom: '2rem' }}>
+        Manage your {{businessName}} subscription.
+      </p>
+
+      {loading && <p style={{ color: '#64748b' }}>Loading…</p>}
+
+      {error && (
+        <div
+          style={{
+            background: 'rgba(239,68,68,0.1)',
+            border: '1px solid #ef4444',
+            borderRadius: '0.5rem',
+            padding: '0.75rem 1rem',
+            color: '#ef4444',
+            marginBottom: '1rem',
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      {!loading && status && (
+        <div
+          style={{
+            border: '1px solid #e2e8f0',
+            borderRadius: '0.75rem',
+            padding: '1.5rem',
+            background: '#f8fafc',
+          }}
+        >
+          <div style={{ marginBottom: '1rem' }}>
+            <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b', marginBottom: '0.25rem' }}>
+              Connect status
+            </div>
+            <div style={{ fontWeight: 600 }}>
+              {status.connected ? (
+                status.chargesEnabled ? '✅ Active — charges enabled' : '⏳ Onboarding in progress'
+              ) : '❌ Not connected'}
+            </div>
+          </div>
+
+          {status.connected && status.chargesEnabled && (
+            <button
+              onClick={handlePortal}
+              disabled={portalLoading}
+              style={{
+                background: '#7c3aed',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '0.5rem',
+                padding: '0.6rem 1.25rem',
+                fontWeight: 600,
+                cursor: portalLoading ? 'default' : 'pointer',
+                opacity: portalLoading ? 0.7 : 1,
+                fontSize: '0.875rem',
+              }}
+            >
+              {portalLoading ? 'Opening portal…' : 'Manage subscription →'}
+            </button>
+          )}
+
+          {!status.connected && (
+            <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.5rem' }}>
+              The app owner needs to complete Stripe Connect onboarding before subscriptions
+              can be managed here.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

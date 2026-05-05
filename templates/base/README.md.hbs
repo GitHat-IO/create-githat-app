@@ -254,3 +254,87 @@ Key properties:
 - **Static-export-friendly** — no server actions. All storage calls are
   client-side fetches against the GitHat API.
 - **Private by default** — set `isPublic: true` for public CDN URLs.
+
+## Billing
+
+GitHat provides two billing primitives depending on who is paying whom.
+
+### Your org's GitHat plan (useBilling)
+
+Manage the org's GitHat subscription (Free → Starter $29/mo → Pro $99/mo → Enterprise).
+The `useBilling()` hook wraps `/billing/org/*`:
+
+```tsx
+import { useBilling, PricingTable } from '@githat/nextjs';
+
+const { getCurrentPlan, openCheckout, openPortal, cancel } = useBilling(org.id);
+
+// Render a full pricing table with upgrade CTAs
+<PricingTable orgId={org.id} currentPlan={plan.plan} />
+
+// Open Stripe Checkout for a plan upgrade
+const { url } = await openCheckout('pro');
+window.location.href = url;
+
+// Open the Stripe Customer Portal (card / cancellation management)
+const { url } = await openPortal();
+window.location.href = url;
+```
+
+The GitHat dashboard's `/billing` page shows the current plan, usage bars
+(apps, seats, API calls, emails vs. limits), and inline upgrade cards.
+
+### Charging your own users (useAppBilling — Stripe Connect)
+
+Customer apps can charge their own end-users through GitHat's Stripe Connect
+layer. GitHat takes a 1% platform fee; the rest goes to your connected account.
+
+```tsx
+import { useAppBilling } from '@githat/nextjs';
+
+const { getStatus, connectOnboarding, createCheckout, openPortal } =
+  useAppBilling(appId, orgId);
+
+// Start or refresh Connect onboarding
+const { url } = await connectOnboarding();
+window.location.href = url;   // user completes Stripe onboarding
+
+// Create a checkout session for an end-user
+const { url } = await createCheckout({
+  lineItems: [{ price: 'price_xxx', quantity: 1 }],
+  successUrl: 'https://yourapp.com/success',
+  cancelUrl: 'https://yourapp.com/cancel',
+});
+window.location.href = url;
+
+// Open the billing portal for an end-user
+const { url } = await openPortal({ customerId: 'cus_xxx' });
+window.location.href = url;
+```
+
+The scaffolded `/billing` route (available in most templates) renders a
+"Manage subscription" button + billing portal link for your end-users.
+
+### Usage metering
+
+Track metered events (API calls, AI tokens, storage bytes, etc.) for billing
+and analytics. Events are stored with a 90-day retention window and aggregated
+by day/month:
+
+```ts
+// Fire-and-forget from your API route or Server Action
+await fetch('https://api.githat.io/usage/track', {
+  method: 'POST',
+  headers: {
+    'X-GitHat-App-Key': process.env.GITHAT_PUBLISHABLE_KEY,
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ meter: 'api.call', quantity: 1 }),
+});
+
+// Query aggregates from the dashboard or a chart component
+const data = await fetch('/api/usage?meter=api.call&granularity=day&since=2026-05-01');
+```
+
+When a Stripe Meter ID is configured for a meter in the GitHat dashboard,
+events are automatically forwarded to Stripe for usage-based pricing.
