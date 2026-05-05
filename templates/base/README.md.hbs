@@ -124,6 +124,19 @@ password-reset emails (verify your domain at `/account/security`
 or via `useEmailDomains()` to upgrade from `auth@githat.io` to
 `auth@yourdomain`).
 
+## Passkey sign-in (Face ID, Touch ID, hardware keys)
+
+`<SignInForm/>` automatically shows a passkey button when the
+browser supports WebAuthn. Users can register a passkey from
+`/account/security` (in `<MfaManager/>`'s "Your passkeys" section).
+Once registered, sign-in is one click + biometric — no email,
+no password, no codes.
+
+Passkeys are origin-bound to your domain — they only work on
+your site, never elsewhere, even if a user has the same passkey
+"saved" in their password manager. This is the correct security
+model.
+
 ## Learn More
 
 - [GitHat Documentation](https://githat.io/docs)
