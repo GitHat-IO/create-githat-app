@@ -361,6 +361,51 @@ const reg = await getRegistration(operationId);
 Registration is handled through AWS Route 53 Domains (backed by ICANN-accredited
 registrars). WHOIS privacy protection is enabled by default.
 
+## Built-in analytics
+
+Every GitHat app ships with a read-side analytics API. Surface it in your admin
+pages using the `useAnalytics()` hook — no additional setup required:
+
+```{{#if typescript}}tsx{{else}}jsx{{/if}}
+import { useAnalytics } from '@githat/nextjs';
+
+const { getOverview, getTimeSeries, getTopUsers, getFunnels } = useAnalytics(appId);
+
+// Last-30-days KPIs
+const { signups, signins, apiCalls, storageMb } = await getOverview();
+
+// Day-by-day sign-in trend
+const { points } = await getTimeSeries({ metric: 'signins', granularity: 'day' });
+
+// Top users by activity
+const { users } = await getTopUsers({ metric: 'signins', limit: 10 });
+
+// Conversion funnel: visitor → signup → email_verified → first_signin → mfa_enabled
+const { funnel } = await getFunnels();
+```
+
+Drop in the ready-made dashboard component (KPI cards + SVG chart + funnel + top-users
+table — zero external chart dependencies):
+
+```{{#if typescript}}tsx{{else}}jsx{{/if}}
+import { AnalyticsDashboard } from '@githat/nextjs';
+
+<AnalyticsDashboard appId={appId} />
+```
+
+For org-wide KPIs (number of apps, total API calls, billing tier):
+
+```{{#if typescript}}tsx{{else}}jsx{{/if}}
+import { useOrgAnalytics } from '@githat/nextjs';
+
+const { getOverview } = useOrgAnalytics(org.id);
+const { numApps, activeUsers, billingTier } = await getOverview();
+```
+
+Analytics endpoints live under `/analytics/*` and require an authenticated
+org-admin JWT. They are read-only and cache the overview for 60 seconds
+in Lambda memory — free-tier-safe with no extra infrastructure.
+
 ## Learn More
 
 - [GitHat Documentation](https://githat.io/docs)
