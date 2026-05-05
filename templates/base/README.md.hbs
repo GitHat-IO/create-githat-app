@@ -239,6 +239,48 @@ Resource-level wildcards are supported: `audit.*` receives every audit event
 for every user in your app. The connection auto-reconnects with exponential
 back-off (1 s → 2 s → 4 s → 8 s → 30 s cap).
 
+## Row-Level Security
+
+GitHat RLS lets you define per-collection policies that gate which rows each user
+can read or write — without writing any backend code. Policies are evaluated on
+every `useData()` call and stored in the GitHat dashboard.
+
+### Quick example
+
+```tsx
+import { useRLS } from '@githat/nextjs';
+
+const { setPolicy, testPolicy } = useRLS();
+
+// Ensure users can only read/write their own rows in "documents"
+await setPolicy('documents', {
+  readPolicy:  { type: 'fieldEquals', field: 'userId', context: 'callerUserId' },
+  writePolicy: { type: 'fieldEquals', field: 'userId', context: 'callerUserId' },
+});
+
+// Dry-run before shipping
+const { allowed, reasons } = await testPolicy({
+  collection: 'documents',
+  row: { userId: 'user-abc', title: 'My doc' },
+  operation: 'read',
+  context: { userId: 'user-abc' },
+});
+// → { allowed: true, reasons: ['policy satisfied'] }
+```
+
+### Predicate types
+
+| Type | Description |
+|------|-------------|
+| `public` | Matches everything — no restriction |
+| `fieldEquals` | `row[field]` must equal `callerUserId` or `callerOrgId` |
+| `fieldIn` | `row[field]` must be in caller's org list |
+| `orgRoleAtLeast` | Caller must hold `owner`, `admin`, or `member` in the row's org |
+| `and` / `or` / `not` | Compose any of the above |
+
+Manage policies visually at **Dashboard → Row-Level Security** or via `useRLS()`.
+If no policy is set, all authenticated users have access (backwards-compatible default).
+
 ## Learn More
 
 - [GitHat Documentation](https://githat.io/docs)
