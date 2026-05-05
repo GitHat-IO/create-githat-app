@@ -66,9 +66,43 @@ After that, every `git push origin main` triggers a build + rsync + restart. The
 {{/if}}{{#if includeOrgManagement}}- `/dashboard/members` — Invite members, manage roles
 {{/if}}
 
+## Branded auth emails (recommended)
+
+Out of the box, password-reset and verification emails are sent from
+`auth@githat.io` with the **From name** set to your app's brand
+("{{businessName}}"). Most email clients show the brand prominently and
+hide the address — but for the most polished experience, verify your
+own domain so emails come from `auth@{{domain}}` instead:
+
+```bash
+# 1. Register your domain in SES via the GitHat API
+curl -X POST https://api.githat.io/apps/$APP_ID/email/domains \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"hostname": "{{domain}}"}'
+```
+
+The response includes 3 DKIM CNAMEs. Add them to your DNS registrar
+(Route 53, Cloudflare, Namecheap, etc.). SES auto-verifies within
+~5 minutes, after which every auth email ships from `auth@{{domain}}`
+with your brand throughout — subject, body, and reset link.
+
+You can also verify domains via the SDK's `useEmailDomains()` hook:
+
+```{{#if typescript}}tsx{{else}}jsx{{/if}}
+import { useEmailDomains } from '@githat/nextjs';
+
+const { add, list, status } = useEmailDomains();
+await add('{{domain}}');           // returns { dkimRecords }
+const domains = await list();      // includes verificationStatus
+```
+
+Once verified, links in emails point to `https://{{domain}}/reset-password?token=…`
+— users never see githat.io.
+
 ## Learn More
 
 - [GitHat Documentation](https://githat.io/docs)
+- [Branded Auth Emails Guide](https://githat.io/docs/email-domains)
 - [SDK Reference](https://www.npmjs.com/package/@githat/nextjs)
 - [API Reference](https://githat.io/docs/api)
-tps://githat.io/docs/api)
