@@ -281,6 +281,86 @@ const { allowed, reasons } = await testPolicy({
 Manage policies visually at **Dashboard → Row-Level Security** or via `useRLS()`.
 If no policy is set, all authenticated users have access (backwards-compatible default).
 
+## Custom domains
+
+GitHat can host your app on a custom domain you already own (Bring Your Own Domain)
+or register a brand-new one for you through Route 53 Domains.
+
+### Bring Your Own Domain (BYOD)
+
+1. Go to **Dashboard → Domains** (or your app's **Domains** tab) and enter your domain.
+2. GitHat detects your DNS provider (Route 53, Cloudflare, GoDaddy, Namecheap, or generic)
+   and returns the CNAME and TXT records you need to add.
+3. If your domain is already in a Route 53 hosted zone GitHat manages, the records are
+   written automatically — no manual DNS steps needed.
+4. GitHat polls every 5 minutes and advances through the onboarding stages automatically:
+
+   `pending_dns` → `dns_verified` → `cert_pending` → `cert_issued` → `cf_attaching` → `live`
+
+You can embed the full wizard in your own UI using the SDK component:
+
+```tsx
+import { DomainOnboardingWizard } from '@githat/nextjs';
+
+<DomainOnboardingWizard
+  appId={appId}
+  onLive={(domain) => console.log(`${domain} is live!`)}
+/>
+```
+
+Or drive it programmatically with the hook:
+
+```ts
+import { useDomains } from '@githat/nextjs';
+
+const { addDomain, getStatus, checkDomain, removeDomain } = useDomains();
+
+// Start onboarding
+const result = await addDomain(appId, 'mystore.com');
+// result.dnsRecords — show these to the user
+// result.instructions.autoWrite — true if GitHat wrote DNS automatically
+
+// Poll status
+const status = await getStatus(appId, 'mystore.com');
+// status.status — one of the stages above
+
+// Trigger a manual DNS + cert poll cycle
+await checkDomain(appId, 'mystore.com');
+```
+
+### Register a new domain
+
+Check availability across multiple TLDs and register right from GitHat:
+
+```ts
+import { useDomains } from '@githat/nextjs';
+
+const { checkAvailability, registerDomain, getRegistration } = useDomains();
+
+// Check availability + pricing
+const { domains } = await checkAvailability('mystore', ['com', 'io', 'co']);
+// domains[0] → { domain, available, awsPriceUsd, platformFeeUsd, totalUsd }
+
+// Register (auto-starts BYOD onboarding after the domain propagates)
+const { operationId } = await registerDomain({
+  domain: 'mystore.com',
+  autoRenew: true,
+  contactInfo: {
+    firstName: 'Jane', lastName: 'Doe',
+    email: 'jane@example.com', phoneNumber: '+1.5555550100',
+    address: '123 Main St', city: 'Seattle',
+    state: 'WA', countryCode: 'US', zipCode: '98101',
+  },
+});
+
+// Poll registration status
+const reg = await getRegistration(operationId);
+// reg.status — 'SUBMITTED' | 'IN_PROGRESS' | 'SUCCESSFUL' | 'FAILED'
+```
+
+Registration is handled through AWS Route 53 Domains (backed by ICANN-accredited
+registrars). WHOIS privacy protection is enabled by default.
+
 ## Learn More
 
 - [GitHat Documentation](https://githat.io/docs)
