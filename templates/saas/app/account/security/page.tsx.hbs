@@ -1,0 +1,32 @@
+'use client';
+
+import { MfaManager } from '@githat/nextjs';
+
+/**
+ * /account/security — TOTP 2FA management for {{businessName}}.
+ *
+ * The <MfaManager/> component reads the current user's mfaEnabled flag
+ * and renders either an "Enable 2FA" CTA or the disable / regenerate-
+ * recovery-codes controls. All flows are gated behind the GitHat API
+ * (api.githat.io) — no integration code lives in this scaffold.
+ */
+export default function SecurityPage() {
+  return (
+    <main
+      style=\{{
+        maxWidth: '640px',
+        margin: '0 auto',
+        padding: 'var(--space-8, 2rem) var(--space-4, 1rem)',
+        color: 'var(--fg, #111)',
+      }}
+    >
+      <header style=\{{ marginBottom: '1.5rem' }}>
+        <h1 style=\{{ fontSize: '1.875rem', fontWeight: 700, margin: 0 }}>Security</h1>
+        <p style=\{{ color: 'var(--fg-muted, #666)', marginTop: '0.25rem' }}>
+          Manage two-factor authentication for your {{businessName}} account.
+        </p>
+      </header>
+      <MfaManager />
+    </main>
+  );
+}

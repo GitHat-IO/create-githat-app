@@ -100,6 +100,17 @@ const domains = await list();      // includes verificationStatus
 Once verified, links in emails point to `https://{{domain}}/reset-password?token=…`
 — users never see githat.io.
 
+## Two-factor authentication
+
+Users can enable TOTP-based 2FA at `/account/security` (the page is
+scaffolded for you). After enrollment, sign-in flows automatically
+gate behind a 6-digit code from any authenticator app (1Password,
+Authy, Google Authenticator, etc.). Recovery codes are generated
+once at enrollment for account recovery.
+
+`<SignInForm/>` and `<MfaChallenge/>` from `@githat/nextjs` handle
+the entire flow end-to-end — no integration code needed.
+
 ## Learn More
 
 - [GitHat Documentation](https://githat.io/docs)
