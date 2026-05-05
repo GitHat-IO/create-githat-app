@@ -111,6 +111,19 @@ once at enrollment for account recovery.
 `<SignInForm/>` and `<MfaChallenge/>` from `@githat/nextjs` handle
 the entire flow end-to-end — no integration code needed.
 
+## Magic-link sign-in (passwordless)
+
+`<SignInForm/>` exposes a "Use a magic link instead" toggle. Users
+type their email, get a one-time link, and sign in without a password.
+The route at `/sign-in/magic` is scaffolded for you and renders
+`<MagicLinkVerify/>`, which handles the token verification and
+MFA-challenge handoff automatically.
+
+Magic-link emails ship from the same per-app branded sender as
+password-reset emails (verify your domain at `/account/security`
+or via `useEmailDomains()` to upgrade from `auth@githat.io` to
+`auth@yourdomain`).
+
 ## Learn More
 
 - [GitHat Documentation](https://githat.io/docs)
