@@ -1,35 +1,29 @@
 /**
- * Category seed for the marketplace template.
+ * Category definitions for the marketplace template.
  *
- * Default values are shaped for a Caribbean colmado (Dominican-flavored),
- * which is the {{businessName}} project's first audience. Replace as
- * needed for your region — see CULTURE.md for what's region-specific
- * vs universal.
+ * Edit this list to match your product taxonomy. Each entry needs:
+ *   - slug: used in URLs (/search?cat=<slug>)
+ *   - label: shown to shoppers
+ *   - emoji: visual icon (optional but helpful for quick scanning)
  *
- * Each category is bilingual on purpose: the Spanish term is what
- * the shopper actually says ("recargas," "víveres") and the English
- * gloss helps Anglophone shoppers navigate without hiding the
- * cultural identity.
+ * Add as many or as few categories as you need. Keep slugs URL-safe
+ * (lowercase, hyphens only — no spaces or special characters).
+ *
+ * If you add a second language, add a `labelEs` / `labelFr` field and
+ * update the category card in app/page.tsx to render it.
  */
 
 export interface Category {
   slug: string;
-  es: string;
-  en: string;
+  label: string;
   emoji: string;
 }
 
 export const CATEGORIES: Category[] = [
-  { slug: 'viveres',   es: 'Víveres',          en: 'Staples',         emoji: '🍚' },
-  { slug: 'frutas',    es: 'Frutas y verduras', en: 'Produce',        emoji: '🥑' },
-  { slug: 'carnes',    es: 'Carnes',            en: 'Meat',           emoji: '🥩' },
-  { slug: 'lacteos',   es: 'Lácteos y huevos',  en: 'Dairy & eggs',   emoji: '🥚' },
-  { slug: 'bebidas',   es: 'Bebidas',           en: 'Drinks',         emoji: '🍺' },
-  { slug: 'hielo',     es: 'Hielo',             en: 'Ice',            emoji: '🧊' },
-  { slug: 'pan',       es: 'Pan y galletas',    en: 'Bread & crackers', emoji: '🍞' },
-  { slug: 'recargas',  es: 'Recargas',          en: 'Phone top-ups',  emoji: '📱' },
-  { slug: 'limpieza',  es: 'Limpieza',          en: 'Cleaning',       emoji: '🧼' },
-  { slug: 'higiene',   es: 'Higiene personal',  en: 'Personal care',  emoji: '🪥' },
-  { slug: 'sazon',     es: 'Sazón',             en: 'Seasonings',     emoji: '🧂' },
-  { slug: 'fritura',   es: 'Frituras',          en: 'Hot snacks',     emoji: '🥟' },
+  { slug: 'general',     label: 'General',         emoji: '🏪' },
+  { slug: 'food',        label: 'Food & drinks',   emoji: '🍎' },
+  { slug: 'household',   label: 'Household',       emoji: '🧹' },
+  { slug: 'personal',    label: 'Personal care',   emoji: '🪥' },
+  { slug: 'electronics', label: 'Electronics',     emoji: '📱' },
+  { slug: 'clothing',    label: 'Clothing',        emoji: '👕' },
 ];

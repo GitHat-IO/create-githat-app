@@ -143,3 +143,41 @@ model.
 - [Branded Auth Emails Guide](https://githat.io/docs/email-domains)
 - [SDK Reference](https://www.npmjs.com/package/@githat/nextjs)
 - [API Reference](https://githat.io/docs/api)
+
+## Marketplace template
+
+If you scaffolded with `--template marketplace`, your product catalog lives in one place:
+
+```
+src/data/products.ts
+```
+
+### Adding products
+
+Open `src/data/products.ts` and add entries to the `PRODUCTS` array:
+
+```ts
+{
+  id: 'my-product',           // unique, URL-safe string
+  name: 'My product',
+  description: 'A short description shown on the card.',
+  price: 12.99,               // numeric, in your currency's base unit
+  category: 'food',           // must match a slug in src/lib/categories.ts
+  inStock: true,
+}
+```
+
+The homepage, cart shell, and search page all import from this file via
+`getAvailableProducts()` — no other changes needed.
+
+### Adding categories
+
+Open `src/lib/categories.ts` and add entries to the `CATEGORIES` array.
+Keep `slug` values lowercase and hyphen-separated (used in URLs).
+
+### Moving to a real database
+
+When you're ready to persist products in a backend (Postgres, DynamoDB,
+Sebastn), replace `getAvailableProducts()` in `app/page.tsx` with a
+`fetch()` to your API. The `Product` interface in `src/data/products.ts`
+stays the same so your UI components don't need to change.

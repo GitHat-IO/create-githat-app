@@ -1,0 +1,64 @@
+/**
+ * Marketplace product catalog — edit this file to add your products.
+ *
+ * This is the ONLY place product data lives in the template. All pages
+ * (homepage, cart, admin) import from here. When you're ready to move
+ * products to a database (Postgres, DynamoDB, Sebastn), replace the
+ * PRODUCTS array with a fetch from your backend and keep the Product
+ * interface unchanged so your UI components don't break.
+ *
+ * Quick start:
+ *   1. Replace the sample entries below with your real products.
+ *   2. Add or remove fields on the Product interface as needed.
+ *   3. Run `npm run dev` — all pages update automatically.
+ */
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;          // in your currency's base unit (e.g. USD)
+  category: string;       // must match a Category slug in categories.ts
+  inStock: boolean;
+  imageAlt?: string;      // describe the product for screen readers
+}
+
+export const PRODUCTS: Product[] = [
+  {
+    id: 'sample-1',
+    name: 'Sample product 1',
+    description: 'Replace this with your first product description.',
+    price: 9.99,
+    category: 'general',
+    inStock: true,
+    imageAlt: 'Sample product 1',
+  },
+  {
+    id: 'sample-2',
+    name: 'Sample product 2',
+    description: 'Replace this with your second product description.',
+    price: 14.99,
+    category: 'general',
+    inStock: true,
+    imageAlt: 'Sample product 2',
+  },
+  {
+    id: 'sample-3',
+    name: 'Sample product 3',
+    description: 'Replace this with your third product description.',
+    price: 4.99,
+    category: 'general',
+    inStock: false,
+    imageAlt: 'Sample product 3',
+  },
+];
+
+/** Convenience helper — returns only in-stock products. */
+export function getAvailableProducts(): Product[] {
+  return PRODUCTS.filter((p) => p.inStock);
+}
+
+/** Look up a single product by id. Returns undefined if not found. */
+export function getProductById(id: string): Product | undefined {
+  return PRODUCTS.find((p) => p.id === id);
+}

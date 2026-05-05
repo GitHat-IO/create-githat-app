@@ -5,28 +5,30 @@ import Link from 'next/link';
 import { SignInButton, SignUpButton, useAuth } from '@githat/nextjs';
 
 /**
- * Tu funda — anonymous-aware cart.
+ * Cart page — anonymous-aware.
  *
  * Three checkout choices, in the order they should appear:
  *   1. Continue as guest (the DEFAULT) — primary button.
  *   2. Sign in (existing GitHat user).
- *   3. Sign up (new GitHat user, gets cart history).
+ *   3. Sign up (new GitHat user, gets order history).
  *
- * The order matters: the colmado UX promise is "you don't have to
- * make an account to shop." If you're tempted to make sign-up the
- * primary button "for the data," re-read CULTURE.md.
+ * The order matters: the UX promise is "you don't have to make an
+ * account to shop." Guest checkout is the primary path.
  *
  * Real cart line items should come from your backend (read by the
- * anon-session id from `src/lib/anon-session.ts`). The hard-coded
- * sample below is just the shell.
+ * anon-session id from `src/lib/anon-session.ts`). The sample below
+ * is just a placeholder shell — replace sampleItems with a fetch or
+ * a cart state hook connected to your data layer.
  */
 export default function CartPage() {
   const { isSignedIn } = useAuth();
   const [emailForReceipt, setEmailForReceipt] = useState('');
+
+  // TODO: replace with real cart items from your backend or cart state
   const sampleItems = [
-    { id: '1', name: 'Plátanos verdes (3)', price: 1.5, store: "Doña Yolanda" },
-    { id: '2', name: 'Presidente fría (6-pack)', price: 9.0, store: "Don Tito" },
-    { id: '3', name: 'Recarga Claro $5', price: 5.0, store: "Doña Yolanda" },
+    { id: '1', name: 'Sample product 1', price: 9.99, store: 'Store A' },
+    { id: '2', name: 'Sample product 2', price: 14.99, store: 'Store B' },
+    { id: '3', name: 'Sample product 3', price: 4.99, store: 'Store A' },
   ];
   const total = sampleItems.reduce((s, i) => s + i.price, 0);
 
@@ -34,10 +36,10 @@ export default function CartPage() {
     <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)' }}>
       <div style=\{{ maxWidth: '40rem', margin: '0 auto', padding: 'var(--space-8) var(--space-4)' }}>
         <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-2)' }}>
-          Tu funda
+          Your cart
         </h1>
         <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-6)' }}>
-          Your bag. Edit, then choose how you want to pay.
+          Review your items, then choose how you want to pay.
         </p>
 
         <ul style=\{{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
@@ -53,7 +55,7 @@ export default function CartPage() {
             }}>
               <div>
                 <div style=\{{ fontWeight: 600 }}>{it.name}</div>
-                <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-muted)' }}>De tu colmadero, {it.store}</div>
+                <div style=\{{ fontSize: '0.75rem', color: 'var(--fg-muted)' }}>From {it.store}</div>
               </div>
               <div style=\{{ fontWeight: 600 }}>${it.price.toFixed(2)}</div>
             </li>
@@ -80,9 +82,9 @@ export default function CartPage() {
           border: '1px solid var(--border)',
           background: 'var(--surface-sub)',
         }}>
-          <h2 style=\{{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>¿Cómo lo pagamos?</h2>
+          <h2 style=\{{ fontSize: '1.25rem', marginBottom: 'var(--space-2)' }}>How would you like to pay?</h2>
           <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-4)', fontSize: '0.875rem' }}>
-            How would you like to pay? You don't need an account.
+            You don't need an account to check out.
           </p>
 
           {!isSignedIn && (
@@ -93,7 +95,7 @@ export default function CartPage() {
                 style=\{{ marginBottom: 'var(--space-4)' }}
               >
                 <label htmlFor="email" style=\{{ display: 'block', marginBottom: 'var(--space-2)', fontSize: '0.875rem' }}>
-                  Email para el recibo (we'll send the receipt and that's it)
+                  Email for your receipt (we'll send the receipt and that's it)
                 </label>
                 <div style=\{{ display: 'flex', gap: 'var(--space-2)' }}>
                   <input
@@ -102,7 +104,7 @@ export default function CartPage() {
                     required
                     value={emailForReceipt}
                     onChange={(e) => setEmailForReceipt(e.target.value)}
-                    placeholder="tu@email.com"
+                    placeholder="you@email.com"
                     style=\{{
                       flex: 1,
                       padding: 'var(--space-3)',
@@ -121,16 +123,16 @@ export default function CartPage() {
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}>
-                    Pagar como invitado
+                    Check out as guest
                   </button>
                 </div>
                 <p style=\{{ marginTop: 'var(--space-2)', fontSize: '0.75rem', color: 'var(--fg-subtle)' }}>
-                  Continue as guest. No password, no account, no saved data.
+                  No password, no account, no saved data.
                 </p>
               </form>
 
               <div style=\{{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', alignItems: 'center', marginTop: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTop: '1px dashed var(--border)' }}>
-                <span style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)' }}>O si quieres guardar tus datos:</span>
+                <span style=\{{ fontSize: '0.875rem', color: 'var(--fg-muted)' }}>Or save your details for next time:</span>
                 <SignInButton />
                 <SignUpButton />
               </div>
@@ -147,7 +149,7 @@ export default function CartPage() {
               fontWeight: 600,
               textDecoration: 'none',
             }}>
-              Pagar →
+              Check out →
             </Link>
           )}
         </section>

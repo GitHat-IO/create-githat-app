@@ -5,15 +5,15 @@ import { useAuth } from '@githat/nextjs';
 /**
  * Seller dashboard — `/admin`.
  *
- * Auth-gated: a logged-in colmadero lands here to manage products,
- * orders, hours, and bank payouts. This is a placeholder shell —
- * wire the data fetches in your own backend.
+ * Auth-gated: a signed-in seller lands here to manage products,
+ * orders, and bank payouts. This is a placeholder shell —
+ * wire the data fetches to your own backend.
  *
- * The four sections below mirror what a real bodega owner asks first:
- *   1. ¿Quién me debe? (today's pending orders)
- *   2. ¿Qué se está vendiendo? (this week's revenue)
- *   3. ¿Qué tengo en stock? (inventory)
- *   4. ¿Cuándo me pagan? (next payout date)
+ * The four tiles below reflect what a seller typically wants to know:
+ *   1. Pending orders (how many need fulfilling today)
+ *   2. Revenue this week
+ *   3. Active products (in stock)
+ *   4. Next payout date (via Sebastn)
  */
 export default function AdminPage() {
   const { isSignedIn, user, isLoading } = useAuth();
@@ -29,10 +29,10 @@ export default function AdminPage() {
     <div style=\{{ background: 'var(--bg)', color: 'var(--fg)', minHeight: 'calc(100vh - 64px)' }}>
       <div style=\{{ maxWidth: '64rem', margin: '0 auto', padding: 'var(--space-8) var(--space-4)' }}>
         <h1 style=\{{ fontFamily: 'var(--font-wordmark)', fontSize: '2rem', marginBottom: 'var(--space-2)' }}>
-          Hola, {user?.name || 'colmadero'}.
+          Welcome back, {user?.name || 'seller'}.
         </h1>
         <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-8)' }}>
-          Esto es lo que está pasando hoy en tu colmado.
+          Here's what's happening in your store today.
         </p>
 
         <div style=\{{
@@ -40,17 +40,17 @@ export default function AdminPage() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: 'var(--space-4)',
         }}>
-          <Stat label="Pedidos pendientes" value="—" hint="Today's open orders" />
-          <Stat label="Ventas esta semana" value="$—" hint="This week's revenue" />
-          <Stat label="Productos activos" value="—" hint="In stock right now" />
-          <Stat label="Próximo pago" value="—" hint="Next bank payout" />
+          <Stat label="Pending orders" value="—" hint="Today's open orders" />
+          <Stat label="Revenue this week" value="$—" hint="This week's sales" />
+          <Stat label="Active products" value="—" hint="In stock right now" />
+          <Stat label="Next payout" value="—" hint="Next bank payout via Sebastn" />
         </div>
 
         <p style=\{{ marginTop: 'var(--space-12)', fontSize: '0.875rem', color: 'var(--fg-subtle)' }}>
           This dashboard is a starter shell — wire each tile to your
           real data layer (Postgres, DynamoDB, Sebastn webhooks).
-          See <code>src/lib/anon-session.ts</code> for the cart-side
-          model.
+          Products are configured in <code>src/data/products.ts</code>.
+          See <code>src/lib/anon-session.ts</code> for the guest cart model.
         </p>
       </div>
     </div>
@@ -75,7 +75,7 @@ function Stat({ label, value, hint }: { label: string; value: string; hint: stri
 function Loading() {
   return (
     <div style=\{{ display: 'flex', minHeight: 'calc(100vh - 64px)', alignItems: 'center', justifyContent: 'center', color: 'var(--fg-muted)' }}>
-      Un momentico…
+      Loading…
     </div>
   );
 }
@@ -84,9 +84,9 @@ function SignInPrompt() {
   return (
     <div style=\{{ display: 'flex', minHeight: 'calc(100vh - 64px)', alignItems: 'center', justifyContent: 'center' }}>
       <div style=\{{ textAlign: 'center', maxWidth: '24rem' }}>
-        <h2 style=\{{ fontFamily: 'var(--font-wordmark)', marginBottom: 'var(--space-3)' }}>Inicia sesión</h2>
+        <h2 style=\{{ fontFamily: 'var(--font-wordmark)', marginBottom: 'var(--space-3)' }}>Sign in to continue</h2>
         <p style=\{{ color: 'var(--fg-muted)', marginBottom: 'var(--space-4)' }}>
-          Sign in to see your colmado's dashboard.
+          Sign in to see your store's dashboard.
         </p>
         <a href="/sign-in" style=\{{ color: 'var(--primary)' }}>Sign in →</a>
       </div>
