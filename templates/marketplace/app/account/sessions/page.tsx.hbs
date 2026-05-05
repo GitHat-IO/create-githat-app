@@ -1,0 +1,180 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSessions } from '@githat/nextjs';
+import type { Session } from '@githat/nextjs';
+
+/**
+ * /account/sessions — Active session management for {{businessName}}.
+ *
+ * Lists all active sessions with device/IP/country info.
+ * Users can revoke individual sessions or sign out everywhere else.
+ */
+export default function SessionsPage() {
+  const { list, revoke, revokeAll } = useSessions();
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [revoking, setRevoking] = useState<string | null>(null);
+  const [revokingAll, setRevokingAll] = useState(false);
+
+  async function load() {
+    setLoading(true);
+    setError(null);
+    try {
+      const { sessions: data } = await list();
+      setSessions(data);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load sessions');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function handleRevoke(sessionId: string) {
+    setRevoking(sessionId);
+    try {
+      await revoke(sessionId);
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to revoke session');
+    } finally {
+      setRevoking(null);
+    }
+  }
+
+  async function handleRevokeAll() {
+    if (!confirm('Sign out of all other devices?')) return;
+    setRevokingAll(true);
+    try {
+      await revokeAll();
+      setSessions((prev) => prev.filter((s) => s.current));
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to revoke sessions');
+    } finally {
+      setRevokingAll(false);
+    }
+  }
+
+  const otherCount = sessions.filter((s) => !s.current).length;
+
+  return (
+    <main
+      style=\{{
+        maxWidth: '720px',
+        margin: '0 auto',
+        padding: 'var(--space-8, 2rem) var(--space-4, 1rem)',
+        color: 'var(--fg, #111)',
+      }}
+    >
+      <header style=\{{ marginBottom: '1.5rem' }}>
+        <div style=\{{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+          <a href="/account/security" style=\{{ color: 'var(--fg-muted, #666)', textDecoration: 'none', fontSize: '0.875rem' }}>
+            Security
+          </a>
+          <span style=\{{ color: 'var(--fg-muted, #666)' }}>›</span>
+          <span style=\{{ fontSize: '0.875rem' }}>Active sessions</span>
+        </div>
+        <h1 style=\{{ fontSize: '1.875rem', fontWeight: 700, margin: 0 }}>Active sessions</h1>
+        <p style=\{{ color: 'var(--fg-muted, #666)', marginTop: '0.25rem' }}>
+          Devices signed in to your {{businessName}} account.
+        </p>
+      </header>
+
+      {error && (
+        <div style=\{{ padding: '0.75rem 1rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', color: '#dc2626', marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
+
+      {otherCount > 0 && (
+        <div style=\{{ marginBottom: '1.5rem' }}>
+          <button
+            onClick={handleRevokeAll}
+            disabled={revokingAll}
+            style=\{{
+              padding: '0.5rem 1.25rem',
+              background: '#fef2f2',
+              color: '#dc2626',
+              border: '1px solid #fecaca',
+              borderRadius: '6px',
+              cursor: revokingAll ? 'not-allowed' : 'pointer',
+              fontWeight: 500,
+            }}
+          >
+            {revokingAll ? 'Signing out...' : `Sign out everywhere else (${otherCount})`}
+          </button>
+        </div>
+      )}
+
+      {loading ? (
+        <p style=\{{ color: 'var(--fg-muted, #666)' }}>Loading sessions...</p>
+      ) : sessions.length === 0 ? (
+        <p style=\{{ color: 'var(--fg-muted, #666)' }}>No active sessions found.</p>
+      ) : (
+        <div style=\{{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {sessions.map((session) => (
+            <div
+              key={session.id}
+              style=\{{
+                padding: '1rem 1.25rem',
+                border: session.current ? '1px solid #6366f1' : '1px solid var(--border, #e5e7eb)',
+                borderRadius: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                gap: '1rem',
+              }}
+            >
+              <div style=\{{ flex: 1, minWidth: 0 }}>
+                <div style=\{{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                  <span style=\{{ fontWeight: 600, fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {session.userAgent || 'Unknown device'}
+                  </span>
+                  {session.current && (
+                    <span style=\{{
+                      padding: '0.1rem 0.5rem',
+                      background: '#ede9fe',
+                      color: '#6366f1',
+                      borderRadius: '999px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      whiteSpace: 'nowrap',
+                    }}>
+                      This device
+                    </span>
+                  )}
+                </div>
+                <div style=\{{ fontSize: '0.8rem', color: 'var(--fg-muted, #666)', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  {session.ipAddress && <span>{session.ipAddress}</span>}
+                  {session.country && <span>{session.country}</span>}
+                  <span>Last active {new Date(session.lastActiveAt).toLocaleDateString()}</span>
+                </div>
+              </div>
+              {!session.current && (
+                <button
+                  onClick={() => handleRevoke(session.id)}
+                  disabled={revoking === session.id}
+                  style=\{{
+                    padding: '0.375rem 0.875rem',
+                    background: 'transparent',
+                    border: '1px solid var(--border, #e5e7eb)',
+                    borderRadius: '6px',
+                    cursor: revoking === session.id ? 'not-allowed' : 'pointer',
+                    fontSize: '0.875rem',
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                  }}
+                >
+                  {revoking === session.id ? 'Revoking...' : 'Revoke'}
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </main>
+  );
+}

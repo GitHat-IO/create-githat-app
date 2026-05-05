@@ -26,7 +26,53 @@ export default function SecurityPage() {
           Manage two-factor authentication for your {{businessName}} account.
         </p>
       </header>
+
       <MfaManager />
+
+      <nav style=\{{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <a
+          href="/account/sessions"
+          style=\{{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.875rem 1.25rem',
+            border: '1px solid var(--border, #e5e7eb)',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            color: 'var(--fg, #111)',
+          }}
+        >
+          <div>
+            <div style=\{{ fontWeight: 600, fontSize: '0.9rem' }}>Active sessions</div>
+            <div style=\{{ fontSize: '0.8rem', color: 'var(--fg-muted, #666)', marginTop: '0.125rem' }}>
+              See and revoke devices signed in to your account
+            </div>
+          </div>
+          <span style=\{{ color: 'var(--fg-muted, #666)' }}>›</span>
+        </a>
+        <a
+          href="/account/activity"
+          style=\{{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0.875rem 1.25rem',
+            border: '1px solid var(--border, #e5e7eb)',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            color: 'var(--fg, #111)',
+          }}
+        >
+          <div>
+            <div style=\{{ fontWeight: 600, fontSize: '0.9rem' }}>Sign-in activity</div>
+            <div style=\{{ fontSize: '0.8rem', color: 'var(--fg-muted, #666)', marginTop: '0.125rem' }}>
+              Review your account&apos;s sign-in history
+            </div>
+          </div>
+          <span style=\{{ color: 'var(--fg-muted, #666)' }}>›</span>
+        </a>
+      </nav>
     </main>
   );
 }

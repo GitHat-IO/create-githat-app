@@ -100,6 +100,44 @@ const domains = await list();      // includes verificationStatus
 Once verified, links in emails point to `https://{{domain}}/reset-password?token=…`
 — users never see githat.io.
 
+## Webhooks
+
+Subscribe to GitHat auth events from your backend via HTTP callbacks. Use the
+GitHat dashboard (`/webhooks`) or the `useWebhooks()` hook to register an endpoint:
+
+```ts
+import { useWebhooks } from '@githat/nextjs';
+
+const { create, list, listDeliveries } = useWebhooks();
+const webhook = await create('https://yourapp.com/hooks/githat', ['user.signed_in', 'user.created']);
+// Save webhook.secret — it's shown only once and used to verify HMAC signatures.
+```
+
+Each delivery sends `X-GitHat-Signature: sha256=<hmac>` so you can verify authenticity.
+
+## Active sessions
+
+Users can view and revoke active sessions at `/account/sessions`. Each session
+shows the user agent, IP, country, and last active time. The current session is
+marked "This device". The `useSessions()` hook backs this page:
+
+```ts
+import { useSessions } from '@githat/nextjs';
+const { list, revoke, revokeAll } = useSessions();
+```
+
+## Sign-in activity
+
+`/account/activity` shows an immutable audit log of every auth event
+(sign-ins, MFA toggles, passkey changes, etc.) with IP, country, and device.
+Paginated with `useAuditLog()`:
+
+```ts
+import { useAuditLog } from '@githat/nextjs';
+const { list } = useAuditLog();
+const { events, nextCursor } = await list({ limit: 50 });
+```
+
 ## Two-factor authentication
 
 Users can enable TOTP-based 2FA at `/account/security` (the page is

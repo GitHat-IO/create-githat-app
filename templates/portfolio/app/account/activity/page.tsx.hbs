@@ -1,0 +1,176 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useAuditLog } from '@githat/nextjs';
+import type { AuditEvent, AuditEventType } from '@githat/nextjs';
+
+const EVENT_ICONS: Record<string, string> = {
+  login_success: '✓',
+  login_failed: '✗',
+  mfa_enabled: '🔒',
+  mfa_disabled: '🔓',
+  mfa_challenge_failed: '⚠',
+  password_changed: '🔑',
+  email_verified: '✉',
+  passkey_added: '🔐',
+  passkey_removed: '🗑',
+  magic_link_requested: '✉',
+  session_revoked: '⊗',
+  account_locked: '⛔',
+  user_created: '★',
+};
+
+const EVENT_LABELS: Record<string, string> = {
+  login_success: 'Signed in',
+  login_failed: 'Failed sign-in attempt',
+  mfa_enabled: '2FA enabled',
+  mfa_disabled: '2FA disabled',
+  mfa_challenge_failed: '2FA challenge failed',
+  password_changed: 'Password changed',
+  email_verified: 'Email verified',
+  passkey_added: 'Passkey added',
+  passkey_removed: 'Passkey removed',
+  magic_link_requested: 'Magic link sent',
+  session_revoked: 'Session revoked',
+  account_locked: 'Account locked',
+  user_created: 'Account created',
+};
+
+/**
+ * /account/activity — Sign-in audit log for {{businessName}}.
+ *
+ * Immutable per-user record of auth events. Paginated table view
+ * with type icon, when, IP, user-agent, and country flag.
+ */
+export default function ActivityPage() {
+  const { list } = useAuditLog();
+  const [events, setEvents] = useState<AuditEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  async function load(append = false) {
+    if (append) setLoadingMore(true); else setLoading(true);
+    setError(null);
+    try {
+      const result = await list({ limit: 50, ...(append && cursor ? { cursor } : {}) });
+      setEvents((prev) => append ? [...prev, ...result.events] : result.events);
+      setCursor(result.nextCursor);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load activity');
+    } finally {
+      if (append) setLoadingMore(false); else setLoading(false);
+    }
+  }
+
+  useEffect(() => { load(); }, []);
+
+  return (
+    <main
+      style=\{{
+        maxWidth: '900px',
+        margin: '0 auto',
+        padding: 'var(--space-8, 2rem) var(--space-4, 1rem)',
+        color: 'var(--fg, #111)',
+      }}
+    >
+      <header style=\{{ marginBottom: '1.5rem' }}>
+        <div style=\{{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+          <a href="/account/security" style=\{{ color: 'var(--fg-muted, #666)', textDecoration: 'none', fontSize: '0.875rem' }}>
+            Security
+          </a>
+          <span style=\{{ color: 'var(--fg-muted, #666)' }}>›</span>
+          <span style=\{{ fontSize: '0.875rem' }}>Activity</span>
+        </div>
+        <h1 style=\{{ fontSize: '1.875rem', fontWeight: 700, margin: 0 }}>Sign-in activity</h1>
+        <p style=\{{ color: 'var(--fg-muted, #666)', marginTop: '0.25rem' }}>
+          Immutable record of security events for your {{businessName}} account.
+        </p>
+      </header>
+
+      {error && (
+        <div style=\{{ padding: '0.75rem 1rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '6px', color: '#dc2626', marginBottom: '1rem' }}>
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <p style=\{{ color: 'var(--fg-muted, #666)' }}>Loading activity...</p>
+      ) : events.length === 0 ? (
+        <p style=\{{ color: 'var(--fg-muted, #666)' }}>No activity found.</p>
+      ) : (
+        <>
+          <div style=\{{ overflowX: 'auto' }}>
+            <table style=\{{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+              <thead>
+                <tr style=\{{ borderBottom: '1px solid var(--border, #e5e7eb)', textAlign: 'left' }}>
+                  <th style=\{{ padding: '0.5rem 0.75rem', fontWeight: 600, color: 'var(--fg-muted, #666)', width: '2rem' }}></th>
+                  <th style=\{{ padding: '0.5rem 0.75rem', fontWeight: 600 }}>Event</th>
+                  <th style=\{{ padding: '0.5rem 0.75rem', fontWeight: 600 }}>When</th>
+                  <th style=\{{ padding: '0.5rem 0.75rem', fontWeight: 600 }}>IP</th>
+                  <th style=\{{ padding: '0.5rem 0.75rem', fontWeight: 600 }}>Country</th>
+                  <th style=\{{ padding: '0.5rem 0.75rem', fontWeight: 600 }}>Device</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((evt, i) => {
+                  const meta = evt.metadata as Record<string, string | undefined>;
+                  const ua = meta?.userAgent || '';
+                  const truncatedUa = ua.length > 50 ? ua.slice(0, 50) + '…' : ua;
+                  return (
+                    <tr
+                      key={evt.sk || i}
+                      style=\{{ borderBottom: '1px solid var(--border, #e5e7eb)' }}
+                    >
+                      <td style=\{{ padding: '0.6rem 0.75rem', textAlign: 'center', fontSize: '1rem' }}>
+                        {EVENT_ICONS[evt.action] || '•'}
+                      </td>
+                      <td style=\{{ padding: '0.6rem 0.75rem', fontWeight: 500 }}>
+                        {EVENT_LABELS[evt.action] || evt.action}
+                      </td>
+                      <td style=\{{ padding: '0.6rem 0.75rem', color: 'var(--fg-muted, #666)', whiteSpace: 'nowrap' }}>
+                        {new Date(evt.created_at).toLocaleString()}
+                      </td>
+                      <td style=\{{ padding: '0.6rem 0.75rem', color: 'var(--fg-muted, #666)', fontFamily: 'monospace' }}>
+                        {meta?.ipAddress || '—'}
+                      </td>
+                      <td style=\{{ padding: '0.6rem 0.75rem', color: 'var(--fg-muted, #666)' }}>
+                        {meta?.country || '—'}
+                      </td>
+                      <td
+                        style=\{{ padding: '0.6rem 0.75rem', color: 'var(--fg-muted, #666)', maxWidth: '280px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                        title={ua}
+                      >
+                        {truncatedUa || '—'}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {cursor && (
+            <div style=\{{ marginTop: '1.5rem', textAlign: 'center' }}>
+              <button
+                onClick={() => load(true)}
+                disabled={loadingMore}
+                style=\{{
+                  padding: '0.5rem 1.5rem',
+                  background: 'transparent',
+                  border: '1px solid var(--border, #e5e7eb)',
+                  borderRadius: '6px',
+                  cursor: loadingMore ? 'not-allowed' : 'pointer',
+                  fontSize: '0.875rem',
+                }}
+              >
+                {loadingMore ? 'Loading...' : 'Load more'}
+              </button>
+            </div>
+          )}
+        </>
+      )}
+    </main>
+  );
+}
