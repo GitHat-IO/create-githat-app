@@ -47,6 +47,7 @@ export interface TemplateContext {
   includeGithatFolder: boolean;
   includeForgotPassword: boolean;
   includeEmailVerification: boolean;
+  includeMagicLink: boolean;
   includeOrgManagement: boolean;
   includeMcpModule: boolean;
   includeAgentModule: boolean;

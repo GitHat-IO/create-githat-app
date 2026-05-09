@@ -6,6 +6,7 @@ import { DEFAULT_API_URL, DASHBOARD_URL } from '../constants.js';
 export type AuthFeature =
   | 'forgot-password'
   | 'email-verification'
+  | 'magic-link'
   | 'org-management'
   | 'mcp-servers'
   | 'ai-agents';
@@ -172,11 +173,12 @@ export async function promptGitHat(existingKey?: string): Promise<GitHatAnswers>
     options: [
       { value: 'forgot-password', label: 'Forgot password', hint: 'reset via email' },
       { value: 'email-verification', label: 'Email verification' },
+      { value: 'magic-link', label: 'Magic link sign-in', hint: 'passwordless email link' },
       { value: 'org-management', label: 'Organizations', hint: 'teams & roles' },
       { value: 'mcp-servers', label: 'MCP servers', hint: 'Model Context Protocol' },
       { value: 'ai-agents', label: 'AI agents', hint: 'wallet-based identity' },
     ],
-    initialValues: ['forgot-password'],
+    initialValues: ['forgot-password', 'email-verification', 'magic-link'],
     required: false,
   });
 

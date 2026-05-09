@@ -66,8 +66,8 @@ function getDefaults(
     publishableKey: publishableKey || '',
     apiUrl: DEFAULT_API_URL,
     authFeatures: template === 'agent'
-      ? ['forgot-password', 'email-verification', 'mcp-servers', 'ai-agents']
-      : isMinimal ? [] : ['forgot-password'],
+      ? ['forgot-password', 'email-verification', 'magic-link', 'mcp-servers', 'ai-agents']
+      : isMinimal ? [] : ['forgot-password', 'email-verification', 'magic-link'],
     databaseChoice: 'none',
     useTailwind: true,
     includeDashboard: template === 'agent' ? true : !isMinimal,
@@ -148,6 +148,7 @@ export function answersToContext(answers: AllAnswers): TemplateContext {
     includeGithatFolder: answers.includeGithatFolder,
     includeForgotPassword: answers.authFeatures.includes('forgot-password'),
     includeEmailVerification: answers.authFeatures.includes('email-verification'),
+    includeMagicLink: answers.authFeatures.includes('magic-link'),
     includeOrgManagement: answers.authFeatures.includes('org-management'),
     includeMcpModule: answers.authFeatures.includes('mcp-servers'),
     includeAgentModule: answers.authFeatures.includes('ai-agents'),
