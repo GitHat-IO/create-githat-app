@@ -6,6 +6,7 @@ import { runPrompts, answersToContext } from './prompts/index.js';
 import { scaffold } from './scaffold/index.js';
 import { VERSION } from './constants.js';
 import { skillsCommand } from './commands/skills/index.js';
+import { deployCommand } from './commands/deploy/index.js';
 
 const program = new Command();
 
@@ -124,5 +125,11 @@ program
 
 // Skills marketplace commands
 program.addCommand(skillsCommand);
+
+// `githat deploy` — direct-API static deploy. Customer never touches
+// AWS; the GitHat backend untars the artifact, syncs to S3,
+// invalidates CloudFront. See src/commands/deploy/index.ts for the
+// full flow.
+program.addCommand(deployCommand);
 
 program.parse();
