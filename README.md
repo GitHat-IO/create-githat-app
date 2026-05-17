@@ -2,7 +2,7 @@
 
 # create-githat-app
 
-**The CLI for [GitHat](https://githat.io) — Auth + Hosting that replaces Clerk + Vercel**
+**The CLI for [GitHat](https://githat.io) — Auth + Hosting**
 
 [![npm version](https://img.shields.io/npm/v/create-githat-app?style=flat-square&logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/create-githat-app)
 [![npm downloads](https://img.shields.io/npm/dm/create-githat-app?style=flat-square&logo=npm&logoColor=white&color=cb3837)](https://www.npmjs.com/package/create-githat-app)
