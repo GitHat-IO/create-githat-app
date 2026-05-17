@@ -298,9 +298,8 @@ node bin/index.js test-app
 ## Related
 
 - [@githat/nextjs](https://www.npmjs.com/package/@githat/nextjs) — React/Next.js SDK
-- [GitHat Platform](https://githat.io) — Auth + Hosting replacing Clerk + Vercel
+- [GitHat Platform](https://githat.io) — Auth + hosting for modern fullstack
 - [GitHat Pricing](https://githat.io/pricing) — Free, Pro, and Enterprise tiers
-- [GitHat vs Clerk](https://githat.io/compare/githat-vs-clerk) — Feature comparison
 - [GitHat vs Auth0](https://githat.io/compare/githat-vs-auth0) — Why developers switch
 
 ## License
