@@ -2,9 +2,8 @@
 
 GitHat's create-githat-app ships a Vercel-style template gallery.
 Every template is a *complete*, *deployable* example of what you can
-build on the GitHat stack — auth (GitHat), hosting (GitHat), database
-(bring-your-own or GitHat customer-data), payments (Sebastn), email
-(GitHat email), agent identity (Web4 / MCP).
+build on the GitHat stack — auth (GitHat), hosting (GitHat), payments
+(Sebastn), email (GitHat email), agent identity (Web4 / MCP).
 
 The point is **demonstration through code**: a developer who's never
 heard of GitHat scaffolds a template, runs `npm install && npm run
@@ -27,9 +26,9 @@ dev`, and sees the platform working. No reading required.
 
 ## Why these six
 
-GitHat replaces Vercel + Supabase by consolidating six categories of
-infrastructure into one platform. Each template is a category showing
-that consolidation in action:
+GitHat replaces Vercel + Clerk by consolidating auth, hosting,
+payments, email, and agent identity into one platform. Each template
+shows that consolidation in action:
 
 - **plain** is the empty room.
 - **saas** is auth + payments. The thing every B2B starter kit charges
@@ -43,7 +42,7 @@ that consolidation in action:
 - **content** is a creator-economy starter. Auth-gated reads, Sebastn
   handling tips and subscriptions, GitHat email for the newsletter.
 - **dashboard** is the "I already have data, I just want auth on it"
-  story. Bring-your-own database, GitHat handles identity.
+  story. You keep your data wherever it lives; GitHat handles identity.
 
 A developer landing on githat.io sees these six and immediately knows
 what they could build. They pick one, scaffold, and the project

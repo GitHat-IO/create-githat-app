@@ -192,7 +192,7 @@ You don't deploy or maintain a backend. GitHat's hosted platform handles:
 - **API key management** — publishable + secret keys per app, rotation
 - **AI agent registration** — Ethereum wallet verification, challenge-response tokens
 - **Email delivery** — verification emails, invitations, password resets (via AWS SES)
-- **Database** — users, orgs, teams, apps, and agents (DynamoDB, managed by GitHat)
+- **Identity store** — GitHat persists users, orgs, teams, apps, and agents for you
 - **Public verification** — anyone can verify an agent at `githat.io/verify/`
 
 Your data lives in GitHat's infrastructure. You write frontend code, GitHat handles the rest.
@@ -280,7 +280,6 @@ VITE_GITHAT_API_URL=https://api.githat.io
 - [CLI Reference](https://githat.io/docs/cli) — Flags, prompts, and templates
 - [Next.js Guide](https://githat.io/docs/nextjs) — Auth in Next.js 14-16+
 - [React Guide](https://githat.io/docs/react) — Auth in any React app
-- [Bring Your Own Database](https://githat.io/docs/byod) — Keep your PostgreSQL, MySQL, or MongoDB
 - [MCP Servers](https://githat.io/docs/mcp) — Domain verification for AI tool servers
 - [AI Agents](https://githat.io/docs/agents) — Wallet-based identity for autonomous agents
 - [Skills Marketplace](https://githat.io/docs/skills) — Install templates, integrations, and workflows
